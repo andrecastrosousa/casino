@@ -33,7 +33,6 @@ public class Room implements Runnable, Spot {
         SlotMachine slot1 = new SlotMachine();
         slot1.play();
 
-
     }
 
     @Override
