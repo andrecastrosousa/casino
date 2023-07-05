@@ -57,12 +57,10 @@ public class Room implements Runnable, Spot {
         }
     }
 
-    public synchronized void addClient(ClientHandler clientHandler) throws IOException {
+    public synchronized void addClient(ClientHandler clientHandler) throws IOException, InterruptedException {
         clientHandlerList.add(clientHandler);
-        new Thread(clientHandler).start();
         clientHandler.changeSpot(this);
-        System.out.println("sending message to client");
-        System.out.println("Client handler" + clientHandler.toString());
+        Thread.sleep(500);
         clientHandler.sendMessageUser("\nWaiting for players to start the game...\n");
         if(isFull()) {
             gameStarted = true;

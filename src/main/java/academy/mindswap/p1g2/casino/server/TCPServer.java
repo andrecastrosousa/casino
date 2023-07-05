@@ -47,7 +47,7 @@ public class TCPServer implements Spot {
             // Create client
             ClientHandler clientHandler = new ClientHandler(socket, this);
             clientHandlerList.add(clientHandler);
-            // new Thread(clientHandler).start();
+            new Thread(clientHandler).start();
 
             Room room;
 
@@ -56,6 +56,7 @@ public class TCPServer implements Spot {
                 rooms.add(room);
                 // new Thread(room).start();
                 executors.execute(room);
+                // new Thread(clientHandler).start();
             } else {
                 room = rooms.get(rooms.size() - 1);
             }
@@ -63,6 +64,8 @@ public class TCPServer implements Spot {
             room.addClient(clientHandler);
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } finally {
             acceptClient();
         }
