@@ -1,7 +1,7 @@
 package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.Commands;
-import academy.mindswap.p1g2.casino.server.utils.Messages;
+import academy.mindswap.p1g2.casino.server.games.SlotMachine;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,13 +22,18 @@ public class Room implements Runnable, Spot {
     }
 
     public void init() throws InterruptedException {
+
         clientHandlerList.forEach(clientHandler -> {
             try {
-                clientHandler.sendMessageUser(Messages.ROOM_STARTED);
+                clientHandler.sendMessageUser("Game will start soon...");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
+        SlotMachine slot1 = new SlotMachine();
+        slot1.play();
+
+
     }
 
     @Override
@@ -48,7 +53,8 @@ public class Room implements Runnable, Spot {
     public synchronized void addClient(ClientHandler clientHandler) throws IOException, InterruptedException {
         clientHandlerList.add(clientHandler);
         clientHandler.changeSpot(this);
-        clientHandler.sendMessageUser(Messages.ROOM_WAITING);
+        Thread.sleep(500);
+        clientHandler.sendMessageUser("\nWaiting for players to start the game...\n");
         if(isFull()) {
             gameStarted = true;
             notifyAll();
@@ -85,13 +91,13 @@ public class Room implements Runnable, Spot {
 
     public void listUsers(ClientHandler clientHandler) throws IOException {
         StringBuilder message = new StringBuilder();
-        message.append(Messages.USER_SEPARATOR);
+        message.append("------------- USERS ---------------\n");
         clientHandlerList.forEach(clientHandler1 -> {
             if(!clientHandler1.equals(clientHandler)) {
                 message.append(clientHandler1.getUsername()).append("\n");
             }
         });
-        message.append(Messages.SEPARATOR);
+        message.append("-----------------------------------");
 
         clientHandler.sendMessageUser(message.toString());
     }
