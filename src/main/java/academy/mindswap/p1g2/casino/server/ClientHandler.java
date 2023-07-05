@@ -16,12 +16,9 @@ public class ClientHandler implements Runnable {
         private String message;
         private final MessageSender messageSender;
 
-        public ClientHandler(Socket socket, TCPServer server) {
+        public ClientHandler(Socket socket, TCPServer server) throws IOException {
             this.socket = socket;
             messageSender = new MessageSender(new CommandInvoker(server));
-        }
-
-        private void startBuffers() throws IOException {
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         }
@@ -33,10 +30,9 @@ public class ClientHandler implements Runnable {
             handleClient();
         }
 
-        protected synchronized void sendMessageUser(String message) throws IOException {
+        protected void sendMessageUser(String message) throws IOException {
             out.write(message);
             out.newLine();
-            System.out.println("Message to client " + message);
             out.flush();
         }
 
@@ -47,7 +43,7 @@ public class ClientHandler implements Runnable {
                     socket.close();
                     return "";
                 }
-                System.out.println("client sent: ".concat(line));
+                System.out.printf(Messages.CLIENT_MESSAGE, line);
 
                 return line;
             } catch (IOException e) {
@@ -57,14 +53,13 @@ public class ClientHandler implements Runnable {
         }
 
         private void greetClient() throws IOException {
-            System.out.println("New client arrived");
-            sendMessageUser("Welcome to our chat!");
+            System.out.println(Messages.CLIENT_ARRIVED);
+            sendMessageUser(Messages.CLIENT_WELCOME);
         }
 
         @Override
         public void run() {
             try {
-                startBuffers();
                 greetClient();
                 handleClient();
             } catch (IOException e) {

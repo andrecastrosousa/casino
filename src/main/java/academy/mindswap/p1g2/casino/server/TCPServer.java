@@ -36,11 +36,11 @@ public class TCPServer implements Spot {
             e.printStackTrace();
             System.exit(1);
         }
-        System.out.println("Server is running");
+        System.out.println(Messages.SERVER_RUNNING);
     }
 
     private void acceptClient() {
-        System.out.println("Server is accepting Clients");
+        System.out.println(Messages.SERVER_OPENING);
         try {
 
             Socket socket = serverSocket.accept();//blocking method
@@ -54,9 +54,7 @@ public class TCPServer implements Spot {
             if((clientHandlerList.size() - 1) % 3 == 0) {
                 room = new Room(rooms.size() + 1);
                 rooms.add(room);
-                // new Thread(room).start();
                 executors.execute(room);
-                // new Thread(clientHandler).start();
             } else {
                 room = rooms.get(rooms.size() - 1);
             }
