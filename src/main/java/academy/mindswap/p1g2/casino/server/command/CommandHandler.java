@@ -7,5 +7,5 @@ import java.io.IOException;
 
 @FunctionalInterface
 public interface CommandHandler {
-    void execute(Spot room, ClientHandler clientHandler) throws IOException;
+    void execute(Spot spot, ClientHandler clientHandler) throws IOException;
 }

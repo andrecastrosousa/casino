@@ -12,7 +12,7 @@ public class Room implements Runnable, Spot {
 
     private int number;
 
-    private boolean gameStarted;
+    private volatile boolean gameStarted;
 
     public Room(int number) {
         this.clientHandlerList = new ArrayList<>();
@@ -20,8 +20,9 @@ public class Room implements Runnable, Spot {
         this.number = number;
     }
 
-    public void init() {
-        if (gameStarted) {
+    public void init() throws InterruptedException {
+        /*if (gameStarted) {
+            System.out.println("ALO");
             clientHandlerList.forEach(clientHandler -> {
                 try {
                     clientHandler.sendMessageUser("Game will start soon...");
@@ -29,21 +30,48 @@ public class Room implements Runnable, Spot {
                     throw new RuntimeException(e);
                 }
             });
-        }
+        } else {
+            //wait();
+            init();
+        }*/
+        clientHandlerList.forEach(clientHandler -> {
+            try {
+                clientHandler.sendMessageUser("Game will start soon...");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
     public void run() {
-        init();
+        try {
+            if(!isFull()) {
+                synchronized (this) {
+                    wait();
+                }
+            }
+            init();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void addClient(ClientHandler clientHandler) throws IOException {
+    public synchronized void addClient(ClientHandler clientHandler) throws IOException {
         clientHandlerList.add(clientHandler);
+        new Thread(clientHandler).start();
         clientHandler.changeSpot(this);
-        if(clientHandlerList.size() == 3) {
+        System.out.println("sending message to client");
+        System.out.println("Client handler" + clientHandler.toString());
+        clientHandler.sendMessageUser("\nWaiting for players to start the game...\n");
+        if(isFull()) {
             gameStarted = true;
+            notifyAll();
         }
-        clientHandler.sendMessageUser("Waiting for players to start the game...");
+    }
+
+    public boolean isFull() {
+        return clientHandlerList.size() == 3;
     }
 
     public void broadcast(String message, ClientHandler clientHandlerBroadcaster){

@@ -47,14 +47,15 @@ public class TCPServer implements Spot {
             // Create client
             ClientHandler clientHandler = new ClientHandler(socket, this);
             clientHandlerList.add(clientHandler);
-            new Thread(clientHandler).start();
+            // new Thread(clientHandler).start();
 
             Room room;
 
             if((clientHandlerList.size() - 1) % 3 == 0) {
                 room = new Room(rooms.size() + 1);
                 rooms.add(room);
-                executors.submit(room);
+                // new Thread(room).start();
+                executors.execute(room);
             } else {
                 room = rooms.get(rooms.size() - 1);
             }

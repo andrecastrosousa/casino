@@ -28,7 +28,9 @@ public class ClientHandler implements Runnable {
 
         private void handleClient() throws IOException {
             sendMessageUser("Input your question");
+            System.out.println("VVS");
             message = readMessageFromUser();
+            System.out.println("ULLELE");
             messageSender.dealWithCommands(message, this);
             handleClient();
         }
@@ -36,6 +38,7 @@ public class ClientHandler implements Runnable {
         void sendMessageUser(String message) throws IOException {
             out.write(message);
             out.newLine();
+            System.out.println("Message to client " + message);
             out.flush();
         }
 
@@ -58,7 +61,7 @@ public class ClientHandler implements Runnable {
         private void greetClient() throws IOException {
             System.out.println("New client arrived");
             sendMessageUser("Welcome to our chat!");
-            askClientForName();
+            // askClientForName();
         }
 
         private void askClientForName() throws IOException {
