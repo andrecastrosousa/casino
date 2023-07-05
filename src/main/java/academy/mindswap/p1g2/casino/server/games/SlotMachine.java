@@ -5,7 +5,7 @@ import java.util.*;
 
 public class SlotMachine {
     private static final int spinsCount = 3; // Number of spins
-    private static final int numbersPerSpin = 3; // Number of number for each spin
+    private static final int numbersPerSpin = 3; /** Number of number for each spin */
     private static final int initialBalance = 100; // Initial balance for player (can be another nr)
     private static final Scanner scanner = new Scanner(System.in); // Create a Scanner
     private static final Random random = new Random();
@@ -74,16 +74,23 @@ public class SlotMachine {
         System.out.println("\n--------*--------");
     }
 
+    /**
+     * hasdjasdha
+     * @param spins number of spin made by user.
+     * @param minimumMatchPrize minimum match to win
+     * @param maximumMatchPrize maximum match to win
+     * @return
+     */
     private int calculatePayout(List<Integer> spins, int minimumMatchPrize, int maximumMatchPrize) { //{2,3,3,4}   {2:!,3:2,4:1}
         Map<Integer, Integer> matrix = new HashMap<>();
         for (Integer num : spins) {
             matrix.put(num, matrix.get(num) != null ? matrix.get(num) + 1 : 1);
         }
 
-        if (matrix.containsValue(2)) {
+        if (matrix.containsValue(minimumMatchPrize)) {
             return 3;
         }
-        if (matrix.containsValue(3)) {
+        if (matrix.containsValue(maximumMatchPrize)) { //inside we must have jackpot (7,7,7), half-jackpot(3,3,3)
             return 10;
         }
         return 0;
