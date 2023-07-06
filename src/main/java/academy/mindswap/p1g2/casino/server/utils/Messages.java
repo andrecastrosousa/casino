@@ -15,5 +15,42 @@ public class Messages {
     public static final String CLIENT_NAME = "Your name is %s";
     public static final String INSERT_COMMAND = "Insert a command";
 
+    /* CARDS */
+    public static final String CARD_HEART = """
+              ____
+             |%s   |
+             |(\\/)|
+             | \\/ |
+             |   %s|
+             `----`
+            """;
+
+    public static final String CARD_DIAMOND = """
+              ____
+             |%s   |
+             | /\\ |
+             | \\/ |
+             |   %s|
+             `----`
+            """;
+
+    public static final String CARD_SPADE = """
+              ____
+             |%s   |
+             | /\\ |
+             |(__)|
+             | /\\%s|
+             `----`
+            """;
+
+    public static final String CARD_CLUB = """
+              ____
+             |%s  |
+             |  & |
+             | &|&|
+             |  |%s|
+             `----`
+            """;
+
     private Messages() {}
 }
