@@ -17,39 +17,39 @@ public class Messages {
 
     /* CARDS */
     public static final String CARD_HEART = """
-              ____
-             |%s   |
-             |(\\/)|
-             | \\/ |
-             |   %s|
-             `----`
+              ______
+             |%s     |
+             | (\\/) |
+             |  \\/  |
+             |     %s|
+             `------`
             """;
 
     public static final String CARD_DIAMOND = """
-              ____
-             |%s   |
-             | /\\ |
-             | \\/ |
-             |   %s|
-             `----`
+              ______
+             |%s     |
+             | / \\  |
+             | \\ /  |
+             |     %s|
+             `------`
             """;
 
     public static final String CARD_SPADE = """
-              ____
-             |%s   |
-             | /\\ |
-             |(__)|
-             | /\\%s|
-             `----`
+              ______
+             |%s     |
+             | / \\  |
+             |(___) |
+             | / \\ %s|
+             `------`
             """;
 
     public static final String CARD_CLUB = """
-              ____
-             |%s  |
-             |  & |
-             | &|&|
-             |  |%s|
-             `----`
+              ______
+             |%s     |
+             |  &   |
+             | &|&  |
+             |  |  %s|
+             `------´
             """;
 
     private Messages() {}
