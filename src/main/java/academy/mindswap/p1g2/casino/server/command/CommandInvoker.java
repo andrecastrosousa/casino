@@ -24,4 +24,8 @@ public class CommandInvoker {
     public void changeSpot(Spot spot) {
         this.spot = spot;
     }
+
+    public Spot getSpot() {
+        return spot;
+    }
 }

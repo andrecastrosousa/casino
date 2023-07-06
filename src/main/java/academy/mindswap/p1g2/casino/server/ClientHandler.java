@@ -94,7 +94,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    void closeConnection() {
+    public void closeConnection() {
         try {
             socket.close();
         } catch (IOException e) {

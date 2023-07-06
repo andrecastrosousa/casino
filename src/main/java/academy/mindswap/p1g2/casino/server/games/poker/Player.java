@@ -21,13 +21,27 @@ public class Player {
         this.currentBalance += balance;
     }
 
-    public void receiveCard(Card card) {
-        this.cards.add(card);
+    public int allIn() {
+        currentBalance = 0;
+        return currentBalance;
+    }
+
+    public void call(int amount) {
+        currentBalance -= amount;
     }
 
     public void fold() {
         cards.clear();
     }
+
+    public void raise(int amount) {
+        currentBalance -= amount;
+    }
+
+    public void receiveCard(Card card) {
+        this.cards.add(card);
+    }
+
 
     public ClientHandler getClientHandler() {
         return clientHandler;
@@ -37,5 +51,9 @@ public class Player {
         StringBuilder message = new StringBuilder();
         cards.forEach(card -> message.append(card.toString()));
         return message.toString();
+    }
+
+    public void playTurn(Poker poker) {
+        poker.waitForTurn(this);
     }
 }
