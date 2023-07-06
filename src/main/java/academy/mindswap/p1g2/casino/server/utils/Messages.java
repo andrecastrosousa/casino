@@ -1,4 +1,4 @@
-package academy.mindswap.p1g2.casino.server;
+package academy.mindswap.p1g2.casino.server.utils;
 
 public class Messages {
 
@@ -11,6 +11,7 @@ public class Messages {
     public static final String CLIENT_MESSAGE = "client sent: %s";
     public static final String CLIENT_ARRIVED = "New client arrived";
     public static final String CLIENT_WELCOME = "Welcome to our chat!";
+    public static final String CLIENT_NAME = "Your name is %s";
 
     private Messages() {}
 }

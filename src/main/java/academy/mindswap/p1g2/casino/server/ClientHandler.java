@@ -1,9 +1,8 @@
 package academy.mindswap.p1g2.casino.server;
 
-import academy.mindswap.p1g2.casino.server.MessageSender;
-import academy.mindswap.p1g2.casino.server.Spot;
-import academy.mindswap.p1g2.casino.server.TCPServer;
 import academy.mindswap.p1g2.casino.server.command.CommandInvoker;
+import academy.mindswap.p1g2.casino.server.utils.Messages;
+import academy.mindswap.p1g2.casino.server.utils.RandomNameGenerator;
 
 import java.io.*;
 import java.net.Socket;
@@ -15,12 +14,14 @@ public class ClientHandler implements Runnable {
         private String username;
         private String message;
         private final MessageSender messageSender;
+        private static int numberOfClients = 0;
 
         public ClientHandler(Socket socket, TCPServer server) throws IOException {
             this.socket = socket;
             messageSender = new MessageSender(new CommandInvoker(server));
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            numberOfClients ++;
         }
 
         private void handleClient() throws IOException {
@@ -55,6 +56,8 @@ public class ClientHandler implements Runnable {
         private void greetClient() throws IOException {
             System.out.println(Messages.CLIENT_ARRIVED);
             sendMessageUser(Messages.CLIENT_WELCOME);
+            username = RandomNameGenerator.generateRandomName();
+            sendMessageUser(String.format(Messages.CLIENT_NAME, username));
         }
 
         @Override
@@ -91,4 +94,11 @@ public class ClientHandler implements Runnable {
             messageSender.changeSpot(spot);
         }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public static int getNumberOfClients() {
+        return numberOfClients;
+    }
 }

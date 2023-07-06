@@ -1,6 +1,7 @@
 package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.Commands;
+import academy.mindswap.p1g2.casino.server.utils.Messages;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,8 +19,6 @@ public class TCPServer implements Spot {
     private List<Room> rooms;
 
     ExecutorService executors = Executors.newFixedThreadPool(3);
-
-    final Object block = new Object();
 
     public static void main(String[] args) {
         TCPServer server = new TCPServer();
