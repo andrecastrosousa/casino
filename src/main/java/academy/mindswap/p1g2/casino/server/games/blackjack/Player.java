@@ -1,7 +1,10 @@
-package academy.mindswap.p1g2.casino.server.games;
+package academy.mindswap.p1g2.casino.server.games.blackjack;
 
+/**
+ *  Player name = client username;
+ */
 public class Player {
-        private String name;
+        private final String name;
         public int cardValue;
 
         public Player(String name){
