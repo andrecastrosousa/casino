@@ -4,9 +4,9 @@ import academy.mindswap.p1g2.casino.server.games.Card;
 
 import java.util.List;
 
-public interface Rule {
+public interface Evaluator {
     boolean evaluateHand();
     boolean evaluateNext(List<Card> cards);
-    void setNextRule(Rule rule);
+    void setNextEvaluator(Evaluator evaluator);
 
 }
