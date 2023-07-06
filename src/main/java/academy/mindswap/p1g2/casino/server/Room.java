@@ -1,13 +1,7 @@
 package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.Commands;
-<<<<<<< HEAD
-import academy.mindswap.p1g2.casino.server.games.slotMachine.SlotMachine;
-=======
-import academy.mindswap.p1g2.casino.server.games.Card;
-import academy.mindswap.p1g2.casino.server.games.DeckGenerator;
-import academy.mindswap.p1g2.casino.server.utils.Messages;
->>>>>>> d7d03d5 (Added Poker commands and rules)
+import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +30,8 @@ public class Room implements Runnable, Spot {
                 throw new RuntimeException(e);
             }
         });
+        Poker poker = new Poker(clientHandlerList);
+        poker.play();
     }
 
     @Override
