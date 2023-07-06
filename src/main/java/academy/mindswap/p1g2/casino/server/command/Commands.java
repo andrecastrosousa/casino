@@ -1,5 +1,7 @@
 package academy.mindswap.p1g2.casino.server.command;
 
+import academy.mindswap.p1g2.casino.server.utils.Messages;
+
 import java.util.Arrays;
 
 public enum Commands {
@@ -7,13 +9,15 @@ public enum Commands {
     LIST("/list", "List all users", new ListUsersCommand()),
     HELP("/help", "List all commands", new HelpCommand()),
     QUIT("/quit", "Quit", new QuitCommand()),
+    CHANGE_NAME("/changeName", "Change your name", new ChangeNameCommand()),
+    NAME("/name", "See your name", new NameCommand()),
     UNKNOWN("", "Unknown command", new UnknownCommand());
 
-    private String command;
+    private final String command;
 
-    private String description;
+    private final String description;
 
-    private CommandHandler handler;
+    private final CommandHandler handler;
 
     Commands(String command, String description, CommandHandler handler) {
         this.command = command;
@@ -31,13 +35,13 @@ public enum Commands {
 
     public static String listCommands() {
         StringBuilder message = new StringBuilder();
-        message.append("------------ COMMANDS --------------\n");
+        message.append(Messages.COMMAND_SEPARATOR);
         for(Commands command : Commands.values()) {
             if(command != UNKNOWN) {
                 message.append(command.getCommand()).append(" -> ").append(command.getDescription()).append("\n");
             }
         }
-        message.append("-----------------------------------");
+        message.append(Messages.SEPARATOR);
         return message.toString();
     }
 
