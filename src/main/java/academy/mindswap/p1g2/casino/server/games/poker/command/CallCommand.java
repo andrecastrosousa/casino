@@ -13,7 +13,7 @@ public class CallCommand implements CommandHandler {
     @Override
     public void execute(Spot spot, ClientHandler clientHandler) throws IOException {
         if(spot instanceof Poker) {
-            ((Poker) spot).call(clientHandler, Integer.parseInt(clientHandler.getMessage().replace(PokerCommands.CALL.getCommand(), "").trim()));
+            ((Poker) spot).call(clientHandler);
             return;
         }
         spot.whisper(Commands.UNKNOWN.getDescription(), clientHandler.getUsername());

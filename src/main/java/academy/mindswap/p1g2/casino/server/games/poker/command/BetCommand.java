@@ -8,11 +8,11 @@ import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 
 import java.io.IOException;
 
-public class RaiseCommand implements CommandHandler {
+public class BetCommand implements CommandHandler {
     @Override
     public void execute(Spot spot, ClientHandler clientHandler) throws IOException {
         if(spot instanceof Poker) {
-            ((Poker) spot).raise(clientHandler);
+            ((Poker) spot).bet(clientHandler);
             return;
         }
         spot.whisper(Commands.UNKNOWN.getDescription(), clientHandler.getUsername());

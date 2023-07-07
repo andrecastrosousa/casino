@@ -35,7 +35,7 @@ public class Card {
         SEVEN('7'),
         EIGHT('8'),
         NINE('9'),
-        TEN('X'),
+        TEN('T'),
         JACK('J'),
         QUEEN('Q'),
         KING('K');

@@ -2,7 +2,7 @@ package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.*;
 import academy.mindswap.p1g2.casino.server.games.poker.Poker;
-import academy.mindswap.p1g2.casino.server.games.poker.command.PokerCommands;
+import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ public class MessageSender {
     private void parseCommand(ClientHandler clientHandler) throws IOException {
         String command = clientHandler.getMessage().split(" ")[0];
         if(commandInvoker.getSpot() instanceof Poker) {
-            CommandHandler commandHandler = PokerCommands.getCommandHandlerByString(command);
+            CommandHandler commandHandler = BetOption.getCommandHandlerByString(command);
             if(!(commandHandler instanceof UnknownCommand)) {
                 invoke(commandHandler, clientHandler);
                 return;

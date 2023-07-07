@@ -5,12 +5,13 @@ import academy.mindswap.p1g2.casino.server.utils.Messages;
 
 import java.util.Arrays;
 
-public enum PokerCommands {
-    ALL_IN("/allIn", "Whisper to someone", new AllInCommand()),
-    CALL("/call", "List all users", new CallCommand()),
+public enum BetOption {
+    ALL_IN("/allIn", "Bet all your poker chip", new AllInCommand()),
+    CALL("/call", "Match the same bet made by other player", new CallCommand()),
     CHECK("/check", "List all commands", new CheckCommand()),
-    FOLD("/fold", "Quit", new FoldCommand()),
-    RAISE("/raise", "Change your name", new RaiseCommand()),
+    FOLD("/fold", "Fold hand", new FoldCommand()),
+    RAISE("/raise", "Raise value of minimum bet", new RaiseCommand()),
+    BET("/bet", "Bet a value", new BetCommand()),
     UNKNOWN("", "Unknown command", new UnknownCommand());
 
     private final String command;
@@ -19,7 +20,7 @@ public enum PokerCommands {
 
     private final CommandHandler handler;
 
-    PokerCommands(String command, String description, CommandHandler handler) {
+    BetOption(String command, String description, CommandHandler handler) {
         this.command = command;
         this.description = description;
         this.handler = handler;
@@ -34,7 +35,7 @@ public enum PokerCommands {
     }
 
     public static CommandHandler getCommandHandlerByString(String message) {
-        return Arrays.stream(PokerCommands.values())
+        return Arrays.stream(BetOption.values())
                 .filter(commands -> commands.getCommand().equals(message))
                 .map(command -> command.handler)
                 .findFirst()
@@ -44,7 +45,7 @@ public enum PokerCommands {
     public static String listCommands() {
         StringBuilder message = new StringBuilder();
         message.append(Messages.POKER_SEPARATOR);
-        for(PokerCommands command : PokerCommands.values()) {
+        for(BetOption command : BetOption.values()) {
             if(command != UNKNOWN) {
                 message.append(command.getCommand()).append(" -> ").append(command.getDescription()).append("\n");
             }

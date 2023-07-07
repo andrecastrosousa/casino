@@ -3,7 +3,7 @@ package academy.mindswap.p1g2.casino.server.games.poker;
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.Spot;
 import academy.mindswap.p1g2.casino.server.command.Commands;
-import academy.mindswap.p1g2.casino.server.games.poker.command.PokerCommands;
+import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.poker.rule.*;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ public class Poker implements Spot {
     private final List<Player> players;
     private final List<Player> playersPlaying;
     private final Dealer dealer;
-    private int balance;
+    private int pot;
     private int currentPlayerPlaying;
 
     public Poker(List<ClientHandler> clientHandlers) {
@@ -32,7 +32,7 @@ public class Poker implements Spot {
             clientHandler.changeSpot(this);
         });
         createEvaluatorChain();
-        balance = 0;
+        pot = 0;
         currentPlayerPlaying = 0;
 
     }
@@ -95,18 +95,20 @@ public class Poker implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        balance += player.allIn();
+        pot += player.allIn();
+        player.selectBetOption(BetOption.ALL_IN);
         player.releaseTurn();
     }
 
-    public void call(ClientHandler clientHandler, int amount) throws IOException {
+    public void call(ClientHandler clientHandler) throws IOException {
         if(!players.get(currentPlayerPlaying).getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser("Isn't your time to play.");
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        balance += amount;
-        player.call(amount);
+        pot += 20;
+        player.call(20);
+        player.selectBetOption(BetOption.CALL);
         player.releaseTurn();
     }
 
@@ -115,6 +117,7 @@ public class Poker implements Spot {
             clientHandler.sendMessageUser("Isn't your time to play.");
         }
         Player player = getPlayerByClient(clientHandler);
+        player.selectBetOption(BetOption.CHECK);
         player.releaseTurn();
     }
 
@@ -126,17 +129,31 @@ public class Poker implements Spot {
         Player player = getPlayerByClient(clientHandler);
         playersPlaying.remove(player);
         dealer.receiveCardsFromPlayer(player.fold());
+        player.selectBetOption(BetOption.FOLD);
         player.releaseTurn();
     }
 
-    public void raise(ClientHandler clientHandler, int amount) throws IOException {
+    public void raise(ClientHandler clientHandler) throws IOException {
         if(!players.get(currentPlayerPlaying).getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser("Isn't your time to play.");
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        balance += amount;
-        player.raise(amount);
+        pot += 20;
+        player.raise(20);
+        player.selectBetOption(BetOption.RAISE);
+        player.releaseTurn();
+    }
+
+    public void bet(ClientHandler clientHandler) throws IOException {
+        if(!players.get(currentPlayerPlaying).getClientHandler().equals(clientHandler)) {
+            clientHandler.sendMessageUser("Isn't your time to play.");
+            return;
+        }
+        Player player = getPlayerByClient(clientHandler);
+        pot += 20;
+        player.raise(20);
+        player.selectBetOption(BetOption.BET);
         player.releaseTurn();
     }
 
@@ -169,7 +186,7 @@ public class Poker implements Spot {
     @Override
     public void listCommands(ClientHandler clientHandler) throws IOException {
         clientHandler.sendMessageUser(Commands.listCommands());
-        clientHandler.sendMessageUser(PokerCommands.listCommands());
+        clientHandler.sendMessageUser(BetOption.listCommands());
     }
 
     @Override

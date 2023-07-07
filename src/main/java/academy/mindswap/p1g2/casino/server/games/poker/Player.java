@@ -2,6 +2,7 @@ package academy.mindswap.p1g2.casino.server.games.poker;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +12,14 @@ public class Player {
     private int currentBalance;
     private final List<Card> cards;
     private volatile boolean isPlaying;
+    private BetOption betOptionSelected;
 
     public Player(ClientHandler clientHandler) {
         this.clientHandler = clientHandler;
         currentBalance = 100;
         cards = new ArrayList<>();
         isPlaying = false;
+        betOptionSelected = null;
     }
 
     public void addBalance(int balance) {
@@ -67,5 +70,9 @@ public class Player {
 
     public boolean isPlaying() {
         return isPlaying;
+    }
+
+    public void selectBetOption(BetOption option) {
+        betOptionSelected = option;
     }
 }
