@@ -19,15 +19,16 @@ public class SlotMachine {
     public void play() {
         System.out.println("Welcome to the Slot Machine!");
         while (balance > 0) {
+
             System.out.println("Press Enter to spin the reels (or type 'quit' to exit):");
             System.out.println("Press 'double' to double your bet!");
-
             String input = scanner.nextLine();
 
             if (input.equalsIgnoreCase("quit")) { //
                 System.out.println("Thank you for playing. Goodbye!");
                 break;
             }
+
             if(input.equalsIgnoreCase("double")) {
                 bet = 2;
             } else {
@@ -39,9 +40,17 @@ public class SlotMachine {
             }
             balance -= bet;
 
+
+
+
             List<Integer> spins = spin();
             displaySpins(spins);
             int payout = calculatePayout(spins, 2, 3);
+            if (payout == 15 ){
+                System.out.println("***JACKPOT TIME BABY***");
+            } if(payout == 7){
+                System.out.println("***HALF-JACKPOT***");
+            }
             if (payout > 0) {
                 if (bet == 2) {
                     payout *= 2; // Double the payout if the player wins with the double bet
@@ -49,11 +58,14 @@ public class SlotMachine {
                 balance += payout; // Update the balance with the payout
                 System.out.println("Balance: " + (balance - payout));
                 System.out.println("Congratulations! You won " + payout + " credits! :D");
+
             } else {
                 System.out.println("Sorry, you didn't win anything... :(");
             }
+
             System.out.println("Your balance is: " + balance);
         }
+
         System.out.println("Game over. You are out of credits... :(");
     }
 
@@ -64,7 +76,10 @@ public class SlotMachine {
             int number = random.nextInt(9) + 1; // Generate a random number between 1 and 9
             spins.add(number);
         }
+
         return spins;
+
+
     }
 
     private void displaySpins(List<Integer> spins) {
@@ -94,22 +109,22 @@ public class SlotMachine {
         if (matrix.containsValue(maximumMatchPrize)) {
             if (spins.contains(7) && matrix.get(7) == spins.size()) {
                 if (bet == 2) {
-                    return 60; // Double the jackpot value (30 credits)
+                    return 30; // Double the jackpot value (30 credits)
                 } else {
-                    return 30; // Jackpot (30 credits)
+                    return 15; // Jackpot (30 credits)
                 }
             } else if (spins.contains(3) && matrix.get(3) == spins.size()) {
                 if (bet == 2) {
-                    return 30;
+                    return 15;
                     // Double the half-jackpot value (30 credits)
                 }else {
-                    return 15; // Half-jackpot (15 credits)
+                    return 7; // Half-jackpot (15 credits)
                 }
             }
             if (bet == 2) {
-                return 20; // Double the regular payout value (20 credits)
+                return 10; // Double the regular payout value (20 credits)
             } else {
-                return 10; // Regular payout (10 credits)
+                return 5; // Regular payout (10 credits)
             }
         }
         return 0;
