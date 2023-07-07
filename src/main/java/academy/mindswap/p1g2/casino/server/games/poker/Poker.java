@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Semaphore;
 
 public class Poker implements Spot {
     private final Evaluator evaluatorChain;
@@ -19,14 +20,17 @@ public class Poker implements Spot {
     private int balance;
     private int currentPlayerPlaying;
 
+    private Semaphore semaphore;
+
     public Poker(List<ClientHandler> clientHandlers) {
         this.dealer = new Dealer();
         evaluatorChain = new RoyalFlushEvaluator();
+        semaphore = new Semaphore(1);
         players = new ArrayList<>();
         playersPlaying = new ArrayList<>();
 
         clientHandlers.forEach(clientHandler -> {
-            Player player = new Player(clientHandler);
+            Player player = new Player(clientHandler, semaphore);
             players.add(player);
             playersPlaying.add(player);
             clientHandler.changeSpot(this);
@@ -34,6 +38,7 @@ public class Poker implements Spot {
         createEvaluatorChain();
         balance = 0;
         currentPlayerPlaying = 0;
+
     }
 
     private void createEvaluatorChain() {
@@ -56,7 +61,7 @@ public class Poker implements Spot {
         evaluatorChain.evaluateHand();
     }
 
-    public synchronized void play() throws IOException, InterruptedException {
+    public void play() throws IOException, InterruptedException {
         dealer.shuffle();
         dealer.distributeCards(players);
 
@@ -64,21 +69,10 @@ public class Poker implements Spot {
             Player currentPlayer = playersPlaying.get(currentPlayerPlaying);
             broadcast(String.format("%s is playing. Wait for your turn.", currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
             currentPlayer.getClientHandler().sendMessageUser("It is your time to play.");
-            wait();
-            synchronized (this) {
-                currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
-                notifyAll();
-            }
-        }
-    }
 
-    public synchronized void waitForTurn(Player player) {
-        while (players.get(currentPlayerPlaying) != player) {
-            try {
-                wait();
-            } catch (InterruptedException ignored) {
+            currentPlayer.playTurn();
 
-            }
+            currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
         }
     }
 
@@ -93,8 +87,6 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         balance += player.allIn();
-        player.playTurn(this);
-
     }
 
     public void call(ClientHandler clientHandler, int amount) throws IOException {
@@ -102,18 +94,13 @@ public class Poker implements Spot {
             clientHandler.sendMessageUser("Isn't your time to play.");
             return;
         }
-        Player player = getPlayerByClient(clientHandler);
         balance += amount;
-        player.playTurn(this);
     }
 
     public void check(ClientHandler clientHandler) throws IOException {
         if(!players.get(currentPlayerPlaying).getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser("Isn't your time to play.");
-            return;
         }
-        Player player = getPlayerByClient(clientHandler);
-        player.playTurn(this);
     }
 
     public void fold(ClientHandler clientHandler) throws IOException {
@@ -123,7 +110,6 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         playersPlaying.remove(player);
-        player.playTurn(this);
     }
 
     public void raise(ClientHandler clientHandler, int amount) throws IOException {
@@ -133,7 +119,6 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         player.raise(amount);
-        player.playTurn(this);
     }
 
     @Override
