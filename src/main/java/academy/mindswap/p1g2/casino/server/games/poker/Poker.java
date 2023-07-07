@@ -20,7 +20,7 @@ public class Poker implements Spot {
     private int balance;
     private int currentPlayerPlaying;
 
-    private Semaphore semaphore;
+    private final Semaphore semaphore;
 
     public Poker(List<ClientHandler> clientHandlers) {
         this.dealer = new Dealer();
@@ -61,16 +61,20 @@ public class Poker implements Spot {
         evaluatorChain.evaluateHand();
     }
 
-    public void play() throws IOException, InterruptedException {
+    public void play() throws IOException {
         dealer.shuffle();
         dealer.distributeCards(players);
 
         while (!gameEnded()) {
             Player currentPlayer = playersPlaying.get(currentPlayerPlaying);
+
             broadcast(String.format("%s is playing. Wait for your turn.", currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
             currentPlayer.getClientHandler().sendMessageUser("It is your time to play.");
+            currentPlayer.waitForTurn();
 
-            currentPlayer.playTurn();
+            while (currentPlayer.isPlaying()) {
+
+            }
 
             currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
         }
@@ -87,6 +91,7 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         balance += player.allIn();
+        player.releaseTurn();
     }
 
     public void call(ClientHandler clientHandler, int amount) throws IOException {
@@ -94,13 +99,18 @@ public class Poker implements Spot {
             clientHandler.sendMessageUser("Isn't your time to play.");
             return;
         }
+        Player player = getPlayerByClient(clientHandler);
         balance += amount;
+        player.call(amount);
+        player.releaseTurn();
     }
 
     public void check(ClientHandler clientHandler) throws IOException {
         if(!players.get(currentPlayerPlaying).getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser("Isn't your time to play.");
         }
+        Player player = getPlayerByClient(clientHandler);
+        player.releaseTurn();
     }
 
     public void fold(ClientHandler clientHandler) throws IOException {
@@ -110,6 +120,8 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         playersPlaying.remove(player);
+        player.fold();
+        player.releaseTurn();
     }
 
     public void raise(ClientHandler clientHandler, int amount) throws IOException {
@@ -118,7 +130,9 @@ public class Poker implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
+        balance += amount;
         player.raise(amount);
+        player.releaseTurn();
     }
 
     @Override

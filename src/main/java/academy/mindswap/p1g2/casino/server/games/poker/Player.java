@@ -11,14 +11,17 @@ import java.util.concurrent.Semaphore;
 public class Player {
     private final ClientHandler clientHandler;
     private int currentBalance;
-    private List<Card> cards;
-    private Semaphore semaphore;
+    private final List<Card> cards;
+    private final Semaphore semaphore;
+
+    private volatile boolean isPlaying;
 
     public Player(ClientHandler clientHandler, Semaphore semaphore) {
         this.clientHandler = clientHandler;
         this.semaphore = semaphore;
         currentBalance = 100;
         cards = new ArrayList<>();
+        isPlaying = false;
     }
 
     public void addBalance(int balance) {
@@ -57,29 +60,23 @@ public class Player {
         return message.toString();
     }
 
-    public void playTurn() throws IOException {
-        waitForTurn();
-        clientHandler.sendMessageUser("Your turn. Please make a move."); // Send a message to the client
-
-        String message = clientHandler.readMessageFromUser(); // Wait for the client's response
-
-        // Process the client's message
-        // For example, you can pass the message to the PokerGame instance
-        clientHandler.getMessageSender().dealWithCommands(message, clientHandler);
-
-        releaseTurn();
-    }
-
-    private void waitForTurn() {
+    public void waitForTurn() {
         try {
             semaphore.acquire();
+            isPlaying = true;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             e.printStackTrace();
         }
     }
 
-    private void releaseTurn() {
+    public void releaseTurn() {
+        System.out.println("SEMAPHORE RELEASE");
         semaphore.release();
+        isPlaying = false;
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
     }
 }

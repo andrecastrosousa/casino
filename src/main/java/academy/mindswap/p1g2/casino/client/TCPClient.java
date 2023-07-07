@@ -12,7 +12,6 @@ public class TCPClient {
         TCPClient client = new TCPClient();
         client.startConsoleReader();
         client.handleServer();
-
     }
 
     private void startConsoleReader() {
@@ -24,7 +23,7 @@ public class TCPClient {
         //   System.out.println("Connected");
         startListenToServer();
         //   System.out.println("Listening");
-        communicateWitServer();
+        communicateWithServer();
         //   System.out.println("After comm");
         close();
     }
@@ -36,11 +35,11 @@ public class TCPClient {
             handleServer();
         }
     }
-    private void communicateWitServer() {
+    private void communicateWithServer() {
         try {
             //   System.out.println("comm");
             sendMessages();
-            communicateWitServer();
+            communicateWithServer();
         } catch (IOException e) {
             System.out.println("Hum... seems that the server is dead");
             handleServer();
@@ -125,7 +124,7 @@ public class TCPClient {
             String readMessageFromServer = serverReader.readLine();
             System.out.println(readMessageFromServer);
 
-            if(readMessageFromServer.equals("bye")) {
+            if(readMessageFromServer.equals("quit")) {
                 close();
                 return;
             }

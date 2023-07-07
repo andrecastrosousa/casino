@@ -12,7 +12,7 @@ public class RaiseCommand implements CommandHandler {
     @Override
     public void execute(Spot spot, ClientHandler clientHandler) throws IOException {
         if(spot instanceof Poker) {
-            ((Poker) spot).call(clientHandler, Integer.parseInt(clientHandler.getMessage().replace(PokerCommands.RAISE.getCommand(), "").trim()));
+            ((Poker) spot).raise(clientHandler, Integer.parseInt(clientHandler.getMessage().replace(PokerCommands.RAISE.getCommand(), "").trim()));
             return;
         }
         spot.whisper(Commands.UNKNOWN.getDescription(), clientHandler.getUsername());

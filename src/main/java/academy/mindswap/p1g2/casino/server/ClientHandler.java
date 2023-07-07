@@ -48,17 +48,17 @@ public class ClientHandler implements Runnable {
         return messageSender;
     }
 
+    public void sendMessageUser(String message) throws IOException {
+        out.write(message);
+        out.newLine();
+        out.flush();
+    }
+
     private void handleClient() throws IOException {
         sendMessageUser(Messages.INSERT_COMMAND);
         message = readMessageFromUser();
         messageSender.dealWithCommands(message, this);
         handleClient();
-    }
-
-    public void sendMessageUser(String message) throws IOException {
-        out.write(message);
-        out.newLine();
-        out.flush();
     }
 
     public String readMessageFromUser() {
@@ -89,21 +89,19 @@ public class ClientHandler implements Runnable {
     public void run() {
         try {
             greetClient();
-            // handleClient();
+            handleClient();
             while (!socket.isClosed()) {
 
             }
+            closeConnection();
         } catch (IOException e) {
-            try {
-                socket.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            closeConnection();
         }
     }
 
     public void closeConnection() {
         try {
+            sendMessageUser("quit");
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
