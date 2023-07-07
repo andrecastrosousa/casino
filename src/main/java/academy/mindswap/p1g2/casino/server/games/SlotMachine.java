@@ -5,7 +5,7 @@ import java.util.*;
 
 public class SlotMachine {
     private static final int spinsCount = 3; // Number of spins
-    private static final int initialBalance = 100; // Initial balance for player (can be another nr)
+    private static final int initialBalance = 20; // Initial balance for player (can be another nr)
     private static final Scanner scanner = new Scanner(System.in); // Create a Scanner
     private static final Random random = new Random();
 
@@ -46,10 +46,13 @@ public class SlotMachine {
             List<Integer> spins = spin();
             displaySpins(spins);
             int payout = calculatePayout(spins, 2, 3);
-            if (payout == 15 ){
+            if (payout == 20 || payout == 40 ){
                 System.out.println("***JACKPOT TIME BABY***");
-            } if(payout == 7){
+            } if(payout == 7 || payout == 14){
                 System.out.println("***HALF-JACKPOT***");
+            }
+            if(payout == 3 || payout == 6){
+                System.out.println("***YOU GOT TWO MATCHES***");
             }
             if (payout > 0) {
                 if (bet == 2) {
@@ -73,7 +76,7 @@ public class SlotMachine {
         List<Integer> spins = new ArrayList<>();
 
         for (int i = 0; i < spinsCount; i++) {
-            int number = random.nextInt(9) + 1; // Generate a random number between 1 and 9
+            int number = random.nextInt(9); // Generate a random number between 1 and 9
             spins.add(number);
         }
 
@@ -104,27 +107,31 @@ public class SlotMachine {
         }
 
         if (matrix.containsValue(minimumMatchPrize)) {
-            return 3;
+            if (bet ==2){
+                return 3;
+            } else {
+                return (int) (1.5+1.5);
+            }
         }
         if (matrix.containsValue(maximumMatchPrize)) {
             if (spins.contains(7) && matrix.get(7) == spins.size()) {
                 if (bet == 2) {
-                    return 30; // Double the jackpot value (30 credits)
+                    return 20; // Double the jackpot value (40 credits)
                 } else {
-                    return 15; // Jackpot (30 credits)
+                    return 10+10; // Jackpot (20 credits)
                 }
             } else if (spins.contains(3) && matrix.get(3) == spins.size()) {
                 if (bet == 2) {
-                    return 15;
-                    // Double the half-jackpot value (30 credits)
-                }else {
-                    return 7; // Half-jackpot (15 credits)
+                    return 7;
+                    // Double the half-jackpot value (14 credits)
+                } else {
+                    return (int) (3.5 + 3.5); // Half-jackpot (7 credits)
                 }
             }
             if (bet == 2) {
-                return 10; // Double the regular payout value (20 credits)
+                return 1; // Double the regular payout value (2 credits)
             } else {
-                return 5; // Regular payout (10 credits)
+                return (int) (0.5+0.5); // Regular payout (1 credits)
             }
         }
         return 0;
