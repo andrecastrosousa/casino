@@ -1,7 +1,7 @@
 package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.Commands;
-import academy.mindswap.p1g2.casino.server.games.slotMachine.SlotMachine;
+import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,8 +21,7 @@ public class Room implements Runnable, Spot {
         this.number = number;
     }
 
-    public void init() throws InterruptedException {
-
+    public void init() throws InterruptedException, IOException {
         clientHandlerList.forEach(clientHandler -> {
             try {
                 clientHandler.sendMessageUser("Game will start soon...");
@@ -30,9 +29,8 @@ public class Room implements Runnable, Spot {
                 throw new RuntimeException(e);
             }
         });
-        SlotMachine slot1 = new SlotMachine();
-        slot1.play();
-
+        Poker poker = new Poker(clientHandlerList);
+        poker.play();
     }
 
     @Override
@@ -44,7 +42,7 @@ public class Room implements Runnable, Spot {
                 }
             }
             init();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -63,30 +61,6 @@ public class Room implements Runnable, Spot {
         return clientHandlerList.size() == 3;
     }
 
-    public void broadcast(String message, ClientHandler clientHandlerBroadcaster){
-        clientHandlerList
-                .stream().filter(clientHandler -> !clientHandlerBroadcaster.equals(clientHandler))
-                .forEach(clientHandler -> {
-                    try {
-                        clientHandler.sendMessageUser(message);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-    }
-
-    public void whisper(String message, String clientToSend) {
-        clientHandlerList.stream()
-                .filter(clientHandler -> Objects.equals(clientHandler.getUsername(), clientToSend))
-                .forEach(clientHandler -> {
-                    try {
-                        clientHandler.sendMessageUser(message);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-    }
-
     public void listUsers(ClientHandler clientHandler) throws IOException {
         StringBuilder message = new StringBuilder();
         message.append("------------- USERS ---------------\n");
@@ -100,6 +74,33 @@ public class Room implements Runnable, Spot {
         clientHandler.sendMessageUser(message.toString());
     }
 
+    @Override
+    public void broadcast(String message, ClientHandler clientHandlerBroadcaster){
+        clientHandlerList
+                .stream().filter(clientHandler -> !clientHandlerBroadcaster.equals(clientHandler))
+                .forEach(clientHandler -> {
+                    try {
+                        clientHandler.sendMessageUser(message);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    @Override
+    public void whisper(String message, String clientToSend) {
+        clientHandlerList.stream()
+                .filter(clientHandler -> Objects.equals(clientHandler.getUsername(), clientToSend))
+                .forEach(clientHandler -> {
+                    try {
+                        clientHandler.sendMessageUser(message);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
+
+    @Override
     public void listCommands(ClientHandler clientHandler) throws IOException {
         clientHandler.sendMessageUser(Commands.listCommands());
     }

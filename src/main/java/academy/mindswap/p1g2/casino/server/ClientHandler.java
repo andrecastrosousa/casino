@@ -44,6 +44,16 @@ public class ClientHandler implements Runnable {
         return numberOfClients;
     }
 
+    public MessageSender getMessageSender() {
+        return messageSender;
+    }
+
+    public void sendMessageUser(String message) throws IOException {
+        out.write(message);
+        out.newLine();
+        out.flush();
+    }
+
     private void handleClient() throws IOException {
         sendMessageUser(Messages.INSERT_COMMAND);
         message = readMessageFromUser();
@@ -51,13 +61,7 @@ public class ClientHandler implements Runnable {
         handleClient();
     }
 
-    protected void sendMessageUser(String message) throws IOException {
-        out.write(message);
-        out.newLine();
-        out.flush();
-    }
-
-    private String readMessageFromUser() {
+    public String readMessageFromUser() {
         try {
             String line = in.readLine(); //blocking method
             if (line == null) {
@@ -65,6 +69,7 @@ public class ClientHandler implements Runnable {
                 return "";
             }
             System.out.printf(Messages.CLIENT_MESSAGE, line);
+            message = line;
 
             return line;
         } catch (IOException e) {
@@ -85,17 +90,18 @@ public class ClientHandler implements Runnable {
         try {
             greetClient();
             handleClient();
-        } catch (IOException e) {
-            try {
-                socket.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            while (!socket.isClosed()) {
+
             }
+            closeConnection();
+        } catch (IOException e) {
+            closeConnection();
         }
     }
 
-    void closeConnection() {
+    public void closeConnection() {
         try {
+            sendMessageUser("quit");
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();

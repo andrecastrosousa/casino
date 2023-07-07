@@ -8,6 +8,6 @@ import java.io.IOException;
 public class BroadcastCommand implements CommandHandler {
     @Override
     public void execute(Spot spot, ClientHandler clientHandler) throws IOException {
-        spot.broadcast(clientHandler.getMessage(), clientHandler);
+        spot.broadcast(String.format("%s: %s", clientHandler.getUsername(), clientHandler.getMessage()), clientHandler);
     }
 }
