@@ -77,8 +77,8 @@ public class SlotMachine {
     /**
      * hasdjasdha
      * @param spins number of spin made by user.
-     * @param minimumMatchPrize minimum match to win
-     * @param maximumMatchPrize maximum match to win
+     * @param minimumMatchPrize minimum match to win (two numbers)
+     * @param maximumMatchPrize maximum match to win (three numbers)
      * @return
      */
     private int calculatePayout(List<Integer> spins, int minimumMatchPrize, int maximumMatchPrize) { //{2,3,3,4}   {2:!,3:2,4:1}
@@ -90,8 +90,14 @@ public class SlotMachine {
         if (matrix.containsValue(minimumMatchPrize)) {
             return 3;
         }
-        if (matrix.containsValue(maximumMatchPrize)) { //inside we must have jackpot (7,7,7), half-jackpot(3,3,3)
+        if (matrix.containsValue(maximumMatchPrize)) {  //inside we must have jackpot (7,7,7), half-jackpot(3,3,3)
+            if (spins.contains(7) && matrix.get(7) == spins.size()) {
+                return 30; // Jackpot!
+            } else if (spins.contains(3) && matrix.get(3) == spins.size()) {
+                return 15;
+            }
             return 10;
+
         }
         return 0;
     }
