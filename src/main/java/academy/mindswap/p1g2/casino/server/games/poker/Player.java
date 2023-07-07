@@ -3,22 +3,17 @@ package academy.mindswap.p1g2.casino.server.games.poker;
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.Card;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 public class Player {
     private final ClientHandler clientHandler;
     private int currentBalance;
     private final List<Card> cards;
-    private final Semaphore semaphore;
-
     private volatile boolean isPlaying;
 
-    public Player(ClientHandler clientHandler, Semaphore semaphore) {
+    public Player(ClientHandler clientHandler) {
         this.clientHandler = clientHandler;
-        this.semaphore = semaphore;
         currentBalance = 100;
         cards = new ArrayList<>();
         isPlaying = false;
@@ -37,8 +32,10 @@ public class Player {
         currentBalance -= amount;
     }
 
-    public void fold() {
+    public List<Card> fold() {
+        List<Card> cardsToRetrieve = new ArrayList<>(cards);
         cards.clear();
+        return cardsToRetrieve;
     }
 
     public void raise(int amount) {
@@ -60,19 +57,11 @@ public class Player {
         return message.toString();
     }
 
-    public void waitForTurn() {
-        try {
-            semaphore.acquire();
-            isPlaying = true;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            e.printStackTrace();
-        }
+    public void startTurn() {
+        isPlaying = true;
     }
 
     public void releaseTurn() {
-        System.out.println("SEMAPHORE RELEASE");
-        semaphore.release();
         isPlaying = false;
     }
 

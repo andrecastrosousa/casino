@@ -5,7 +5,7 @@ public class Messages {
     public static final String SEPARATOR = "-----------------------------------";
     public static final String USER_SEPARATOR = "------------- USERS ---------------\n";
     public static final String COMMAND_SEPARATOR = "------------ COMMANDS --------------\n";
-    public static final String POKER_SEPARATOR = "------------ POKER --------------\n";
+    public static final String POKER_SEPARATOR = "------------- POKER ---------------\n";
     public static final String SERVER_RUNNING = "Server is running";
     public static final String SERVER_OPENING = "Server is accepting Clients";
     public static final String ROOM_WAITING = "\nWaiting for players to start the game...\n";

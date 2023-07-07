@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Semaphore;
 
 public class Poker implements Spot {
     private final Evaluator evaluatorChain;
@@ -20,17 +19,14 @@ public class Poker implements Spot {
     private int balance;
     private int currentPlayerPlaying;
 
-    private final Semaphore semaphore;
-
     public Poker(List<ClientHandler> clientHandlers) {
         this.dealer = new Dealer();
         evaluatorChain = new RoyalFlushEvaluator();
-        semaphore = new Semaphore(1);
         players = new ArrayList<>();
         playersPlaying = new ArrayList<>();
 
         clientHandlers.forEach(clientHandler -> {
-            Player player = new Player(clientHandler, semaphore);
+            Player player = new Player(clientHandler);
             players.add(player);
             playersPlaying.add(player);
             clientHandler.changeSpot(this);
@@ -62,22 +58,31 @@ public class Poker implements Spot {
     }
 
     public void play() throws IOException {
-        dealer.shuffle();
-        dealer.distributeCards(players);
+
 
         while (!gameEnded()) {
             Player currentPlayer = playersPlaying.get(currentPlayerPlaying);
 
             broadcast(String.format("%s is playing. Wait for your turn.", currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
             currentPlayer.getClientHandler().sendMessageUser("It is your time to play.");
-            currentPlayer.waitForTurn();
+            currentPlayer.startTurn();
 
             while (currentPlayer.isPlaying()) {
 
             }
 
-            currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
+            if(playersPlaying.size() == 1) {
+                startNewHand();
+                currentPlayerPlaying = 0;
+            } else {
+                currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
+            }
         }
+    }
+
+    private void startNewHand() {
+        dealer.shuffle();
+        dealer.distributeCards(players);
     }
 
     private boolean gameEnded() {
@@ -120,7 +125,7 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         playersPlaying.remove(player);
-        player.fold();
+        dealer.receiveCardsFromPlayer(player.fold());
         player.releaseTurn();
     }
 
