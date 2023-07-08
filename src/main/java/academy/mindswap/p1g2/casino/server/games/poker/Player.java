@@ -4,6 +4,7 @@ import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.Card;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,13 +14,15 @@ public class Player {
     private final List<Card> cards;
     private volatile boolean isPlaying;
     private BetOption betOptionSelected;
+    private Table table;
 
-    public Player(ClientHandler clientHandler) {
+    public Player(ClientHandler clientHandler, Table table) {
         this.clientHandler = clientHandler;
         currentBalance = 100;
         cards = new ArrayList<>();
         isPlaying = false;
         betOptionSelected = null;
+        this.table = table;
     }
 
     public void addBalance(int balance) {
@@ -74,5 +77,9 @@ public class Player {
 
     public void selectBetOption(BetOption option) {
         betOptionSelected = option;
+    }
+
+    public void sendMessageToPlayer(String message) throws IOException {
+        clientHandler.sendMessageUser(message);
     }
 }

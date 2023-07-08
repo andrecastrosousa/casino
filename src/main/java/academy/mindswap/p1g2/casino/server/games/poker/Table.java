@@ -1,70 +1,89 @@
 package academy.mindswap.p1g2.casino.server.games.poker;
 
 import academy.mindswap.p1g2.casino.server.games.Card;
-import academy.mindswap.p1g2.casino.server.games.DeckGenerator;
-import academy.mindswap.p1g2.casino.server.games.poker.street.PreFlopStreet;
-import academy.mindswap.p1g2.casino.server.games.poker.street.Street;
-import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Table {
     private final List<Card> cards;
-    private final List<Card> tableCards;
-    private final List<Card> turnDownCards;
+    private final List<Card> burnedCards;
     private StreetType streetType;
+    private Pot pot;
+    private TableManager tableManager;
+    private boolean handOnGoing;
 
     public Table() {
-        cards = DeckGenerator.getDeckOfCards();
-        tableCards = new ArrayList<>();
-        turnDownCards = new ArrayList<>();
+        cards = new ArrayList<>();
+        burnedCards = new ArrayList<>();
         streetType = StreetType.PRE_FLOP;
+        pot = new Pot();
+        tableManager = new TableManager();
     }
 
-    public void shuffle() {
-        Collections.shuffle(cards);
+    public void startHand() {
+        Dealer dealer = tableManager.getDealer();
+        dealer.shuffle();
+        dealer.distributeCards(tableManager.getPlayers());
+        handOnGoing = true;
     }
 
-    public void distributeCards(List<Player> players) {
-        for(int i = 0; i < 2; i++) {
-            for(Player player : players) {
-                player.receiveCard(cards.remove(cards.size() - 1));
-            }
+    public void startStreet() {
+        Player currentPlayer = tableManager.getCurrentPlayerPlaying();
+
+        currentPlayer.startTurn();
+
+        while (currentPlayer.isPlaying()) {
+
         }
 
-        players.forEach(player -> {
-            try {
-                player.getClientHandler().sendMessageUser(player.showCards());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        handOnGoing = tableManager.handEnded();
     }
 
-    public void turnUpCards() {
-        streetType = StreetImpl.buildStreet(streetType).nextStreet();
-
-        if(tableCards.size() < 3) {
-            turnDownCards.add(cards.remove(cards.size() - 1));
-            for(int i = 0; i < 3; i++) {
-                tableCards.add(cards.remove(cards.size() - 1));
-            }
-        }
+    public boolean isHandOnGoing() {
+        return handOnGoing;
     }
 
-    public void nextHand() {
-        cards.addAll(tableCards);
-        cards.addAll(turnDownCards);
-        shuffle();
-        streetType = StreetType.PRE_FLOP;
+    public StreetType getStreetType() {
+        return streetType;
     }
 
-    public void receiveCardsFromPlayer(List<Card> cards) {
-        cards.add(0, cards.get(0));
-        cards.add(0, cards.get(1));
+    public void burnCard() {
+        Dealer dealer = tableManager.getDealer();
+        burnedCards.add(dealer.giveCard());
+    }
+
+    public void turnUpCard() {
+        Dealer dealer = tableManager.getDealer();
+        cards.add(dealer.giveCard());
+    }
+
+    public void setStreetType(StreetType streetType) {
+        this.streetType = streetType;
+    }
+
+    public void sitDealer(Dealer dealer) {
+        tableManager.setDealer(dealer);
+    }
+
+    public void sitPlayer(Player player) {
+        tableManager.setPlayer(player);
+    }
+
+    public List<Player> getPlayers() {
+        return tableManager.getPlayers();
+    }
+
+    public int quantityOfPlayers() {
+        return tableManager.getQuantityOfPlayers();
+    }
+
+    public Player getCurrentPlayerPlaying() {
+        return tableManager.getCurrentPlayerPlaying();
+    }
+
+    public void removePlayerFromHand(Player player, boolean fromTable) {
+        tableManager.removePlayer(player, fromTable);
     }
 }

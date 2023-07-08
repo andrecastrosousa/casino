@@ -1,17 +1,28 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
-public abstract class StreetImpl implements Street {
+import academy.mindswap.p1g2.casino.server.games.poker.Table;
 
-    public static Street buildStreet(StreetType streetType) {
-        return switch (streetType) {
-            case PRE_FLOP -> new PreFlopStreet();
-            case FLOP -> new FlopStreet();
-            case TURN -> new TurnStreet();
-            case RIVER -> new RiverStreet();
-            case SHOWDOWN -> new ShowdownStreet();
+public abstract class StreetImpl implements Street, StreetHandler {
+
+    protected Table table;
+
+    public StreetImpl(Table table) {
+        this.table = table;
+    }
+
+    public static Street buildStreet(Table table) {
+        return switch (table.getStreetType()) {
+            case PRE_FLOP -> new PreFlopStreet(table);
+            case FLOP -> new FlopStreet(table);
+            case TURN -> new TurnStreet(table);
+            case RIVER -> new RiverStreet(table);
+            case SHOWDOWN -> new ShowdownStreet(table);
         };
     }
 
     @Override
-    public abstract StreetType nextStreet();
+    public abstract void nextStreet();
+
+    @Override
+    public abstract void execute();
 }

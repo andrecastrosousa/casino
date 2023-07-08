@@ -8,17 +8,17 @@ import java.util.*;
 
 public class Dealer {
     private final List<Card> cards;
-    private final List<Card> tableCards;
-    private final List<Card> turnDownCards;
 
     public Dealer() {
         cards = DeckGenerator.getDeckOfCards();
-        tableCards = new ArrayList<>();
-        turnDownCards = new ArrayList<>();
     }
 
     public void shuffle() {
         Collections.shuffle(cards);
+    }
+
+    public Card giveCard() {
+        return cards.remove(cards.size() - 1);
     }
 
     public void distributeCards(List<Player> players) {
@@ -35,21 +35,6 @@ public class Dealer {
                 throw new RuntimeException(e);
             }
         });
-    }
-
-    public void turnUpCards() {
-        if(tableCards.size() < 3) {
-            turnDownCards.add(cards.remove(cards.size() - 1));
-            for(int i = 0; i < 3; i++) {
-                tableCards.add(cards.remove(cards.size() - 1));
-            }
-        }
-    }
-
-    public void nextHand() {
-        cards.addAll(tableCards);
-        cards.addAll(turnDownCards);
-        shuffle();
     }
 
     public void receiveCardsFromPlayer(List<Card> cards) {

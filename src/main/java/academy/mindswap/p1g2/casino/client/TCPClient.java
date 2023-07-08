@@ -123,8 +123,7 @@ public class TCPClient {
         private void readMessage() throws IOException {
             String readMessageFromServer = serverReader.readLine();
             System.out.println(readMessageFromServer);
-
-            if(readMessageFromServer.equals("quit")) {
+            if(readMessageFromServer == null || readMessageFromServer.equals("quit")) {
                 close();
                 return;
             }
