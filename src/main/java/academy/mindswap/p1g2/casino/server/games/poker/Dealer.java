@@ -38,7 +38,8 @@ public class Dealer {
     }
 
     public void receiveCardsFromPlayer(List<Card> cards) {
-        cards.add(0, cards.get(0));
-        cards.add(0, cards.get(1));
+        for (Card card: cards) {
+            cards.add(0, card);
+        }
     }
 }

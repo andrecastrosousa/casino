@@ -4,6 +4,7 @@ import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.Card;
 import academy.mindswap.p1g2.casino.server.games.poker.Dealer;
 import academy.mindswap.p1g2.casino.server.games.poker.Player;
+import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
 
 import java.util.ArrayList;
@@ -14,14 +15,15 @@ public class Table {
     private final List<Player> players;
     private final List<Player> playersPlaying;
     private int currentPlayerPlaying;
-
     private final TableManager tableManager;
+    private int playTimes;
 
     public Table() {
         currentPlayerPlaying = 0;
         players = new ArrayList<>();
         playersPlaying = new ArrayList<>();
         tableManager = new TableManager();
+        playTimes = 0;
     }
 
     public Player getCurrentPlayerPlaying() {
@@ -30,10 +32,6 @@ public class Table {
 
     public List<Player> getPlayers() {
         return players;
-    }
-
-    public Dealer getDealer() {
-        return dealer;
     }
 
     public void sitDealer(Dealer dealer) {
@@ -69,8 +67,10 @@ public class Table {
         tableManager.setStreetType(streetType);
     }
 
-    public List<Card> getCards() {
-        return tableManager.getCards();
+    public String showTableCards() {
+        StringBuilder message = new StringBuilder();
+        tableManager.getCards().forEach(card -> message.append(card.toString()));
+        return message.toString();
     }
 
     public String getPlayerHand(ClientHandler clientHandler) {
@@ -82,6 +82,11 @@ public class Table {
             return playerFound.showCards();
         }
         return "";
+    }
+
+    public void initStreet() {
+        StreetImpl.buildStreet(this).execute();
+        playTimes = 0;
     }
 
     public void startHand() {
@@ -99,8 +104,12 @@ public class Table {
         while (currentPlayer.isPlaying()) {
 
         }
-
-        tableManager.setHandOnGoing(handEnded());
+        playTimes++;
+        tableManager.setHandOnGoing(handContinue());
+        if(playTimes >= players.size()) {
+            StreetImpl.buildStreet(this).nextStreet();
+            initStreet();
+        }
     }
 
     public void removePlayer(Player player, boolean fromTable) {
@@ -111,12 +120,12 @@ public class Table {
         dealer.receiveCardsFromPlayer(player.fold());
     }
 
-    public boolean handEnded() {
+    public boolean handContinue() {
         if(playersPlaying.size() == 1) {
             currentPlayerPlaying = 0;
-            return true;
+            return false;
         }
         currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
-        return false;
+        return true;
     }
 }

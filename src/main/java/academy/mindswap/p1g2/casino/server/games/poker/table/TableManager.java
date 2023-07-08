@@ -20,18 +20,6 @@ public class TableManager {
         pot = new Pot();
     }
 
-    public void startStreet() {
-        /*Player currentPlayer = table.getCurrentPlayerPlaying();
-
-        currentPlayer.startTurn();
-
-        while (currentPlayer.isPlaying()) {
-
-        }
-
-        handOnGoing = table.handEnded();*/
-    }
-
     public boolean isHandOnGoing() {
         return handOnGoing;
     }
@@ -58,5 +46,9 @@ public class TableManager {
 
     public List<Card> getCards() {
         return cards;
+    }
+
+    public List<Card> getBurnedCards() {
+        return burnedCards;
     }
 }

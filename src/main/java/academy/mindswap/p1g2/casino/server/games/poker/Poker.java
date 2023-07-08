@@ -53,7 +53,7 @@ public class Poker implements Spot {
 
     public void play() throws IOException {
         while (!gameEnded()) {
-            table.startHand();
+            table.initStreet();
             while (table.isHandOnGoing()) {
                 Player currentPlayer = table.getCurrentPlayerPlaying();
                 broadcast(String.format("%s is playing. Wait for your turn.", currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
@@ -139,7 +139,7 @@ public class Poker implements Spot {
     }
 
     public void showTableCards(ClientHandler clientHandler) {
-        whisper(table.getCards().toString(), clientHandler.getUsername());
+        whisper(table.showTableCards().toString(), clientHandler.getUsername());
     }
 
     @Override

@@ -10,7 +10,7 @@ public abstract class StreetImpl implements Street, StreetHandler {
         this.table = table;
     }
 
-    public static Street buildStreet(Table table) {
+    public static StreetImpl buildStreet(Table table) {
         return switch (table.getStreetType()) {
             case PRE_FLOP -> new PreFlopStreet(table);
             case FLOP -> new FlopStreet(table);
