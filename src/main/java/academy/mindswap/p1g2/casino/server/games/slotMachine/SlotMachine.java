@@ -1,22 +1,19 @@
 package academy.mindswap.p1g2.casino.server.games.slotMachine;
-
 import academy.mindswap.p1g2.casino.server.games.slotMachine.evaluator.*;
+import academy.mindswap.p1g2.casino.server.utils.Messages;
 
+import java.io.IOException;
 import java.util.*;
-
 
 public class SlotMachine {
     private static final int spinsCount = 3; // Number of spins
-    private static final int initialBalance = 20; // Initial balance for player (can be another nr)
-    private static final Scanner scanner = new Scanner(System.in); // Create a Scanner
     private static final Random random = new Random();
-
-    private int balance;
     int bet;
     private Evaluator evaluatorChain;
+    Player player;
 
     public SlotMachine() {
-        balance = initialBalance;
+
         evaluatorChain = new LoseEvaluator();
         Evaluator evaluatorJackpot = new JackpotEvaluator();
         Evaluator evaluatorHalfJackpot = new HalfJackpotEvaluator();
@@ -25,65 +22,52 @@ public class SlotMachine {
         evaluatorHalfJackpot.setNextEvaluator(new TwoMatchEvaluator());
     }
 
-    public void play() {
-        System.out.println("Welcome to the Slot Machine!");
-        while (balance > 0) {
+    public void play() throws IOException {
+        player.sendMessage(Messages.SLOT_MACHINE_WELCOME);
 
-            System.out.println("Press Enter to spin the reels (or type 'quit' to exit):");
-            System.out.println("Type 'double' to double your bet!");
-            String input = scanner.nextLine();
+            /*player.sendMessage(Messages.SLOT_MACHINE_SPIN);
+            player.sendMessage(Messages.SLOT_MACHINE_DOUBLE);
+
 
             if (input.equalsIgnoreCase("quit")) { //
-                System.out.println("You finished the game with " + balance + " credits!");
-                System.out.println("Thank you for playing. Goodbye!");
+                player.sendMessage(String.format(Messages.SLOT_MACHINE_END_BALANCE, balance));
+                player.sendMessage(Messages.SLOT_MACHINE_GOODBYE);
                 break;
+            }*/
+            if (player.getBalance() < bet) {
+                player.sendMessage(Messages.SLOT_MACHINE_NO_CREDITS);
             }
-
-            if (input.equalsIgnoreCase("double")) {
-                bet = 2;
-            } else {
-                bet = 1;
-            }
-            if (balance < bet) {
-                System.out.println("Insufficient credits to place the bet. Please try again.");
-                break;
-            }
-            balance -= bet;
-
-
+            player.addBalance( - bet);
             List<Integer> spins = spin();
             displaySpins(spins);
             int payout = calculatePayout(spins, 2, 3);
-            evaluatorChain.evaluateHand(payout);
+            evaluatorChain.evaluateHand(payout, player);
+            player.addBalance(payout);
             if (payout > 0) {
-                balance += payout; // Update the balance with the payout
-                System.out.println("Balance: " + (balance - payout));
-                System.out.println("Congratulations! You won " + payout + " credits! :D");
+                player.addBalance(payout); // Update the balance with the payout
+                player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE_WIN, (player.getBalance() - payout)));
+                player.sendMessage(String.format(Messages.SLOT_MACHINE_CONGRATULATIONS, payout));
             }
-            System.out.println("Your balance is: " + balance);
+            player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE, player.getBalance()));
         }
-        System.out.println("Game over. :(");
-    }
+
+
 
     private List<Integer> spin() {
         List<Integer> spins = new ArrayList<>();
-
         for (int i = 0; i < spinsCount; i++) {
-            int number = random.nextInt(9); // Generate a random number between 0 and 9
+            int number = random.nextInt(9); // Generate a random number between 0 and 9. Increase the occurrence of certain numbers to reduce the odds.
             spins.add(number);
         }
-
         return spins;
-
-
     }
 
-    private void displaySpins(List<Integer> spins) {
-        System.out.println("\n--------*--------");
+    private void displaySpins(List<Integer> spins) throws IOException {
+        player.sendMessage(Messages.SLOT_MACHINE_SEPARATOR);
         for (int number : spins) {
-            System.out.print("| " + number + " | ");
+            player.sendMessage(String.format(Messages.SLOT_MACHINE_NRS_DISPLAY, number));
         }
-        System.out.println("\n--------*--------");
+        player.sendMessage(Messages.SLOT_MACHINE_SEPARATOR);
     }
 
     /**
@@ -107,11 +91,17 @@ public class SlotMachine {
                 return 20 * bet;
             } else if (spins.contains(3) && matrix.get(3) == spins.size()) {
                 return 7 * bet;
-                // Double the half-jackpot value (14 credits)
             }
-            return 5 * bet; // Double the regular payout value (2 credits)
+            return 5 * bet;
         }
         return 0;
+    }
+
+    public void sitPlayer(Player player) {
+        this.player = player;
+    }
+    public void setBet(int bet){
+        this.bet = bet;
     }
 }
 

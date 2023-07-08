@@ -2,19 +2,24 @@ package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.Commands;
 import academy.mindswap.p1g2.casino.server.games.poker.Poker;
+import academy.mindswap.p1g2.casino.server.games.slotMachine.Slot;
+import academy.mindswap.p1g2.casino.server.games.slotMachine.SlotMachine;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class WaitingRoom implements Runnable, Spot {
+public class Room implements Runnable, Spot {
     private final List<ClientHandler> clientHandlerList;
 
     private int number;
 
-    public WaitingRoom(int number) {
+    private volatile boolean gameStarted;
+
+    public Room(int number) {
         this.clientHandlerList = new ArrayList<>();
+        gameStarted = false;
         this.number = number;
     }
 
@@ -26,10 +31,8 @@ public class WaitingRoom implements Runnable, Spot {
                 throw new RuntimeException(e);
             }
         });
-        Poker poker = new Poker(clientHandlerList);
-        poker.play();
-        /*Blackjack blackjack = new Blackjack(clientHandlerList);
-        blackjack.play();*/
+        Slot slot = new Slot(clientHandlerList);
+        slot.play();
     }
 
     @Override
@@ -49,8 +52,9 @@ public class WaitingRoom implements Runnable, Spot {
     public synchronized void addClient(ClientHandler clientHandler) throws IOException, InterruptedException {
         clientHandlerList.add(clientHandler);
         clientHandler.changeSpot(this);
-        clientHandler.sendMessageUser(String.format("\nYou are in a waiting room nº%d. \nWaiting for players to start the game...\n", number));
+        clientHandler.sendMessageUser("\nWaiting for players to start the game...\n");
         if(isFull()) {
+            gameStarted = true;
             notifyAll();
         }
     }
