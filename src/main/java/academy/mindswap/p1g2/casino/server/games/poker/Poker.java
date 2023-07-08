@@ -5,6 +5,7 @@ import academy.mindswap.p1g2.casino.server.Spot;
 import academy.mindswap.p1g2.casino.server.command.Commands;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.poker.rule.*;
+import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
 
 import java.io.IOException;
 import java.util.List;
@@ -63,7 +64,7 @@ public class Poker implements Spot {
     }
 
     private boolean gameEnded() {
-        return table.quantityOfPlayers() <= 1;
+        return table.getQuantityOfPlayers() <= 1;
     }
 
     public void allIn(ClientHandler clientHandler) throws IOException {
@@ -104,7 +105,7 @@ public class Poker implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        table.removePlayerFromHand(player, false);
+        table.removePlayer(player, false);
         player.selectBetOption(BetOption.FOLD);
         player.releaseTurn();
     }
@@ -131,6 +132,14 @@ public class Poker implements Spot {
         player.raise(20);
         player.selectBetOption(BetOption.BET);
         player.releaseTurn();
+    }
+
+    public void showHand(ClientHandler clientHandler) {
+        whisper(table.getPlayerHand(clientHandler), clientHandler.getUsername());
+    }
+
+    public void showTableCards(ClientHandler clientHandler) {
+        whisper(table.getCards().toString(), clientHandler.getUsername());
     }
 
     @Override
@@ -169,7 +178,7 @@ public class Poker implements Spot {
     public void removeClient(ClientHandler clientHandler) {
         Player playerToRemove = getPlayerByClient(clientHandler);
         if(playerToRemove != null) {
-            table.removePlayerFromHand(playerToRemove, true);
+            table.removePlayer(playerToRemove, true);
             playerToRemove.getClientHandler().closeConnection();
         }
     }

@@ -1,4 +1,4 @@
-package academy.mindswap.p1g2.casino.server.games.poker;
+package academy.mindswap.p1g2.casino.server.games.poker.table;
 
 public class Pot {
     private int amount;

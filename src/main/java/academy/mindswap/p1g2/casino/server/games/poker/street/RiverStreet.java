@@ -1,6 +1,6 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
-import academy.mindswap.p1g2.casino.server.games.poker.Table;
+import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
 
 public class RiverStreet extends StreetImpl {
     public RiverStreet(Table table) {
@@ -15,8 +15,6 @@ public class RiverStreet extends StreetImpl {
     @Override
     public void execute() {
         table.burnCard();
-        for(int i = 0; i < 3; i++) {
-            table.turnUpCard();
-        }
+        table.turnUpCard();
     }
 }

@@ -1,6 +1,6 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
-import academy.mindswap.p1g2.casino.server.games.poker.Table;
+import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
 
 public class PreFlopStreet extends StreetImpl {
     public PreFlopStreet(Table table) {
@@ -14,6 +14,6 @@ public class PreFlopStreet extends StreetImpl {
 
     @Override
     public void execute() {
-
+        table.startHand();
     }
 }
