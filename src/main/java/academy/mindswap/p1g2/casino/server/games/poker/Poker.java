@@ -4,7 +4,7 @@ import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.Spot;
 import academy.mindswap.p1g2.casino.server.command.Commands;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
-import academy.mindswap.p1g2.casino.server.games.poker.rule.*;
+import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
 
 import java.io.IOException;
@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class Poker implements Spot {
-    private final Evaluator evaluatorChain;
     private final Table table;
 
     public Poker(List<ClientHandler> clientHandlers) {
@@ -24,20 +23,11 @@ public class Poker implements Spot {
             clientHandler.changeSpot(this);
         });
 
-        evaluatorChain = new RoyalFlushEvaluator();
         createEvaluatorChain();
     }
 
     private void createEvaluatorChain() {
-        evaluatorChain.setNextEvaluator(new StraightFlushEvaluator());
-        evaluatorChain.setNextEvaluator(new FourOfAKindEvaluator());
-        evaluatorChain.setNextEvaluator(new FullHouseEvaluator());
-        evaluatorChain.setNextEvaluator(new FlushEvaluator());
-        evaluatorChain.setNextEvaluator(new StraightEvaluator());
-        evaluatorChain.setNextEvaluator(new ThreeOfAKindEvaluator());
-        evaluatorChain.setNextEvaluator(new TwoPairEvaluator());
-        evaluatorChain.setNextEvaluator(new OnePairEvaluator());
-        evaluatorChain.setNextEvaluator(new HighCardEvaluator());
+
     }
 
     private Player getPlayerByClient(ClientHandler clientHandler) {
@@ -45,10 +35,6 @@ public class Poker implements Spot {
                 .filter(player -> player.getClientHandler().equals(clientHandler))
                 .findFirst()
                 .orElse(null);
-    }
-
-    public void finishHand() {
-        evaluatorChain.evaluateHand();
     }
 
     public void play() throws IOException {
@@ -139,7 +125,7 @@ public class Poker implements Spot {
     }
 
     public void showTableCards(ClientHandler clientHandler) {
-        whisper(table.showTableCards().toString(), clientHandler.getUsername());
+        whisper(table.showTableCards(), clientHandler.getUsername());
     }
 
     @Override

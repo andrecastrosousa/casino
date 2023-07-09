@@ -1,8 +1,12 @@
 package academy.mindswap.p1g2.casino.server.games.poker.rule;
 
+import academy.mindswap.p1g2.casino.server.games.Card;
+
+import java.util.List;
+
 public class FlushEvaluator extends HandEvaluator {
     @Override
-    public boolean evaluateHand() {
-        return false;
+    public int evaluateHand(List<Card> cards) {
+        return 0;
     }
 }

@@ -8,14 +8,36 @@ public abstract class HandEvaluator implements Evaluator {
     private Evaluator nextEvaluator;
 
     @Override
-    public abstract boolean evaluateHand();
+    public abstract int evaluateHand(List<Card> cards);
 
     @Override
-    public boolean evaluateNext(List<Card> cards) {
+    public int evaluateNext(List<Card> cards) {
         if(nextEvaluator != null) {
-            return nextEvaluator.evaluateHand();
+            return nextEvaluator.evaluateHand(cards);
         }
-        return false;
+        return 0;
+    }
+
+    public static Evaluator getEvaluatorChain() {
+        Evaluator evaluatorChain = new RoyalFlushEvaluator();
+        Evaluator straightFlushEvaluator = new StraightEvaluator();
+        evaluatorChain.setNextEvaluator(straightFlushEvaluator);
+        Evaluator fourOfAKindEvaluator = new FourOfAKindEvaluator();
+        straightFlushEvaluator.setNextEvaluator(fourOfAKindEvaluator);
+        Evaluator fullHouseEvaluator = new FullHouseEvaluator();
+        fourOfAKindEvaluator.setNextEvaluator(fullHouseEvaluator);
+        Evaluator straightEvaluator = new StraightEvaluator();
+        fullHouseEvaluator.setNextEvaluator(straightEvaluator);
+        Evaluator threeOfKindEvaluator = new ThreeOfAKindEvaluator();
+        straightEvaluator.setNextEvaluator(threeOfKindEvaluator);
+        Evaluator twoPairEvaluator = new TwoPairEvaluator();
+        threeOfKindEvaluator.setNextEvaluator(twoPairEvaluator);
+        Evaluator onePairEvaluator = new OnePairEvaluator();
+        twoPairEvaluator.setNextEvaluator(onePairEvaluator);
+        Evaluator highCardEvaluator = new HighCardEvaluator();
+        onePairEvaluator.setNextEvaluator(highCardEvaluator);
+
+        return evaluatorChain;
     }
 
     @Override

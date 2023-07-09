@@ -108,7 +108,11 @@ public class Table {
         tableManager.setHandOnGoing(handContinue());
         if(playTimes >= players.size()) {
             StreetImpl.buildStreet(this).nextStreet();
-            initStreet();
+            if(tableManager.getStreetType() == StreetType.SHOWDOWN) {
+                tableManager.setHandOnGoing(false);
+            } else {
+                initStreet();
+            }
         }
     }
 
