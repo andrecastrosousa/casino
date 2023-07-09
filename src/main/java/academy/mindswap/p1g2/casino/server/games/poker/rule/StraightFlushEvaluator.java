@@ -12,22 +12,21 @@ public class StraightFlushEvaluator extends HandEvaluator {
         cards.sort(Comparator.comparingInt(Card::getCardValueOnPoker));
 
         // Check if the hand contains a straight flush
-        for (int i = 0; i <= cards.size() - 5; i++) {
-            boolean isStraightFlush = true;
-            Card.Suit suit = cards.get(i).getSuit();
+        boolean isStraightFlush = true;
+        Card.Suit suit = cards.get(0).getSuit();
 
-            for (int j = i + 1; j < i + 5; j++) {
-                if (cards.get(j).getSuit() != suit ||
-                        cards.get(j).getValue().getPokerValue() != cards.get(j - 1).getValue().getPokerValue() + 1) {
-                    isStraightFlush = false;
-                    break;
-                }
-            }
-
-            if (isStraightFlush) {
-                return 9000;
+        for (int j = 1; j < cards.size(); j++) {
+            if (cards.get(j).getSuit() != suit ||
+                    cards.get(j).getValue().getPokerValue() != cards.get(j - 1).getValue().getPokerValue() + 1) {
+                isStraightFlush = false;
+                break;
             }
         }
+
+        if (isStraightFlush) {
+            return 9000;
+        }
+
 
         // Pass the evaluation to the next evaluator in the chain
         return evaluateNext(cards);

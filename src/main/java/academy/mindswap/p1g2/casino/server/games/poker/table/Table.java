@@ -87,6 +87,9 @@ public class Table {
     public void initStreet() {
         StreetImpl.buildStreet(this).execute();
         playTimes = 0;
+        if(tableManager.getStreetType() == StreetType.SHOWDOWN) {
+            tableManager.setHandOnGoing(false);
+        }
     }
 
     public void startHand() {
@@ -108,11 +111,7 @@ public class Table {
         tableManager.setHandOnGoing(handContinue());
         if(playTimes >= players.size()) {
             StreetImpl.buildStreet(this).nextStreet();
-            if(tableManager.getStreetType() == StreetType.SHOWDOWN) {
-                tableManager.setHandOnGoing(false);
-            } else {
-                initStreet();
-            }
+            initStreet();
         }
     }
 
