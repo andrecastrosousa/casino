@@ -1,6 +1,8 @@
 package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.Commands;
+import academy.mindswap.p1g2.casino.server.games.poker.street.ShowdownStreet;
+import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 
 import java.io.IOException;
@@ -40,6 +42,8 @@ public class TCPServer implements Spot {
 
     private void acceptClient() {
         System.out.println(Messages.SERVER_OPENING);
+        ShowdownStreet showdownStreet = new ShowdownStreet(new Table());
+        showdownStreet.execute();
         try {
 
             Socket socket = serverSocket.accept();//blocking method

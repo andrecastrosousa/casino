@@ -1,25 +1,35 @@
 package academy.mindswap.p1g2.casino.server.games.poker.rule;
 
 import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.poker.HandScore;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OnePairEvaluator extends HandEvaluator {
     @Override
-    public int evaluateHand(List<Card> cards) {
-        Map<Card.Value, Integer> valuesCount = new HashMap<>();
+    public HandScore evaluateHand(List<Card> cards) {
+        Map<Card.Value, List<Card>> valueCounts = new HashMap<>();
 
-        for (Card card: cards) {
-            int count = valuesCount.getOrDefault(card.getValue(), 0);
-            valuesCount.put(card.getValue(), count + 1);
+        for(Card card: cards) {
+            List<Card> cardsAdded = valueCounts.getOrDefault(card.getValue(), new ArrayList<>());
+            cardsAdded.add(card);
+            valueCounts.put(card.getValue(), cardsAdded);
         }
 
-        if(valuesCount.containsValue(2)) {
-            return 3000;
+        List<Card> newHand = valueCounts.values().stream()
+                .filter(cards1 -> cards1.size() == 2)
+                .findFirst()
+                .orElse(new ArrayList<>());
+
+        if(newHand.size() == 2) {
+            List<Card> higherCard = cards.stream()
+                    .filter(card -> !newHand.contains(card))
+                    .sorted(Collections.reverseOrder(Comparator.comparingInt(Card::getCardValueOnPoker)))
+                    .toList();
+            newHand.addAll(higherCard.subList(0, 3));
+            return new HandScore(2000, newHand);
         }
 
-        return 0;
+        return evaluateNext(cards);
     }
 }

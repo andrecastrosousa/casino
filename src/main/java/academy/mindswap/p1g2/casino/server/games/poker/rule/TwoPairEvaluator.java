@@ -1,34 +1,41 @@
 package academy.mindswap.p1g2.casino.server.games.poker.rule;
 
 import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.poker.HandScore;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class TwoPairEvaluator extends HandEvaluator {
     @Override
-    public int evaluateHand(List<Card> cards) {
-        Map<Card.Value, Integer> valueCounts = new HashMap<>();
+    public HandScore evaluateHand(List<Card> cards) {
+        Map<Card.Value, List<Card>> valueCounts = new HashMap<>();
 
         for(Card card: cards) {
-            int count = valueCounts.getOrDefault(card.getValue(), 0);
-            valueCounts.put(card.getValue(), count + 1);
+            List<Card> cardsAdded = valueCounts.getOrDefault(card.getValue(), new ArrayList<>());
+            cardsAdded.add(card);
+            valueCounts.put(card.getValue(), cardsAdded);
         }
 
-        long pairsQuantity = valueCounts.values().stream()
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .entrySet()
-                .stream()
-                .filter(e -> e.getValue() > 1)
-                .count();
+        List<List<Card>> cardsPair = valueCounts.values().stream()
+                .filter(cards1 -> cards1.size() == 2).toList();
 
-        if (pairsQuantity == 2) {
-            return 4000;
+        if (cardsPair.size() == 2) {
+            List<Card> newHand = new ArrayList<>();
+            newHand.addAll(cardsPair.get(0));
+            newHand.addAll(cardsPair.get(1));
+
+            Card higherCard = cards.stream()
+                    .filter(card -> !newHand.contains(card))
+                    .max(Comparator.comparingInt(Card::getCardValueOnPoker))
+                    .orElse(null);
+
+            newHand.add(higherCard);
+
+            return new HandScore(3000, newHand);
         }
 
-        return 0;
+        return evaluateNext(cards);
     }
 }

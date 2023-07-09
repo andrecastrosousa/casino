@@ -1,6 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.poker.rule;
 
 import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.poker.HandScore;
 
 import java.util.List;
 
@@ -8,26 +9,30 @@ public abstract class HandEvaluator implements Evaluator {
     private Evaluator nextEvaluator;
 
     @Override
-    public abstract int evaluateHand(List<Card> cards);
+    public abstract HandScore evaluateHand(List<Card> cards);
 
     @Override
-    public int evaluateNext(List<Card> cards) {
+    public HandScore evaluateNext(List<Card> cards) {
         if(nextEvaluator != null) {
             return nextEvaluator.evaluateHand(cards);
         }
-        return 0;
+        return null;
     }
 
     public static Evaluator getEvaluatorChain() {
         Evaluator evaluatorChain = new RoyalFlushEvaluator();
-        Evaluator straightFlushEvaluator = new StraightEvaluator();
+        Evaluator straightFlushEvaluator = new StraightFlushEvaluator();
         evaluatorChain.setNextEvaluator(straightFlushEvaluator);
         Evaluator fourOfAKindEvaluator = new FourOfAKindEvaluator();
         straightFlushEvaluator.setNextEvaluator(fourOfAKindEvaluator);
         Evaluator fullHouseEvaluator = new FullHouseEvaluator();
         fourOfAKindEvaluator.setNextEvaluator(fullHouseEvaluator);
+
+        Evaluator flushEvaluator = new FlushEvaluator();
+        fullHouseEvaluator.setNextEvaluator(flushEvaluator);
+
         Evaluator straightEvaluator = new StraightEvaluator();
-        fullHouseEvaluator.setNextEvaluator(straightEvaluator);
+        flushEvaluator.setNextEvaluator(straightEvaluator);
         Evaluator threeOfKindEvaluator = new ThreeOfAKindEvaluator();
         straightEvaluator.setNextEvaluator(threeOfKindEvaluator);
         Evaluator twoPairEvaluator = new TwoPairEvaluator();

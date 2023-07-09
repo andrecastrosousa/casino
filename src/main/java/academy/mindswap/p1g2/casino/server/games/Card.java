@@ -2,7 +2,9 @@ package academy.mindswap.p1g2.casino.server.games;
 
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 
-public class Card {
+import java.util.Objects;
+
+public class Card implements Comparable {
     private final Value value;
 
     private final Suit suit;
@@ -35,6 +37,25 @@ public class Card {
     @Override
     public String toString() {
         return String.format(suit.getAsciiArt(), value, value);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Card card = (Card) o;
+        return getCardValueOnPoker() - card.getCardValueOnPoker();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, suit);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return value.getPokerValue() == card.value.getPokerValue();
     }
 
     public enum Value {
