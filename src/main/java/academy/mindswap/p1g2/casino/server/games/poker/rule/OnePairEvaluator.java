@@ -13,7 +13,7 @@ public class OnePairEvaluator extends HandEvaluator {
         if(newHand.size() == 2) {
             List<Card> higherCards = getHigherCards(cards, newHand);
             newHand.addAll(higherCards.subList(0, 3));
-            return new HandScore(2000, newHand);
+            return new HandScore(EvaluatorType.ONE_PAIR.getScore(), newHand, EvaluatorType.ONE_PAIR);
         }
 
         return evaluateNext(cards);

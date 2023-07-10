@@ -1,13 +1,12 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
-import academy.mindswap.p1g2.casino.server.games.Card;
-import academy.mindswap.p1g2.casino.server.games.poker.HandScore;
+import academy.mindswap.p1g2.casino.server.games.poker.Player;
 import academy.mindswap.p1g2.casino.server.games.poker.rule.Evaluator;
+import academy.mindswap.p1g2.casino.server.games.poker.rule.EvaluatorFactory;
 import academy.mindswap.p1g2.casino.server.games.poker.rule.HandEvaluator;
 import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 public class ShowdownStreet extends StreetImpl {
     public ShowdownStreet(Table table) {
@@ -21,23 +20,23 @@ public class ShowdownStreet extends StreetImpl {
 
     @Override
     public void execute() {
-        // TODO: EVALUATE ALL HANDS
-        List<Card> cardList = new ArrayList<>(List.of(
-                new Card(Card.Value.FIVE, Card.Suit.SPADES),
-                new Card(Card.Value.TWO, Card.Suit.CLUBS),
-                new Card(Card.Value.TEN, Card.Suit.DIAMONDS),
-                new Card(Card.Value.SIX, Card.Suit.CLUBS),
-                new Card(Card.Value.JACK, Card.Suit.CLUBS),
-                new Card(Card.Value.ACE, Card.Suit.DIAMONDS),
-                new Card(Card.Value.QUEEN, Card.Suit.SPADES)
-        ));
+        Evaluator evaluator = EvaluatorFactory.make();
+        for (Player player: table.getPlayers()) {
+            player.addCards(table.getCards());
+            player.setHandScore(evaluator.evaluateHand(player.getCards()));
+        }
 
-        Evaluator evaluator = HandEvaluator.getEvaluatorChain();
-        HandScore returnValue = evaluator.evaluateHand(cardList);
-        System.out.println(returnValue);
+        table.getPlayers().stream().sorted().findFirst().ifPresent(winnerPlayer -> table.getPlayers().forEach(player -> {
+            try {
+                if (player == winnerPlayer) {
+                    player.sendMessageToPlayer(String.format("You won the hand with %s", player.getHandScore().getEvaluator().getName()));
+                } else {
+                    player.sendMessageToPlayer(String.format("%s won the hand with %s", winnerPlayer.getClientHandler().getUsername(), player.getHandScore().getEvaluator().getName()));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }));
 
-        /*cards.addAll(tableCards);
-        cards.addAll(turnDownCards);
-        shuffle();*/
     }
 }

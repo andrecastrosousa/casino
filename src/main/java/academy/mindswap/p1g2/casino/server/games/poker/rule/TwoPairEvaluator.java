@@ -19,7 +19,7 @@ public class TwoPairEvaluator extends HandEvaluator {
 
             newHand.add(higherCards.get(0));
 
-            return new HandScore(3000, newHand);
+            return new HandScore(EvaluatorType.TWO_PAIR.getScore(), newHand, EvaluatorType.TWO_PAIR);
         }
 
         return evaluateNext(cards);

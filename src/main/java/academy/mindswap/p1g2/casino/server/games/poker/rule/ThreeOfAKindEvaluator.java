@@ -13,7 +13,11 @@ public class ThreeOfAKindEvaluator extends HandEvaluator {
         if(newHand.size() == 3) {
             List<Card> higherCards = getHigherCards(cards, newHand);
             newHand.addAll(higherCards.subList(0, 2));
-            return new HandScore(4000, newHand);
+            return new HandScore(
+                    EvaluatorType.THREE_OF_KIND.getScore(),
+                    newHand,
+                    EvaluatorType.THREE_OF_KIND
+            );
         }
 
         return evaluateNext(cards);

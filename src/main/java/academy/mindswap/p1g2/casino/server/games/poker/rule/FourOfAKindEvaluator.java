@@ -14,7 +14,7 @@ public class FourOfAKindEvaluator extends HandEvaluator {
             List<Card> higherCards = getHigherCards(cards, newHand);
 
             newHand.add(higherCards.get(0));
-            return new HandScore(8000, newHand);
+            return new HandScore(EvaluatorType.FOUR_OF_KIND.getScore(), newHand, EvaluatorType.FOUR_OF_KIND);
         }
 
         return evaluateNext(cards);

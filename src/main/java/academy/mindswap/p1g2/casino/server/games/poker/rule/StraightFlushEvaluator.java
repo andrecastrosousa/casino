@@ -24,7 +24,11 @@ public class StraightFlushEvaluator extends HandEvaluator {
             int indexOfLastCombinationCard = isStraight(cardsFlush);
 
             if (indexOfLastCombinationCard > 0) {
-                return new HandScore(9000, cardsFlush.subList(indexOfLastCombinationCard - 4, indexOfLastCombinationCard + 1));
+                return new HandScore(
+                        EvaluatorType.STRAIGHT_FLUSH.getScore(),
+                        cardsFlush.subList(indexOfLastCombinationCard - 4, indexOfLastCombinationCard + 1),
+                        EvaluatorType.STRAIGHT_FLUSH
+                );
             }
         }
 

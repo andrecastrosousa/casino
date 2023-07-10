@@ -19,7 +19,11 @@ public class FlushEvaluator extends HandEvaluator {
                     .sorted(Collections.reverseOrder(Comparator.comparingInt(Card::getCardValueOnPoker)))
                     .toList();
 
-            return new HandScore(6000, newHand.size() == 5 ? newHand : newHand.subList(0, 5));
+            return new HandScore(
+                    EvaluatorType.FLUSH.getScore(),
+                    newHand.size() == 5 ? newHand : newHand.subList(0, 5),
+                    EvaluatorType.FLUSH
+            );
         }
         return evaluateNext(cards);
     }

@@ -22,10 +22,11 @@ public class RoyalFlushEvaluator extends HandEvaluator {
 
             if (isFlush(cards, suitFlush)) {
                 return new HandScore(
-                        10000,
+                        EvaluatorType.ROYAL_FLUSH.getScore(),
                         royalFlushCards.stream()
                                 .filter(card -> card.getSuit() == suitFlush.get())
-                                .toList()
+                                .toList(),
+                        EvaluatorType.ROYAL_FLUSH
                 );
             }
         }

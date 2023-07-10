@@ -18,7 +18,11 @@ public class StraightEvaluator extends HandEvaluator {
         int indexOfLastCombinationCard = isStraight(cardsWithoutPairs);
 
         if (indexOfLastCombinationCard > 0) {
-            return new HandScore(5000, cardsWithoutPairs.subList(indexOfLastCombinationCard - 4, indexOfLastCombinationCard + 1));
+            return new HandScore(
+                    EvaluatorType.STRAIGHT.getScore(),
+                    cardsWithoutPairs.subList(indexOfLastCombinationCard - 4, indexOfLastCombinationCard + 1),
+                    EvaluatorType.STRAIGHT
+            );
         }
 
         return evaluateNext(cards);

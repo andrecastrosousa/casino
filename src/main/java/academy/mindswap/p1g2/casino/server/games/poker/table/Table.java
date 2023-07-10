@@ -68,6 +68,10 @@ public class Table {
         tableManager.setStreetType(streetType);
     }
 
+    public List<Card> getCards() {
+        return tableManager.getCards();
+    }
+
     public String showTableCards() {
         StringBuilder message = new StringBuilder();
         tableManager.getCards().forEach(card -> message.append(card.toString()));

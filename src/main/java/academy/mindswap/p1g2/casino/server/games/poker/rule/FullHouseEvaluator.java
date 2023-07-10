@@ -15,7 +15,7 @@ public class FullHouseEvaluator extends HandEvaluator {
             newHand.addAll(cardsPair.get(0));
             newHand.addAll(cardsPair.get(1));
 
-            return new HandScore(7000, newHand);
+            return new HandScore(EvaluatorType.FULL_HOUSE.getScore(), newHand, EvaluatorType.FULL_HOUSE);
         }
 
         return evaluateNext(cards);

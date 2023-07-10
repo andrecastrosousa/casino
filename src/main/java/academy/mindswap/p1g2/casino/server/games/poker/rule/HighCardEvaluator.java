@@ -15,7 +15,11 @@ public class HighCardEvaluator extends HandEvaluator {
                 .skip(2)
                 .toList();
 
-        return new HandScore(newHand.get(newHand.size() - 1).getCardValueOnPoker(), newHand);
+        return new HandScore(
+                EvaluatorType.HIGH_CARD.getScore() + newHand.get(newHand.size() - 1).getCardValueOnPoker(),
+                newHand,
+                EvaluatorType.HIGH_CARD
+        );
 
     }
 }
