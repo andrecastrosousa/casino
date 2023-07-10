@@ -23,13 +23,13 @@ public class ShowdownStreet extends StreetImpl {
     public void execute() {
         // TODO: EVALUATE ALL HANDS
         List<Card> cardList = new ArrayList<>(List.of(
-                new Card(Card.Value.FIVE, Card.Suit.HEARTS),
-                new Card(Card.Value.FOUR, Card.Suit.HEARTS),
-                new Card(Card.Value.THREE, Card.Suit.HEARTS),
-                new Card(Card.Value.SIX, Card.Suit.HEARTS),
-                new Card(Card.Value.SEVEN, Card.Suit.HEARTS),
-                new Card(Card.Value.EIGHT, Card.Suit.CLUBS),
-                new Card(Card.Value.JACK, Card.Suit.HEARTS)
+                new Card(Card.Value.FIVE, Card.Suit.SPADES),
+                new Card(Card.Value.TWO, Card.Suit.CLUBS),
+                new Card(Card.Value.TEN, Card.Suit.DIAMONDS),
+                new Card(Card.Value.SIX, Card.Suit.CLUBS),
+                new Card(Card.Value.JACK, Card.Suit.CLUBS),
+                new Card(Card.Value.ACE, Card.Suit.DIAMONDS),
+                new Card(Card.Value.QUEEN, Card.Suit.SPADES)
         ));
 
         Evaluator evaluator = HandEvaluator.getEvaluatorChain();

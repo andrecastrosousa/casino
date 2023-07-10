@@ -19,18 +19,8 @@ public class RoyalFlushEvaluator extends HandEvaluator {
 
         if (royalFlushCards.size() >= 5) {
             AtomicReference<Card.Suit> suitFlush = new AtomicReference<>(Card.Suit.CLUBS);
-            boolean isFlush = Arrays.stream(Card.getSuits())
-                    .anyMatch(suit -> {
-                        if(cards.stream()
-                                .filter(card -> card.getSuit() == suit)
-                                .count() == 5) {
-                            suitFlush.set(suit);
-                            return true;
-                        }
-                        return false;
-                    });
 
-            if (isFlush) {
+            if (isFlush(cards, suitFlush)) {
                 return new HandScore(
                         10000,
                         royalFlushCards.stream()
