@@ -55,8 +55,9 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         player.allIn();
+        broadcast(String.format("%s did an all in", clientHandler.getUsername()),clientHandler);
+        whisper("You did an all in", clientHandler.getUsername());
         player.releaseTurn();
-        System.out.println(player);
     }
 
     public void call(ClientHandler clientHandler) throws IOException {
@@ -66,8 +67,9 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         player.call(20);
+        broadcast(String.format("%s did a call with 20 poker chips", clientHandler.getUsername()),clientHandler);
+        whisper(String.format("You did a call with 20 poker chips, your current balance is %d", player.getCurrentBalance()), clientHandler.getUsername());
         player.releaseTurn();
-        System.out.println(player);
     }
 
     public void check(ClientHandler clientHandler) throws IOException {
@@ -77,8 +79,9 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         player.check();
+        broadcast(String.format("%s did a check.", clientHandler.getUsername()),clientHandler);
+        whisper("You did a check", clientHandler.getUsername());
         player.releaseTurn();
-        System.out.println(player);
     }
 
     public void fold(ClientHandler clientHandler) throws IOException {
@@ -88,9 +91,10 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         player.fold();
+        broadcast(String.format("%s did a fold.", clientHandler.getUsername()),clientHandler);
+        whisper("You did a fold", clientHandler.getUsername());
         table.removePlayer(player, false);
         player.releaseTurn();
-        System.out.println(player);
     }
 
     public void raise(ClientHandler clientHandler) throws IOException {
@@ -100,8 +104,9 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         player.raise(40);
+        broadcast(String.format("%s did a raise with 40 poker chips", clientHandler.getUsername()),clientHandler);
+        whisper(String.format("You did a raise with 40 poker chips, your current balance is %d", player.getCurrentBalance()), clientHandler.getUsername());
         player.releaseTurn();
-        System.out.println(player);
     }
 
     public void bet(ClientHandler clientHandler) throws IOException {
@@ -111,8 +116,9 @@ public class Poker implements Spot {
         }
         Player player = getPlayerByClient(clientHandler);
         player.bet(20);
+        broadcast(String.format("%s did a bet with 20 poker chips", clientHandler.getUsername()),clientHandler);
+        whisper(String.format("You did a bet with 20 poker chips, your current balance is %d", player.getCurrentBalance()), clientHandler.getUsername());
         player.releaseTurn();
-        System.out.println(player);
     }
 
     public void showHand(ClientHandler clientHandler) {
