@@ -14,4 +14,15 @@ public class Pot {
     public void addAmount(int amount) {
         this.amount += amount;
     }
+
+    public void resetPot() {
+        amount = 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Pot{" +
+                "amount=" + amount +
+                '}';
+    }
 }

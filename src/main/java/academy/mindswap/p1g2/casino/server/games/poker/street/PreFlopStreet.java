@@ -9,7 +9,10 @@ public class PreFlopStreet extends StreetImpl {
 
     @Override
     public void nextStreet() {
-        table.setStreetType(StreetType.FLOP);
+        if(table.getPlayTimes() >= table.getPlayers().size() && canGoToNextStreet()) {
+            table.setStreetType(StreetType.FLOP);
+            table.initStreet();
+        }
     }
 
     @Override

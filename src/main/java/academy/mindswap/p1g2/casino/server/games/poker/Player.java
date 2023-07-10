@@ -13,10 +13,11 @@ import java.util.Objects;
 public class Player implements Comparable {
     private final ClientHandler clientHandler;
     private int currentBalance;
-    private List<Card> cards;
+    private final List<Card> cards;
     private volatile boolean isPlaying;
     private BetOption betOptionSelected;
-    private Table table;
+    private int bet;
+    private final Table table;
     private HandScore handScore;
 
     public Player(ClientHandler clientHandler, Table table) {
@@ -32,23 +33,43 @@ public class Player implements Comparable {
         this.currentBalance += balance;
     }
 
-    public int allIn() {
-        currentBalance = 0;
-        return currentBalance;
+    public void allIn() {
+        betOptionSelected = BetOption.ALL_IN;
+        this.bet += currentBalance;
+        table.addBet(currentBalance);
+    }
+
+    public void bet(int amount) {
+        betOptionSelected = BetOption.CALL;
+        this.bet += amount;
+        currentBalance -= amount;
+        table.addBet(amount);
     }
 
     public void call(int amount) {
+        betOptionSelected = BetOption.CALL;
+        this.bet += amount;
         currentBalance -= amount;
+        table.addBet(amount);
     }
 
     public List<Card> fold() {
+        betOptionSelected = BetOption.FOLD;
+        resetBet();
         List<Card> cardsToRetrieve = new ArrayList<>(cards);
         cards.clear();
         return cardsToRetrieve;
     }
 
     public void raise(int amount) {
+        betOptionSelected = BetOption.RAISE;
         currentBalance -= amount;
+        this.bet += amount;
+        table.addBet(amount);
+    }
+
+    public void check() {
+        betOptionSelected = BetOption.CHECK;
     }
 
     public void receiveCard(Card card) {
@@ -78,10 +99,6 @@ public class Player implements Comparable {
         return isPlaying;
     }
 
-    public void selectBetOption(BetOption option) {
-        betOptionSelected = option;
-    }
-
     public void sendMessageToPlayer(String message) throws IOException {
         clientHandler.sendMessageUser(message);
     }
@@ -102,6 +119,14 @@ public class Player implements Comparable {
         return handScore;
     }
 
+    public void resetBet() {
+        bet = 0;
+    }
+
+    public int getBet() {
+        return bet;
+    }
+
     @Override
     public int compareTo(Object o) {
         Player player = (Player) o;
@@ -119,5 +144,20 @@ public class Player implements Comparable {
     @Override
     public int hashCode() {
         return Objects.hash(clientHandler);
+    }
+
+    @Override
+    public String toString() {
+        System.out.println(table.toString());
+        return "Player{" +
+                "clientHandler=" + clientHandler +
+                ", currentBalance=" + currentBalance +
+                ", cards=" + cards +
+                ", isPlaying=" + isPlaying +
+                ", betOptionSelected=" + betOptionSelected +
+                ", bet=" + bet +
+                ", table=" + table +
+                ", handScore=" + handScore +
+                '}';
     }
 }

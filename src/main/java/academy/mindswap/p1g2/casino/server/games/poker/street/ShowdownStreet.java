@@ -15,6 +15,7 @@ public class ShowdownStreet extends StreetImpl {
 
     @Override
     public void nextStreet() {
+        table.resetHand();
         table.setStreetType(StreetType.PRE_FLOP);
     }
 

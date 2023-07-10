@@ -11,7 +11,10 @@ public class FlopStreet extends StreetImpl {
 
     @Override
     public void nextStreet() {
-        table.setStreetType(StreetType.TURN);
+        if(table.getPlayTimes() >= table.getPlayersPlaying().size() && canGoToNextStreet()) {
+            table.setStreetType(StreetType.TURN);
+            table.initStreet();
+        }
     }
 
     @Override

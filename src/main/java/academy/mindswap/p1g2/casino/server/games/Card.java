@@ -36,7 +36,7 @@ public class Card implements Comparable {
 
     @Override
     public String toString() {
-        return String.format(suit.getAsciiArt(), value, value);
+        return String.format(suit.getAsciiArt(), value.getSymbol(), value.getSymbol());
     }
 
     @Override

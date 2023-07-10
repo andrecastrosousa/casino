@@ -44,7 +44,7 @@ public class Poker implements Spot {
                 Player currentPlayer = table.getCurrentPlayerPlaying();
                 broadcast(String.format("%s is playing. Wait for your turn.", currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
                 currentPlayer.sendMessageToPlayer("It is your time to play.");
-                table.startStreet();
+                table.playStreet();
             }
             StreetImpl.buildStreet(table).nextStreet();
         }
@@ -60,9 +60,9 @@ public class Poker implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        // pot += player.allIn();
-        player.selectBetOption(BetOption.ALL_IN);
+        player.allIn();
         player.releaseTurn();
+        System.out.println(player);
     }
 
     public void call(ClientHandler clientHandler) throws IOException {
@@ -71,19 +71,20 @@ public class Poker implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        // pot += 20;
         player.call(20);
-        player.selectBetOption(BetOption.CALL);
         player.releaseTurn();
+        System.out.println(player);
     }
 
     public void check(ClientHandler clientHandler) throws IOException {
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser("Isn't your time to play.");
+            return;
         }
         Player player = getPlayerByClient(clientHandler);
-        player.selectBetOption(BetOption.CHECK);
+        player.check();
         player.releaseTurn();
+        System.out.println(player);
     }
 
     public void fold(ClientHandler clientHandler) throws IOException {
@@ -92,9 +93,10 @@ public class Poker implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
+        player.fold();
         table.removePlayer(player, false);
-        player.selectBetOption(BetOption.FOLD);
         player.releaseTurn();
+        System.out.println(player);
     }
 
     public void raise(ClientHandler clientHandler) throws IOException {
@@ -103,10 +105,9 @@ public class Poker implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        // pot += 20;
         player.raise(20);
-        player.selectBetOption(BetOption.RAISE);
         player.releaseTurn();
+        System.out.println(player);
     }
 
     public void bet(ClientHandler clientHandler) throws IOException {
@@ -115,10 +116,9 @@ public class Poker implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        // pot += 20;
-        player.raise(20);
-        player.selectBetOption(BetOption.BET);
+        player.bet(20);
         player.releaseTurn();
+        System.out.println(player);
     }
 
     public void showHand(ClientHandler clientHandler) {
