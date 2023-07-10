@@ -14,6 +14,7 @@ public enum BetOption {
     BET("/bet", "Bet a value", new BetCommand()),
     HAND("/hand", "Show cards on your hand", new ShowHandCommand()),
     TABLE("/table", "Show cards on table", new ShowTableCommand()),
+    BALANCE("/balance", "Show current balance", new BalanceCommand()),
     UNKNOWN("", "Unknown command", new UnknownCommand());
 
     private final String command;

@@ -3,7 +3,6 @@ package academy.mindswap.p1g2.casino.server.games.poker.street;
 import academy.mindswap.p1g2.casino.server.games.poker.Player;
 import academy.mindswap.p1g2.casino.server.games.poker.rule.Evaluator;
 import academy.mindswap.p1g2.casino.server.games.poker.rule.EvaluatorFactory;
-import academy.mindswap.p1g2.casino.server.games.poker.rule.HandEvaluator;
 import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
 
 import java.io.IOException;
@@ -30,10 +29,16 @@ public class ShowdownStreet extends StreetImpl {
         table.getPlayers().stream().sorted().findFirst().ifPresent(winnerPlayer -> table.getPlayers().forEach(player -> {
             try {
                 if (player == winnerPlayer) {
-                    player.sendMessageToPlayer(String.format("You won the hand with %s", player.getHandScore().getEvaluator().getName()));
+                    player.sendMessageToPlayer(String.format("You won the hand with %s and won %d poker chips.", player.getHandScore().getEvaluator().getName(), table.getPotValue()));
+                    player.addBalance(table.getPotValue());
                 } else {
-                    player.sendMessageToPlayer(String.format("%s won the hand with %s", winnerPlayer.getClientHandler().getUsername(), player.getHandScore().getEvaluator().getName()));
+                    player.sendMessageToPlayer(String.format("%s won the hand with %s and won %d poker chips.",
+                            winnerPlayer.getClientHandler().getUsername(),
+                            player.getHandScore().getEvaluator().getName(),
+                            table.getPotValue()
+                    ));
                 }
+                table.receiveCardsFromPlayer(player.returnCards());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

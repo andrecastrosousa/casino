@@ -7,6 +7,7 @@ import academy.mindswap.p1g2.casino.server.games.poker.Player;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class Table {
     }
 
     public Player getCurrentPlayerPlaying() {
-        return playersPlaying.get(currentPlayerPlaying);
+        return players.get(currentPlayerPlaying);
     }
 
     public List<Player> getPlayers() {
@@ -138,15 +139,44 @@ public class Table {
             players.remove(player);
         }
         playersPlaying.remove(player);
-        dealer.receiveCardsFromPlayer(player.fold());
+        receiveCardsFromPlayer(player.returnCards());
+    }
+
+    public void receiveCardsFromPlayer(List<Card> cards) {
+        dealer.receiveCardsFromPlayer(cards);
+    }
+
+    public int getPotValue() {
+        return tableManager.getPotValue();
     }
 
     public boolean handContinue() {
         if(playersPlaying.size() == 1) {
             currentPlayerPlaying = 0;
+            Player winnerPlayer = playersPlaying.get(0);
+
+            players.forEach(player -> {
+                try {
+                    if (player == winnerPlayer) {
+                        player.sendMessageToPlayer(String.format("You won the hand and won %d poker chips", tableManager.getPotValue()));
+                        player.addBalance(tableManager.getPotValue());
+                        receiveCardsFromPlayer(player.returnCards());
+                    } else {
+                        player.sendMessageToPlayer(String.format("%s won the hand and won %d poker chips", winnerPlayer.getClientHandler().getUsername(), tableManager.getPotValue()));
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            tableManager.setStreetType(StreetType.SHOWDOWN);
             return false;
         }
-        currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
+        currentPlayerPlaying = (currentPlayerPlaying + 1) % players.size();
+        while (!playersPlaying.contains(players.get(currentPlayerPlaying))) {
+            currentPlayerPlaying = (currentPlayerPlaying + 1) % players.size();
+        }
+
         return true;
     }
 

@@ -48,16 +48,16 @@ public class TableManager {
         return cards;
     }
 
-    public List<Card> getBurnedCards() {
-        return burnedCards;
-    }
-
     public void addBetToPot(int bet) {
         pot.addAmount(bet);
     }
 
     public void resetPot() {
         pot.resetPot();
+    }
+
+    public int getPotValue() {
+        return pot.getAmount();
     }
 
     @Override

@@ -33,11 +33,16 @@ public class Player implements Comparable {
         this.currentBalance += balance;
     }
 
+    public int getCurrentBalance() {
+        return currentBalance;
+    }
+
     public void allIn() {
         betOptionSelected = BetOption.ALL_IN;
         this.bet += currentBalance;
         table.addBet(currentBalance);
     }
+
 
     public void bet(int amount) {
         betOptionSelected = BetOption.CALL;
@@ -53,9 +58,13 @@ public class Player implements Comparable {
         table.addBet(amount);
     }
 
-    public List<Card> fold() {
+    public void fold() {
         betOptionSelected = BetOption.FOLD;
         resetBet();
+        table.receiveCardsFromPlayer(returnCards());
+    }
+
+    public List<Card> returnCards() {
         List<Card> cardsToRetrieve = new ArrayList<>(cards);
         cards.clear();
         return cardsToRetrieve;

@@ -39,7 +39,7 @@ public class Dealer {
 
     public void receiveCardsFromPlayer(List<Card> cards) {
         for (Card card: cards) {
-            cards.add(0, card);
+            this.cards.add(0, card);
         }
     }
 }

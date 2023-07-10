@@ -22,12 +22,6 @@ public class Poker implements Spot {
             table.sitPlayer(new Player(clientHandler, table));
             clientHandler.changeSpot(this);
         });
-
-        createEvaluatorChain();
-    }
-
-    private void createEvaluatorChain() {
-
     }
 
     private Player getPlayerByClient(ClientHandler clientHandler) {
@@ -105,7 +99,7 @@ public class Poker implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        player.raise(20);
+        player.raise(40);
         player.releaseTurn();
         System.out.println(player);
     }
@@ -127,6 +121,10 @@ public class Poker implements Spot {
 
     public void showTableCards(ClientHandler clientHandler) {
         whisper(table.showTableCards(), clientHandler.getUsername());
+    }
+
+    public void showBalance(ClientHandler clientHandler) {
+        whisper(String.format("Current balance %d", getPlayerByClient(clientHandler).getCurrentBalance()), clientHandler.getUsername());
     }
 
     @Override
