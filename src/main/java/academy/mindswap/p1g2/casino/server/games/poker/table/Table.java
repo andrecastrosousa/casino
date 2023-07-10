@@ -92,9 +92,7 @@ public class Table {
     public void initStreet() {
         StreetImpl.buildStreet(this).execute();
         playTimes = 0;
-        if(tableManager.getStreetType() == StreetType.SHOWDOWN) {
-            tableManager.setHandOnGoing(false);
-        }
+
     }
 
     public void startHand() {

@@ -38,8 +38,7 @@ public class Poker implements Spot {
     }
 
     public void play() throws IOException {
-        table.initStreet();
-        /*while (!gameEnded()) {
+        while (!gameEnded()) {
             table.initStreet();
             while (table.isHandOnGoing()) {
                 Player currentPlayer = table.getCurrentPlayerPlaying();
@@ -47,7 +46,8 @@ public class Poker implements Spot {
                 currentPlayer.sendMessageToPlayer("It is your time to play.");
                 table.startStreet();
             }
-        }*/
+            StreetImpl.buildStreet(table).nextStreet();
+        }
     }
 
     private boolean gameEnded() {

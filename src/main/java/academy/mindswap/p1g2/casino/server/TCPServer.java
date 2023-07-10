@@ -42,8 +42,6 @@ public class TCPServer implements Spot {
 
     private void acceptClient() {
         System.out.println(Messages.SERVER_OPENING);
-        ShowdownStreet showdownStreet = new ShowdownStreet(new Table());
-        showdownStreet.execute();
         try {
 
             Socket socket = serverSocket.accept();//blocking method
