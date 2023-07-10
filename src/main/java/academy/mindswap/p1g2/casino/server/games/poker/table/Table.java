@@ -4,10 +4,10 @@ import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.Card;
 import academy.mindswap.p1g2.casino.server.games.poker.Dealer;
 import academy.mindswap.p1g2.casino.server.games.poker.Player;
-import academy.mindswap.p1g2.casino.server.games.poker.street.ShowdownStreet;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class Table {
     }
 
     public Player getCurrentPlayerPlaying() {
-        return playersPlaying.get(currentPlayerPlaying);
+        return players.get(currentPlayerPlaying);
     }
 
     public List<Player> getPlayers() {
@@ -72,6 +72,18 @@ public class Table {
         return tableManager.getCards();
     }
 
+    public void addBet(int bet) {
+        tableManager.addBetToPot(bet);
+    }
+
+    public int getPlayTimes() {
+        return playTimes;
+    }
+
+    public List<Player> getPlayersPlaying() {
+        return playersPlaying;
+    }
+
     public String showTableCards() {
         StringBuilder message = new StringBuilder();
         tableManager.getCards().forEach(card -> message.append(card.toString()));
@@ -92,7 +104,14 @@ public class Table {
     public void initStreet() {
         StreetImpl.buildStreet(this).execute();
         playTimes = 0;
+        players.forEach(Player::resetBet);
+    }
 
+    public void resetHand() {
+        players.forEach(Player::resetBet);
+        playersPlaying.clear();
+        playersPlaying.addAll(players);
+        tableManager.resetPot();
     }
 
     public void startHand() {
@@ -102,7 +121,7 @@ public class Table {
         tableManager.setHandOnGoing(true);
     }
 
-    public void startStreet() {
+    public void playStreet() {
         Player currentPlayer = getCurrentPlayerPlaying();
 
         currentPlayer.startTurn();
@@ -112,10 +131,7 @@ public class Table {
         }
         playTimes++;
         tableManager.setHandOnGoing(handContinue());
-        if(playTimes >= players.size()) {
-            StreetImpl.buildStreet(this).nextStreet();
-            initStreet();
-        }
+        StreetImpl.buildStreet(this).nextStreet();
     }
 
     public void removePlayer(Player player, boolean fromTable) {
@@ -123,15 +139,53 @@ public class Table {
             players.remove(player);
         }
         playersPlaying.remove(player);
-        dealer.receiveCardsFromPlayer(player.fold());
+        receiveCardsFromPlayer(player.returnCards());
+    }
+
+    public void receiveCardsFromPlayer(List<Card> cards) {
+        dealer.receiveCardsFromPlayer(cards);
+    }
+
+    public int getPotValue() {
+        return tableManager.getPotValue();
     }
 
     public boolean handContinue() {
         if(playersPlaying.size() == 1) {
             currentPlayerPlaying = 0;
+            Player winnerPlayer = playersPlaying.get(0);
+
+            players.forEach(player -> {
+                try {
+                    if (player == winnerPlayer) {
+                        player.sendMessageToPlayer(String.format("You won the hand and won %d poker chips", tableManager.getPotValue()));
+                        player.addBalance(tableManager.getPotValue());
+                        receiveCardsFromPlayer(player.returnCards());
+                    } else {
+                        player.sendMessageToPlayer(String.format("%s won the hand and won %d poker chips", winnerPlayer.getClientHandler().getUsername(), tableManager.getPotValue()));
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            tableManager.setStreetType(StreetType.SHOWDOWN);
             return false;
         }
-        currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
+        currentPlayerPlaying = (currentPlayerPlaying + 1) % players.size();
+        while (!playersPlaying.contains(players.get(currentPlayerPlaying))) {
+            currentPlayerPlaying = (currentPlayerPlaying + 1) % players.size();
+        }
+
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Table{" +
+                ", currentPlayerPlaying=" + currentPlayerPlaying +
+                ", tableManager=" + tableManager +
+                ", playTimes=" + playTimes +
+                '}';
     }
 }

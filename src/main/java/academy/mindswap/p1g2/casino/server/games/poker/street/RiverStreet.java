@@ -11,7 +11,10 @@ public class RiverStreet extends StreetImpl {
 
     @Override
     public void nextStreet() {
-        table.setStreetType(StreetType.SHOWDOWN);
+        if(table.getPlayTimes() >= table.getPlayersPlaying().size() && canGoToNextStreet()) {
+            table.setStreetType(StreetType.SHOWDOWN);
+            table.initStreet();
+        }
     }
 
     @Override

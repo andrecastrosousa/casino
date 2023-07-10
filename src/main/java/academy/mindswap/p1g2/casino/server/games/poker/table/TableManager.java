@@ -10,7 +10,7 @@ public class TableManager {
     private final List<Card> cards;
     private final List<Card> burnedCards;
     private StreetType streetType;
-    private Pot pot;
+    private final Pot pot;
     private boolean handOnGoing;
 
     public TableManager() {
@@ -48,7 +48,23 @@ public class TableManager {
         return cards;
     }
 
-    public List<Card> getBurnedCards() {
-        return burnedCards;
+    public void addBetToPot(int bet) {
+        pot.addAmount(bet);
+    }
+
+    public void resetPot() {
+        pot.resetPot();
+    }
+
+    public int getPotValue() {
+        return pot.getAmount();
+    }
+
+    @Override
+    public String toString() {
+        return "TableManager{" +
+                "streetType=" + streetType +
+                ", pot=" + pot +
+                '}';
     }
 }
