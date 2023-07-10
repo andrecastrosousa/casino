@@ -15,7 +15,6 @@ public class Player {
             return name;
         }
 
-
         public int score(int cardValue){
             return this.cardValue += cardValue;
         }

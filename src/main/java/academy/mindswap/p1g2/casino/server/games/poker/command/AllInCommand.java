@@ -1,7 +1,6 @@
 package academy.mindswap.p1g2.casino.server.games.poker.command;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.Room;
 import academy.mindswap.p1g2.casino.server.Spot;
 import academy.mindswap.p1g2.casino.server.command.CommandHandler;
 import academy.mindswap.p1g2.casino.server.command.Commands;

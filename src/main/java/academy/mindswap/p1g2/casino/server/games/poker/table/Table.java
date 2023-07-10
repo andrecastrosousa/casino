@@ -108,6 +108,7 @@ public class Table {
     }
 
     public void resetHand() {
+        tableManager.setHandOnGoing(false);
         players.forEach(Player::resetBet);
         playersPlaying.clear();
         playersPlaying.addAll(players);
@@ -178,14 +179,5 @@ public class Table {
         }
 
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return "Table{" +
-                ", currentPlayerPlaying=" + currentPlayerPlaying +
-                ", tableManager=" + tableManager +
-                ", playTimes=" + playTimes +
-                '}';
     }
 }
