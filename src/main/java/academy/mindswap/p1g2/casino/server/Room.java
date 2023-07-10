@@ -13,7 +13,7 @@ public class Room implements Runnable, Spot {
 
     private int number;
 
-    private volatile boolean gameStarted;
+    private boolean gameStarted;
 
     public Room(int number) {
         this.clientHandlerList = new ArrayList<>();

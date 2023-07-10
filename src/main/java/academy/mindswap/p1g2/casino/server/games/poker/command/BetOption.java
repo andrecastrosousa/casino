@@ -12,6 +12,8 @@ public enum BetOption {
     FOLD("/fold", "Fold hand", new FoldCommand()),
     RAISE("/raise", "Raise value of minimum bet", new RaiseCommand()),
     BET("/bet", "Bet a value", new BetCommand()),
+    HAND("/hand", "Show cards on your hand", new ShowHandCommand()),
+    TABLE("/table", "Show cards on table", new ShowTableCommand()),
     UNKNOWN("", "Unknown command", new UnknownCommand());
 
     private final String command;

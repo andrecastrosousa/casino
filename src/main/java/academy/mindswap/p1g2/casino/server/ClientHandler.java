@@ -93,7 +93,7 @@ public class ClientHandler implements Runnable {
             while (!socket.isClosed()) {
 
             }
-            closeConnection();
+            // closeConnection();
         } catch (IOException e) {
             closeConnection();
         }
