@@ -41,6 +41,7 @@ public class Player implements Comparable {
         betOptionSelected = BetOption.ALL_IN;
         this.bet += currentBalance;
         table.addBet(currentBalance);
+        currentBalance = 0;
     }
 
 
@@ -153,20 +154,5 @@ public class Player implements Comparable {
     @Override
     public int hashCode() {
         return Objects.hash(clientHandler);
-    }
-
-    @Override
-    public String toString() {
-        System.out.println(table.toString());
-        return "Player{" +
-                "clientHandler=" + clientHandler +
-                ", currentBalance=" + currentBalance +
-                ", cards=" + cards +
-                ", isPlaying=" + isPlaying +
-                ", betOptionSelected=" + betOptionSelected +
-                ", bet=" + bet +
-                ", table=" + table +
-                ", handScore=" + handScore +
-                '}';
     }
 }
