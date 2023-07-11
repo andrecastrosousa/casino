@@ -1,4 +1,6 @@
 package academy.mindswap.p1g2.casino.server.games.slotMachine;
+
+import academy.mindswap.p1g2.casino.server.Player;
 import academy.mindswap.p1g2.casino.server.games.slotMachine.evaluator.*;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
@@ -42,7 +44,7 @@ public class SlotMachine {
                 player.sendMessage(Messages.SLOT_MACHINE_GOODBYE);
                 break;
             }*/
-            if (player.getBalance() < bet) {
+            if (player.getCurrentBalance() < bet) {
                 player.sendMessage(Messages.SLOT_MACHINE_NO_CREDITS);
             }
             player.addBalance( - bet);
@@ -56,11 +58,11 @@ public class SlotMachine {
             player.addBalance(payout);
         if (payout > 0) {
             player.addBalance(payout);
-            player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE_WIN, (player.getBalance() - payout)));
+            player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE_WIN, (player.getCurrentBalance() - payout)));
             player.sendMessage(String.format(Messages.SLOT_MACHINE_CONGRATULATIONS, payout));
         }
 
-        player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE, player.getBalance()));
+        player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE, player.getCurrentBalance()));
     }
 
 

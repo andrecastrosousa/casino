@@ -1,4 +1,4 @@
-package academy.mindswap.p1g2.casino.server.games;
+package academy.mindswap.p1g2.casino.server.games.deck;
 
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 
@@ -79,7 +79,7 @@ public class Card implements Comparable {
 
         private final char symbol;
         private final int pokerValue;
-        private int blackjackValue;
+        private final int blackjackValue;
 
         Value(char symbol, int pokerValue, int blackjackValue) {
             this.symbol = symbol;

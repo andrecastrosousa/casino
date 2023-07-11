@@ -48,13 +48,13 @@ public class ClientHandler implements Runnable {
         return messageSender;
     }
 
-    public void sendMessageUser(String message) throws IOException {
+    protected void sendMessageUser(String message) throws IOException {
         out.write(message);
         out.newLine();
         out.flush();
     }
 
-    private void handleClient() throws IOException {
+    private void handleClient() throws IOException, InterruptedException {
         sendMessageUser(Messages.INSERT_COMMAND);
         message = readMessageFromUser();
         messageSender.dealWithCommands(message, this);
@@ -96,6 +96,8 @@ public class ClientHandler implements Runnable {
             // closeConnection();
         } catch (IOException e) {
             closeConnection();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

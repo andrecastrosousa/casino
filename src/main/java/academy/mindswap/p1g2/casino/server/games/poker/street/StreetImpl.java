@@ -1,6 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
-import academy.mindswap.p1g2.casino.server.games.poker.Player;
+import academy.mindswap.p1g2.casino.server.games.blackjack.BlackjackPlayer;
+import academy.mindswap.p1g2.casino.server.games.poker.PokerPlayer;
 import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
 
 import java.util.Comparator;
@@ -33,7 +34,7 @@ public abstract class StreetImpl implements Street, StreetHandler {
         int maxBet = table.getHigherBet();
 
         long count = table.getPlayersPlaying().stream()
-                .filter(player -> player.getBet() == maxBet)
+                .filter(player -> ((PokerPlayer) player).getBet() == maxBet)
                 .count();
 
         return count == table.getPlayersPlaying().size();

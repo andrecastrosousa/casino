@@ -1,9 +1,10 @@
 package academy.mindswap.p1g2.casino.server.games.poker.table;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.games.Card;
-import academy.mindswap.p1g2.casino.server.games.poker.Dealer;
-import academy.mindswap.p1g2.casino.server.games.poker.Player;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
+import academy.mindswap.p1g2.casino.server.Player;
+import academy.mindswap.p1g2.casino.server.games.poker.PokerDealer;
+import academy.mindswap.p1g2.casino.server.games.poker.PokerPlayer;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
@@ -14,7 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Table {
-    private Dealer dealer;
+    private PokerDealer pokerDealer;
     private final List<Player> players;
     private final List<Player> playersPlaying;
     private int currentPlayerPlaying;
@@ -37,8 +38,8 @@ public class Table {
         return players;
     }
 
-    public void sitDealer(Dealer dealer) {
-        this.dealer = dealer;
+    public void sitDealer(PokerDealer pokerDealer) {
+        this.pokerDealer = pokerDealer;
     }
 
     public void sitPlayer(Player player) {
@@ -58,12 +59,13 @@ public class Table {
         return tableManager.getStreetType();
     }
 
-    public void burnCard() throws InterruptedException {
-        tableManager.burnCard(dealer.giveCard());
+
+    public void burnCard() {
+        tableManager.burnCard(pokerDealer.giveCard());
     }
 
-    public void turnUpCard() throws InterruptedException {
-        tableManager.turnUpCard(dealer.giveCard());
+    public void turnUpCard() {
+        tableManager.turnUpCard(pokerDealer.giveCard());
     }
 
     public void setStreetType(StreetType streetType) {
@@ -98,7 +100,7 @@ public class Table {
                 .findFirst()
                 .orElse(null);
         if(playerFound != null) {
-            return playerFound.showCards();
+            return ((PokerPlayer) playerFound).showCards();
         }
         return "";
     }
@@ -107,22 +109,26 @@ public class Table {
         StreetImpl.buildStreet(this).execute();
         playTimes = 0;
         currentPlayerPlaying = 0;
-        players.forEach(Player::resetBet);
+        players.forEach( player -> {
+            ((PokerPlayer) player).resetBet();
+        });
     }
 
     public void resetHand() {
         tableManager.setHandOnGoing(false);
-        players.forEach(Player::resetBet);
+        players.forEach( player -> {
+            ((PokerPlayer) player).resetBet();
+        });
         playersPlaying.clear();
         playersPlaying.addAll(players);
-        dealer.pickTableCards(tableManager.clear());
+        pokerDealer.pickTableCards(tableManager.clear());
         tableManager.resetPot();
     }
 
-    public void startHand() throws InterruptedException {
-        dealer.shuffle();
-        dealer.distributeCards(players);
 
+    public void startHand() {
+        pokerDealer.shuffle();
+        pokerDealer.distributeCards(players);
         tableManager.setHandOnGoing(true);
     }
 
@@ -150,11 +156,11 @@ public class Table {
             players.remove(player);
         }
         playersPlaying.remove(player);
-        receiveCardsFromPlayer(player.returnCards());
+        receiveCardsFromPlayer(((PokerPlayer) player).returnCards());
     }
 
     public void receiveCardsFromPlayer(List<Card> cards) {
-        dealer.receiveCardsFromPlayer(cards);
+        pokerDealer.receiveCardsFromPlayer(cards);
     }
 
     public int getPotValue() {
@@ -169,11 +175,11 @@ public class Table {
             players.forEach(player -> {
                 try {
                     if (player == winnerPlayer) {
-                        player.sendMessageToPlayer(String.format(Messages.YOU_WON_HAND, tableManager.getPotValue()));
+                        player.sendMessage(String.format(Messages.YOU_WON_HAND, tableManager.getPotValue()));
                         player.addBalance(tableManager.getPotValue());
-                        receiveCardsFromPlayer(player.returnCards());
+                        receiveCardsFromPlayer(((PokerPlayer) player).returnCards());
                     } else {
-                        player.sendMessageToPlayer(String.format(Messages.SOMEONE_WON_HAND, winnerPlayer.getClientHandler().getUsername(), tableManager.getPotValue()));
+                        player.sendMessage(String.format(Messages.SOMEONE_WON_HAND, winnerPlayer.getClientHandler().getUsername(), tableManager.getPotValue()));
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -193,7 +199,7 @@ public class Table {
 
     public int getHigherBet() {
         return getPlayersPlaying().stream()
-                .map(Player::getBet)
+                .map(player -> ((PokerPlayer) player).getBet())
                 .max(Comparator.comparingInt(Integer::intValue))
                 .orElse(0);
     }

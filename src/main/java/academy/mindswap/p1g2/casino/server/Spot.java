@@ -10,4 +10,5 @@ public interface Spot {
     void listCommands(ClientHandler clientHandler) throws IOException;
 
     void whisper(String message, String username);
+    void listUsers(ClientHandler clientHandler) throws IOException;
 }

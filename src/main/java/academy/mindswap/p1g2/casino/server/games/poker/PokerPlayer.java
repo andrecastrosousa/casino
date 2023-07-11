@@ -1,40 +1,28 @@
 package academy.mindswap.p1g2.casino.server.games.poker;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
+import academy.mindswap.p1g2.casino.server.Player;
+import academy.mindswap.p1g2.casino.server.PlayerImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Player implements Comparable {
-    private final ClientHandler clientHandler;
-    private int currentBalance;
+public class PokerPlayer extends PlayerImpl implements Comparable {
     private final List<Card> cards;
-    private volatile boolean isPlaying;
     private BetOption betOptionSelected;
     private int bet;
     private final Table table;
     private HandScore handScore;
 
-    public Player(ClientHandler clientHandler, Table table) {
-        this.clientHandler = clientHandler;
-        currentBalance = 100;
+    public PokerPlayer(ClientHandler clientHandler, Table table) {
+        super(clientHandler, 100);
         cards = new ArrayList<>();
-        isPlaying = false;
         betOptionSelected = null;
         this.table = table;
-    }
-
-    public void addBalance(int balance) {
-        this.currentBalance += balance;
-    }
-
-    public int getCurrentBalance() {
-        return currentBalance;
     }
 
     public void allIn() {
@@ -98,31 +86,10 @@ public class Player implements Comparable {
         this.cards.add(card);
     }
 
-
-    public ClientHandler getClientHandler() {
-        return clientHandler;
-    }
-
     public String showCards() {
         StringBuilder message = new StringBuilder();
         cards.forEach(card -> message.append(card.toString()));
         return message.toString();
-    }
-
-    public void startTurn() {
-        isPlaying = true;
-    }
-
-    public void releaseTurn() {
-        isPlaying = false;
-    }
-
-    public boolean isPlaying() {
-        return isPlaying;
-    }
-
-    public void sendMessageToPlayer(String message) throws IOException {
-        clientHandler.sendMessageUser(message);
     }
 
     public void addCards(List<Card> cards) {
@@ -151,7 +118,7 @@ public class Player implements Comparable {
 
     @Override
     public int compareTo(Object o) {
-        Player player = (Player) o;
+        PokerPlayer player = (PokerPlayer) o;
         return this.handScore.compareTo(player.handScore);
     }
 
@@ -160,7 +127,7 @@ public class Player implements Comparable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return Objects.equals(clientHandler, player.clientHandler);
+        return Objects.equals(clientHandler, player.getClientHandler());
     }
 
     @Override

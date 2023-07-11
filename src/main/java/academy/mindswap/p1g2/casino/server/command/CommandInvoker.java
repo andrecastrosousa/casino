@@ -17,7 +17,7 @@ public class CommandInvoker {
         this.commandHandler = commandHandler;
     }
 
-    public void invoke(ClientHandler clientHandler) throws IOException {
+    public void invoke(ClientHandler clientHandler) throws IOException, InterruptedException {
         commandHandler.execute(spot, clientHandler);
     }
 

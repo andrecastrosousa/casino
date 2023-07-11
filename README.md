@@ -16,7 +16,7 @@ The casino offers the following mini-games for players to enjoy:
 
 1. ***Poker***: A classic card game where players bet on their hand's strength and attempt to create the best possible combination of cards to win the pot.
 
-2. ***Blackjack***: Also known as "21," this game requires players to compete against the dealer by reaching a hand value as close to 21 as possible without exceeding it.
+2. ***Blackjack***: Also known as "21," this game requires players to compete against the pokerDealer by reaching a hand value as close to 21 as possible without exceeding it.
 
 3. ***Roulette***: A game of chance where players place bets on a number, color, or group of numbers and wait for the roulette wheel to determine the winner.
 

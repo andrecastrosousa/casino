@@ -1,20 +1,20 @@
 package academy.mindswap.p1g2.casino.server.games.blackjack;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
+import academy.mindswap.p1g2.casino.server.PlayerImpl;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player {
+public class BlackjackPlayer extends PlayerImpl {
     private final ArrayList<Card> hand;
     private int score;
-    private ClientHandler clientHandler;
-    private boolean isPlaying;
-    public Player(ClientHandler clientHandler) {
-        this.clientHandler = clientHandler;
-        hand = new ArrayList<Card>(2);
+
+    public BlackjackPlayer(ClientHandler clientHandler) {
+        super(clientHandler);
+        hand = new ArrayList<>(2);
         score = 0;
     }
 
@@ -31,26 +31,6 @@ public class Player {
         return hand;
     }
 
-    public ClientHandler getClientHandler() {
-        return clientHandler;
-    }
-
-    public void sendMessageToPlayer(String message) throws IOException {
-        clientHandler.sendMessageUser(message);
-    }
-
-    public void startTurn() {
-        isPlaying = true;
-    }
-
-    public boolean isPlaying() {
-        return isPlaying;
-    }
-
-    public void releaseTurn(){
-        isPlaying = false;
-    }
-
     public String showCards() {
         StringBuilder message = new StringBuilder();
         hand.forEach(card -> message.append(card.toString()));
@@ -61,8 +41,8 @@ public class Player {
         List<Card> cards = new ArrayList<>(hand);
         hand.clear();
         score = 0;
-        clientHandler.sendMessageUser(message);
+        sendMessage(message);
         return cards;
     }
-    }
+}
 

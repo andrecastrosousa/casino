@@ -3,6 +3,7 @@ package academy.mindswap.p1g2.casino.server;
 import academy.mindswap.p1g2.casino.server.command.*;
 import academy.mindswap.p1g2.casino.server.games.blackjack.Blackjack;
 import academy.mindswap.p1g2.casino.server.games.blackjack.commands.BlackjackMove;
+import academy.mindswap.p1g2.casino.server.games.menu.MenuOption;
 import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.slotMachine.Slot;
@@ -22,41 +23,38 @@ public class MessageSender {
         commandInvoker.changeSpot(spot);
     }
 
-    public void dealWithCommands(String message, ClientHandler clientHandler) throws IOException {
-        if(message.startsWith("/")) {
+    public void dealWithCommands(String message, ClientHandler clientHandler) throws IOException, InterruptedException {
+        if (message.startsWith("/")) {
             parseCommand(clientHandler);
         } else {
             invoke(new BroadcastCommand(), clientHandler);
         }
     }
 
-    private void invoke(CommandHandler commandHandler, ClientHandler clientHandler) throws IOException {
+    private void invoke(CommandHandler commandHandler, ClientHandler clientHandler) throws IOException, InterruptedException {
         commandInvoker.setMessageCommand(commandHandler);
         commandInvoker.invoke(clientHandler);
     }
 
-    private void parseCommand(ClientHandler clientHandler) throws IOException {
+    private void parseCommand(ClientHandler clientHandler) throws IOException, InterruptedException {
         String command = clientHandler.getMessage().split(" ")[0];
-        if(commandInvoker.getSpot() instanceof Poker) {
-            CommandHandler commandHandler = BetOption.getCommandHandlerByString(command);
-            if(!(commandHandler instanceof UnknownCommand)) {
-                invoke(commandHandler, clientHandler);
-                return;
-            }
-        }else
-            if(commandInvoker.getSpot() instanceof Slot) {
-            CommandHandler commandHandler = SpinOption.getCommandHandlerByString(command);
-            if(!(commandHandler instanceof UnknownCommand)) {
-                invoke(commandHandler, clientHandler);
-                return;
-            }
-        } else if(commandInvoker.getSpot() instanceof Blackjack) {
-                CommandHandler commandHandler = BlackjackMove.getCommandHandlerByString(command);
-                if(!(commandHandler instanceof UnknownCommand)) {
-                    invoke(commandHandler, clientHandler);
-                    return;
-                }
-            }
+        CommandHandler commandHandler = null;
+
+        if (commandInvoker.getSpot() instanceof Poker) {
+            commandHandler = BetOption.getCommandHandlerByString(command);
+        } else if (commandInvoker.getSpot() instanceof Slot) {
+            commandHandler = SpinOption.getCommandHandlerByString(command);
+        } else if (commandInvoker.getSpot() instanceof Blackjack) {
+            commandHandler = BlackjackMove.getCommandHandlerByString(command);
+        } else if (commandInvoker.getSpot() instanceof WaitingRoom) {
+            commandHandler = MenuOption.getCommandHandlerByString(command);
+        }
+
+        if (commandHandler != null && !(commandHandler instanceof UnknownCommand)) {
+            invoke(commandHandler, clientHandler);
+            return;
+        }
+
         invoke(Commands.getCommandHandlerByString(command), clientHandler);
     }
 }
