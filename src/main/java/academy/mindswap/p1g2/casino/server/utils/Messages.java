@@ -69,8 +69,8 @@ public class Messages {
     public static final String YOU_BET_20 = "You did a bet with 20 poker chips, your current balance is %d";
     public static final String CURRENT_BALANCE = "Current balance %d";
     public static final String CANT_BET_SOMEONE_BET = "You can't bet because someone already did it. You only can /call, /raise, /allIn or /fold";
-    public static final String YOU_WON_HAND = "You won the hand and won %d poker chips";
-    public static final String SOMEONE_WON_HAND = "%s won the hand and won %d poker chips";
+    public static final String YOU_WON_HAND = "You won the hand with %s and won %d poker chips";
+    public static final String SOMEONE_WON_HAND = "%s won the hand and with %s won %d poker chips";
     public static final String YOU_LOSE_ALL_CHIPS = "You have lost all your poker chips. Thanks for playing.";
     public static final String SOMEONE_WON_HAND_W = "%s won the hand with %s and won %d poker chips.";
 

@@ -3,6 +3,7 @@ package academy.mindswap.p1g2.casino.server.games.poker;
 import academy.mindswap.p1g2.casino.server.games.Card;
 import academy.mindswap.p1g2.casino.server.games.DeckGenerator;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
+import academy.mindswap.p1g2.casino.server.games.Player;
 
 import java.io.IOException;
 import java.util.*;
@@ -37,13 +38,13 @@ public class Dealer {
     public void distributeCards(List<Player> players) {
         for(int i = 0; i < 2; i++) {
             for(Player player : players) {
-                player.receiveCard(cards.remove(cards.size() - 1));
+                ((PokerPlayer) player).receiveCard(cards.remove(cards.size() - 1));
             }
         }
 
         players.forEach(player -> {
             try {
-                player.getClientHandler().sendMessageUser(player.showCards());
+                player.getClientHandler().sendMessageUser(((PokerPlayer) player).showCards());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

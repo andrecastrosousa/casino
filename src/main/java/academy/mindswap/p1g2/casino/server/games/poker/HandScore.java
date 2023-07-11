@@ -8,7 +8,7 @@ import java.util.List;
 public class HandScore implements Comparable {
     private final List<Card> cards;
     private int score;
-    private EvaluatorType evaluator;
+    private final EvaluatorType evaluator;
 
     public HandScore(int score, List<Card> cards, EvaluatorType evaluator) {
         this.cards = cards;
@@ -30,14 +30,6 @@ public class HandScore implements Comparable {
 
     public EvaluatorType getEvaluator() {
         return evaluator;
-    }
-
-    @Override
-    public String toString() {
-        return "HandScore{" +
-                "cards=" + cards +
-                ", score=" + score +
-                '}';
     }
 
     @Override

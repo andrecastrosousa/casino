@@ -1,8 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.slotMachine.evaluator;
 
-
+import academy.mindswap.p1g2.casino.server.games.Player;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
-import academy.mindswap.p1g2.casino.server.games.slotMachine.Player;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 
 import java.io.IOException;

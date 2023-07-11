@@ -1,7 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.slotMachine.evaluator;
 
+import academy.mindswap.p1g2.casino.server.games.Player;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
-import academy.mindswap.p1g2.casino.server.games.slotMachine.Player;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 
 import java.io.IOException;
@@ -13,6 +13,7 @@ public class LoseEvaluator implements Evaluator {
     public LoseEvaluator() {
         loseSound = new PlaySound("../casino/sounds/lose_sound.wav");
     }
+
     @Override
     public boolean evaluateHand(int payout, Player player) throws IOException {
         if (payout == 0) {

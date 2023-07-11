@@ -3,6 +3,7 @@ package academy.mindswap.p1g2.casino.server.games.poker;
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.Spot;
 import academy.mindswap.p1g2.casino.server.command.Commands;
+import academy.mindswap.p1g2.casino.server.games.Player;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
@@ -10,7 +11,6 @@ import academy.mindswap.p1g2.casino.server.utils.Messages;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,7 +27,7 @@ public class Poker implements Spot {
         betSound = new PlaySound("../casino/sounds/bet_sound.wav");
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
         clientHandlers.forEach(clientHandler -> {
-            table.sitPlayer(new Player(clientHandler, table));
+            table.sitPlayer(new PokerPlayer(clientHandler, table));
             clientHandler.changeSpot(this);
         });
     }
@@ -51,7 +51,7 @@ public class Poker implements Spot {
                 Player currentPlayer = table.getCurrentPlayerPlaying();
                 if(currentPlayer.getCurrentBalance() > 0) {
                     broadcast(String.format(Messages.SOMEONE_PLAYING, currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
-                    currentPlayer.sendMessageToPlayer(Messages.YOUR_TURN);
+                    currentPlayer.sendMessage(Messages.YOUR_TURN);
                 }
                 table.playStreet();
             }
@@ -73,15 +73,19 @@ public class Poker implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        player.allIn();
+
+        PokerPlayer pokerPlayer = (PokerPlayer) player;
+
+        pokerPlayer.allIn();
         broadcast(String.format(Messages.SOMEONE_ALL_IN, clientHandler.getUsername()),clientHandler);
         whisper(Messages.YOU_ALL_IN, clientHandler.getUsername());
         player.releaseTurn();
     }
 
     public void call(ClientHandler clientHandler) throws IOException {
-        Player player = getPlayerByClient(clientHandler);
         int maxBet = table.getHigherBet();
+        Player player = getPlayerByClient(clientHandler);
+        PokerPlayer pokerPlayer = (PokerPlayer) player;
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
@@ -89,18 +93,18 @@ public class Poker implements Spot {
         } else if(maxBet == 0) {
             clientHandler.sendMessageUser(Messages.NO_BET_CANT_CALL);
             return;
-        } else if(player.getBet() == maxBet) {
+        } else if(pokerPlayer.getBet() == maxBet) {
             clientHandler.sendMessageUser(Messages.HIGHER_BET_CANT_CALL);
             return;
         }
 
-        player.call(maxBet - player.getBet());
+        pokerPlayer.call(maxBet - pokerPlayer.getBet());
         if (player.getCurrentBalance() == 0) {
-            broadcast(String.format(Messages.SOMEONE_ALL_IN_W_CHIPS, clientHandler.getUsername(), player.getBet()),clientHandler);
-            whisper(String.format(Messages.YOU_ALL_IN_W_CHIPS_BALANCE, player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.SOMEONE_ALL_IN_W_CHIPS, clientHandler.getUsername(), pokerPlayer.getBet()),clientHandler);
+            whisper(String.format(Messages.YOU_ALL_IN_W_CHIPS_BALANCE, pokerPlayer.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         } else {
-            broadcast(String.format(Messages.SOMEONE_CALL_W_CHIPS, clientHandler.getUsername(), maxBet - player.getBet()),clientHandler);
-            whisper(String.format(Messages.YOU_CALL_W_CHIPS_BALANCE, maxBet - player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.SOMEONE_CALL_W_CHIPS, clientHandler.getUsername(), maxBet - pokerPlayer.getBet()),clientHandler);
+            whisper(String.format(Messages.YOU_CALL_W_CHIPS_BALANCE, maxBet - pokerPlayer.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         }
 
         player.releaseTurn();
@@ -110,27 +114,32 @@ public class Poker implements Spot {
         playCheckSound();
         int maxBet = table.getHigherBet();
         Player player = getPlayerByClient(clientHandler);
+        PokerPlayer pokerPlayer = (PokerPlayer) player;
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
-        } else if(player.getBet() < maxBet ) {
+        } else if(pokerPlayer.getBet() < maxBet ) {
             clientHandler.sendMessageUser(Messages.HIGHER_BET_CANT_CHECK);
             return;
         }
-        player.check();
+
+        pokerPlayer.check();
         broadcast(String.format(Messages.SOMEONE_CHECK, clientHandler.getUsername()),clientHandler);
         whisper(Messages.YOU_CHECK, clientHandler.getUsername());
         player.releaseTurn();
     }
 
     public void fold(ClientHandler clientHandler) throws IOException {
+        Player player = getPlayerByClient(clientHandler);
+        PokerPlayer pokerPlayer = (PokerPlayer) player;
+
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         }
-        Player player = getPlayerByClient(clientHandler);
-        player.fold();
+
+        pokerPlayer.fold();
         broadcast(String.format(Messages.SOMEONE_FOLD, clientHandler.getUsername()),clientHandler);
         whisper(Messages.YOU_FOLD, clientHandler.getUsername());
         table.removePlayer(player, false);
@@ -139,6 +148,8 @@ public class Poker implements Spot {
 
     public void raise(ClientHandler clientHandler) throws IOException {
         int maxBet = table.getHigherBet();
+        Player player = getPlayerByClient(clientHandler);
+        PokerPlayer pokerPlayer = (PokerPlayer) player;
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
@@ -147,14 +158,14 @@ public class Poker implements Spot {
             clientHandler.sendMessageUser(Messages.NO_ONE_BET_CANT_RISE);
             return;
         }
-        Player player = getPlayerByClient(clientHandler);
-        player.raise(maxBet * 2);
+
+        pokerPlayer.raise(maxBet * 2);
         if (player.getCurrentBalance() == 0) {
-            broadcast(String.format(Messages.YOU_ALL_IN_W_CHIPS, clientHandler.getUsername(), player.getBet()),clientHandler);
-            whisper(String.format(Messages.YOU_ALL_IN_W_CHIPS_BALANCE, player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.YOU_ALL_IN_W_CHIPS, clientHandler.getUsername(), pokerPlayer.getBet()),clientHandler);
+            whisper(String.format(Messages.YOU_ALL_IN_W_CHIPS_BALANCE, pokerPlayer.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         } else {
-            broadcast(String.format(Messages.YOU_RISE_W_CHIPS, clientHandler.getUsername(), player.getBet()),clientHandler);
-            whisper(String.format(Messages.YOU_RISE_W_CHIPS_BALANCE, player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.YOU_RISE_W_CHIPS, clientHandler.getUsername(), pokerPlayer.getBet()),clientHandler);
+            whisper(String.format(Messages.YOU_RISE_W_CHIPS_BALANCE, pokerPlayer.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         }
 
         player.releaseTurn();
@@ -164,6 +175,7 @@ public class Poker implements Spot {
         playBetSound();
         int maxBet = table.getHigherBet();
         Player player = getPlayerByClient(clientHandler);
+        PokerPlayer pokerPlayer = (PokerPlayer) player;
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
@@ -172,10 +184,10 @@ public class Poker implements Spot {
             clientHandler.sendMessageUser(Messages.CANT_BET_SOMEONE_BET);
             return;
         }
-        player.bet(20);
+        pokerPlayer.bet(20);
         if (player.getCurrentBalance() == 0) {
-            broadcast(String.format(Messages.SOMEONE_ALL_IN_W_CHIPS, clientHandler.getUsername(), player.getBet()),clientHandler);
-            whisper(String.format(Messages.YOU_ALL_IN_W_CHIPS_BALANCE, player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.SOMEONE_ALL_IN_W_CHIPS, clientHandler.getUsername(), pokerPlayer.getBet()),clientHandler);
+            whisper(String.format(Messages.YOU_ALL_IN_W_CHIPS_BALANCE, pokerPlayer.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         } else {
             broadcast(String.format(Messages.SOMEONE_BET_20, clientHandler.getUsername()),clientHandler);
             whisper(String.format(Messages.YOU_BET_20, player.getCurrentBalance()), clientHandler.getUsername());
@@ -215,7 +227,7 @@ public class Poker implements Spot {
                 .filter(player -> Objects.equals(player.getClientHandler().getUsername(), clientToSend))
                 .forEach(player -> {
                     try {
-                        player.sendMessageToPlayer(message);
+                        player.sendMessage(message);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

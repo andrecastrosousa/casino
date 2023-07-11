@@ -18,11 +18,4 @@ public class Pot {
     public void resetPot() {
         amount = 0;
     }
-
-    @Override
-    public String toString() {
-        return "Pot{" +
-                "amount=" + amount +
-                '}';
-    }
 }

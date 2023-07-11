@@ -2,6 +2,7 @@ package academy.mindswap.p1g2.casino.server.games.poker;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.Player;
 import academy.mindswap.p1g2.casino.server.games.PlayerImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class PokerPlayer extends PlayerImpl implements Comparable{
+public class PokerPlayer extends PlayerImpl implements Comparable {
     private final List<Card> cards;
     private BetOption betOptionSelected;
     private int bet;
@@ -117,7 +118,7 @@ public class PokerPlayer extends PlayerImpl implements Comparable{
 
     @Override
     public int compareTo(Object o) {
-        Player player = (Player) o;
+        PokerPlayer player = (PokerPlayer) o;
         return this.handScore.compareTo(player.handScore);
     }
 
@@ -126,7 +127,7 @@ public class PokerPlayer extends PlayerImpl implements Comparable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return Objects.equals(clientHandler, player.clientHandler);
+        return Objects.equals(clientHandler, player.getClientHandler());
     }
 
     @Override

@@ -5,6 +5,8 @@ import academy.mindswap.p1g2.casino.server.Spot;
 import academy.mindswap.p1g2.casino.server.command.Commands;
 import academy.mindswap.p1g2.casino.server.games.Card;
 import academy.mindswap.p1g2.casino.server.games.DeckGenerator;
+import academy.mindswap.p1g2.casino.server.games.Player;
+import academy.mindswap.p1g2.casino.server.games.poker.Dealer;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
@@ -43,11 +45,11 @@ public class Blackjack implements Spot {
     public Blackjack(List<ClientHandler> clientHandlerList) {
         players = new ArrayList<>();
         cards = DeckGenerator.getDeckOfCards();
-        dealer = new Dealer(cards);
+        dealer = new Dealer();
         hitSound = new PlaySound("../casino/sounds/hit_sound.wav");
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
         clientHandlerList.forEach(clientHandler -> {
-            players.add(new Player(clientHandler));
+            players.add(new BlackjackPlayer(clientHandler));
             clientHandler.changeSpot(this);
         });
         handCount = 0;
@@ -60,8 +62,8 @@ public class Blackjack implements Spot {
 
         while (!gameOver()) {
             dealer.shuffle();
-            dealer.giveCards(players);
-            List<Player> playersNotBurst = players.stream().filter(player -> player.getScore() > 0).toList();
+            dealer.distributeCards(players);
+            List<Player> playersNotBurst = players.stream().filter(player -> ((BlackjackPlayer) player).getScore() > 0).toList();
             while (currentPlayerPlaying < playersNotBurst.size()) {
                 Player currentPlayer = playersNotBurst.get(currentPlayerPlaying);
                 broadcast(String.format(Messages.SOMEONE_PLAYING, currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
@@ -74,27 +76,25 @@ public class Blackjack implements Spot {
             }
             currentPlayerPlaying = 0;
             handCount++;
-            theWinnerIs();
-            dealer.resetHand();
+            // theWinnerIs();
         }
-
-
     }
     private void playHitSound() {
         hitSound.play();
     }
-    public void hit(ClientHandler clientHandler) throws IOException {
+    public void hit(ClientHandler clientHandler) throws IOException, InterruptedException {
         playHitSound();
         Player currentPlayer = players.get(currentPlayerPlaying);
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         }
-        currentPlayer.receiveCard(dealer.giveCard());
-        if (currentPlayer.getScore() > HIGH_SCORE) {
-            dealer.receiveCardsFromPlayer(currentPlayer.returnCards(Messages.HAND_BURST));
+        BlackjackPlayer blackjackPlayer = (BlackjackPlayer) currentPlayer;
+        blackjackPlayer.receiveCard(dealer.giveCard());
+        if (blackjackPlayer.getScore() > HIGH_SCORE) {
+            dealer.receiveCardsFromPlayer(blackjackPlayer.returnCards(Messages.HAND_BURST));
         } else {
-            clientHandler.sendMessageUser(currentPlayer.showCards());
+            clientHandler.sendMessageUser(blackjackPlayer.showCards());
         }
         currentPlayer.releaseTurn();
     }
@@ -114,7 +114,7 @@ public class Blackjack implements Spot {
             clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         }
-        dealer.receiveCardsFromPlayer(currentPlayer.returnCards(Messages.YOU_GIVE_UP));
+        dealer.receiveCardsFromPlayer(((BlackjackPlayer) currentPlayer).returnCards(Messages.YOU_GIVE_UP));
         currentPlayer.releaseTurn();
     }
 
@@ -137,7 +137,7 @@ public class Blackjack implements Spot {
                 .filter(player -> Objects.equals(player.getClientHandler().getUsername(), clientToSend))
                 .forEach(player -> {
                     try {
-                        player.sendMessageToPlayer(message);
+                        player.sendMessage(message);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -168,24 +168,6 @@ public class Blackjack implements Spot {
 
     private boolean gameOver() {
         return handCount > 3;
-    }
-
-    private void theWinnerIs() throws IOException {
-        broadcast(dealer.showCards(), players.get(0).getClientHandler());
-        players.get(0).sendMessageToPlayer(dealer.showCards());
-        List<Player> players = this.players.stream().filter(player -> player.getScore() > 0).toList();
-        players.forEach(player -> {
-            try {
-                if (dealer.getScore() > player.getScore() && dealer.getScore() <= 21) {
-                    dealer.receiveCardsFromPlayer(player.returnCards(Messages.DEALER_WIN));
-                } else {
-                    playWinSound();
-                    dealer.receiveCardsFromPlayer(player.returnCards(Messages.YOU_WIN));
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 }
 

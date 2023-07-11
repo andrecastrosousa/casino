@@ -2,8 +2,9 @@ package academy.mindswap.p1g2.casino.server.games.poker.table;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.Player;
 import academy.mindswap.p1g2.casino.server.games.poker.Dealer;
-import academy.mindswap.p1g2.casino.server.games.poker.Player;
+import academy.mindswap.p1g2.casino.server.games.poker.PokerPlayer;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
@@ -98,7 +99,7 @@ public class Table {
                 .findFirst()
                 .orElse(null);
         if(playerFound != null) {
-            return playerFound.showCards();
+            return ((PokerPlayer) playerFound).showCards();
         }
         return "";
     }
@@ -107,12 +108,16 @@ public class Table {
         StreetImpl.buildStreet(this).execute();
         playTimes = 0;
         currentPlayerPlaying = 0;
-        players.forEach(Player::resetBet);
+        players.forEach( player -> {
+            ((PokerPlayer) player).resetBet();
+        });
     }
 
     public void resetHand() {
         tableManager.setHandOnGoing(false);
-        players.forEach(Player::resetBet);
+        players.forEach( player -> {
+            ((PokerPlayer) player).resetBet();
+        });
         playersPlaying.clear();
         playersPlaying.addAll(players);
         dealer.pickTableCards(tableManager.clear());
@@ -150,7 +155,7 @@ public class Table {
             players.remove(player);
         }
         playersPlaying.remove(player);
-        receiveCardsFromPlayer(player.returnCards());
+        receiveCardsFromPlayer(((PokerPlayer) player).returnCards());
     }
 
     public void receiveCardsFromPlayer(List<Card> cards) {
@@ -169,11 +174,11 @@ public class Table {
             players.forEach(player -> {
                 try {
                     if (player == winnerPlayer) {
-                        player.sendMessageToPlayer(String.format(Messages.YOU_WON_HAND, tableManager.getPotValue()));
+                        player.sendMessage(String.format(Messages.YOU_WON_HAND, tableManager.getPotValue()));
                         player.addBalance(tableManager.getPotValue());
-                        receiveCardsFromPlayer(player.returnCards());
+                        receiveCardsFromPlayer(((PokerPlayer) player).returnCards());
                     } else {
-                        player.sendMessageToPlayer(String.format(Messages.SOMEONE_WON_HAND, winnerPlayer.getClientHandler().getUsername(), tableManager.getPotValue()));
+                        player.sendMessage(String.format(Messages.SOMEONE_WON_HAND, winnerPlayer.getClientHandler().getUsername(), tableManager.getPotValue()));
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -193,7 +198,7 @@ public class Table {
 
     public int getHigherBet() {
         return getPlayersPlaying().stream()
-                .map(Player::getBet)
+                .map(player -> ((PokerPlayer) player).getBet())
                 .max(Comparator.comparingInt(Integer::intValue))
                 .orElse(0);
     }
