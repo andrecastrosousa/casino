@@ -1,30 +1,30 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
-import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
+import academy.mindswap.p1g2.casino.server.games.poker.table.PokerTable;
 
 import java.io.IOException;
 
 public class RiverStreet extends StreetImpl {
-    public RiverStreet(Table table) {
-        super(table);
+    public RiverStreet(PokerTable pokerTable) {
+        super(pokerTable);
     }
 
     @Override
     public void nextStreet() throws InterruptedException {
-        if(table.getPlayTimes() >= table.getPlayersPlaying().size() && canGoToNextStreet()) {
-            table.setStreetType(StreetType.SHOWDOWN);
-            table.initStreet();
+        if(pokerTable.getPlayTimes() >= pokerTable.getPlayersPlaying().size() && canGoToNextStreet()) {
+            pokerTable.setStreetType(StreetType.SHOWDOWN);
+            pokerTable.initStreet();
         }
     }
 
     @Override
     public void execute() throws InterruptedException {
-        table.burnCard();
-        table.turnUpCard();
+        pokerTable.burnCard();
+        pokerTable.turnUpCard();
 
-        table.getPlayers().forEach(player -> {
+        pokerTable.getPlayers().forEach(player -> {
             try {
-                player.sendMessage(table.showTableCards());
+                player.sendMessage(pokerTable.showTableCards());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

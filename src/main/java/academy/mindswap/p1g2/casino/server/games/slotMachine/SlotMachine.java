@@ -10,52 +10,35 @@ import java.util.*;
 
 public class SlotMachine {
     private static final int spinsCount = 3; // Number of spins
+    private static final int MINIMUM_MATCH_PRIZE = 2;
+    private static final int MAXIMUM_MATCH_PRIZE = 3;
     private static final Random random = new Random();
     int bet;
-    private Evaluator evaluatorChain;
+    private final Evaluator evaluatorChain;
     Player player;
-    private PlaySound spinSound;
+    private final PlaySound spinSound;
 
     public SlotMachine() {
-
-        evaluatorChain = new LoseEvaluator();
-        Evaluator evaluatorJackpot = new JackpotEvaluator();
-        Evaluator evaluatorHalfJackpot = new HalfJackpotEvaluator();
-        evaluatorChain.setNextEvaluator(evaluatorJackpot);
-        evaluatorJackpot.setNextEvaluator(evaluatorHalfJackpot);
-        evaluatorHalfJackpot.setNextEvaluator(new TwoMatchEvaluator());
+        evaluatorChain = SlotEvaluatorFactory.make();
         spinSound = new PlaySound("../casino/sounds/spin_sound.wav");
-
-
     }
 
     public void play() throws IOException, InterruptedException {
         player.sendMessage(Messages.SLOT_MACHINE_WELCOME);
 
         Thread.sleep(5000);
+        if (player.getCurrentBalance() < bet) {
+            player.sendMessage(Messages.SLOT_MACHINE_NO_CREDITS);
+        }
+        player.addBalance( - bet);
+        playSpinSound();
+        Thread.sleep(2000);
+        List<Integer> spins = spin();
 
-
-            /*player.sendMessage(Messages.SLOT_MACHINE_SPIN);
-            player.sendMessage(Messages.SLOT_MACHINE_DOUBLE);
-
-
-            if (input.equalsIgnoreCase("quit")) { //
-                player.sendMessage(String.format(Messages.SLOT_MACHINE_END_BALANCE, balance));
-                player.sendMessage(Messages.SLOT_MACHINE_GOODBYE);
-                break;
-            }*/
-            if (player.getCurrentBalance() < bet) {
-                player.sendMessage(Messages.SLOT_MACHINE_NO_CREDITS);
-            }
-            player.addBalance( - bet);
-            playSpinSound();
-            Thread.sleep(2000);
-            List<Integer> spins = spin();
-
-            displaySpins(spins);
-            int payout = calculatePayout(spins, 2, 3);
-            evaluatorChain.evaluateHand(payout, player);
-            player.addBalance(payout);
+        displaySpins(spins);
+        int payout = calculatePayout(spins);
+        evaluatorChain.evaluateHand(payout, player);
+        player.addBalance(payout);
         if (payout > 0) {
             player.addBalance(payout);
             player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE_WIN, (player.getCurrentBalance() - payout)));
@@ -85,19 +68,17 @@ public class SlotMachine {
      * hasdjasdha
      *
      * @param spins             number of spin made by user.
-     * @param minimumMatchPrize minimum match to win (two numbers)
-     * @param maximumMatchPrize maximum match to win (three numbers)
      * @return
      */
-    private int calculatePayout(List<Integer> spins, int minimumMatchPrize, int maximumMatchPrize) { //{2,3,3,4}   {2:!,3:2,4:1}
+    private int calculatePayout(List<Integer> spins) { //{2,3,3,4}   {2:!,3:2,4:1}
         Map<Integer, Integer> matrix = new HashMap<>();
         for (Integer num : spins) {
             matrix.put(num, matrix.get(num) != null ? matrix.get(num) + 1 : 1);
         }
 
-        if (matrix.containsValue(minimumMatchPrize)) {
+        if (matrix.containsValue(MINIMUM_MATCH_PRIZE)) {
             return 3 * bet;
-        } else if (matrix.containsValue(maximumMatchPrize)) {
+        } else if (matrix.containsValue(MAXIMUM_MATCH_PRIZE)) {
             if (spins.contains(7) && matrix.get(7) == spins.size()) {
                 return 20 * bet;
             } else if (spins.contains(3) && matrix.get(3) == spins.size()) {

@@ -5,7 +5,7 @@ import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.Player;
 import academy.mindswap.p1g2.casino.server.PlayerImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
-import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
+import academy.mindswap.p1g2.casino.server.games.poker.table.PokerTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,20 +15,20 @@ public class PokerPlayer extends PlayerImpl implements Comparable {
     private final List<Card> cards;
     private BetOption betOptionSelected;
     private int bet;
-    private final Table table;
+    private final PokerTable pokerTable;
     private HandScore handScore;
 
-    public PokerPlayer(ClientHandler clientHandler, Table table) {
+    public PokerPlayer(ClientHandler clientHandler, PokerTable pokerTable) {
         super(clientHandler, 100);
         cards = new ArrayList<>();
         betOptionSelected = null;
-        this.table = table;
+        this.pokerTable = pokerTable;
     }
 
     public void allIn() {
         betOptionSelected = BetOption.ALL_IN;
         this.bet += currentBalance;
-        table.addBet(currentBalance);
+        pokerTable.addBet(currentBalance);
         currentBalance = 0;
     }
 
@@ -41,7 +41,7 @@ public class PokerPlayer extends PlayerImpl implements Comparable {
         }
         this.bet += amount;
         currentBalance -= amount;
-        table.addBet(amount);
+        pokerTable.addBet(amount);
     }
 
     public void call(int amount) {
@@ -52,13 +52,13 @@ public class PokerPlayer extends PlayerImpl implements Comparable {
         }
         this.bet += amount;
         currentBalance -= amount;
-        table.addBet(amount);
+        pokerTable.addBet(amount);
     }
 
     public void fold() {
         betOptionSelected = BetOption.FOLD;
         resetBet();
-        table.receiveCardsFromPlayer(returnCards());
+        pokerTable.receiveCardsFromPlayer(returnCards());
     }
 
     public List<Card> returnCards() {
@@ -75,7 +75,7 @@ public class PokerPlayer extends PlayerImpl implements Comparable {
         }
         currentBalance -= amount;
         this.bet += amount;
-        table.addBet(amount);
+        pokerTable.addBet(amount);
     }
 
     public void check() {

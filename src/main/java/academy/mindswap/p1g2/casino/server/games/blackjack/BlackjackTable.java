@@ -1,13 +1,14 @@
 package academy.mindswap.p1g2.casino.server.games.blackjack;
 
 import academy.mindswap.p1g2.casino.server.Player;
+import academy.mindswap.p1g2.casino.server.games.Dealer;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Table {
+public class BlackjackTable {
     private final BlackjackDealer blackjackDealer;
     private int currentPlayerPlaying;
     private int handCount;
@@ -15,7 +16,7 @@ public class Table {
     private List<Player> playersNotBurst;
     private final PlaySound winSound;
 
-    public Table() {
+    public BlackjackTable() {
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
         playersNotBurst = new ArrayList<>();
         blackjackDealer = new BlackjackDealer();
@@ -75,11 +76,12 @@ public class Table {
         playersNotBurst = players.stream().filter(player -> ((BlackjackPlayer) player).getScore() > 0).toList();
     }
 
-    public void playHand() {
+    public synchronized void startTurn() throws InterruptedException {
         Player currentPlayer = getCurrentPlayerPlaying();
         currentPlayer.startTurn();
 
-        while (currentPlayer.isPlaying()) {}
+        wait();
+
         currentPlayerPlaying++;
     }
 
@@ -87,6 +89,10 @@ public class Table {
         currentPlayerPlaying = 0;
         handCount++;
         blackjackDealer.resetHand();
+    }
+
+    public synchronized void releaseTurn() {
+        notifyAll();
     }
 
     public void theWinnerIs() throws IOException {

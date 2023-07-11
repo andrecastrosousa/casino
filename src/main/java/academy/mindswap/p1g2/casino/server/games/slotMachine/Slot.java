@@ -11,17 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Slot extends GameImpl {
-    private int currentPlayerPlaying;
+
     private final PlaySound winSound;
+
+    private final SlotManager slotManager;
 
     public Slot() {
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
         this.players = new ArrayList<>();
+        slotManager = new SlotManager();
         this.playersPlaying = new ArrayList<>();
     }
 
     public Player getPlayerByClient(ClientHandler clientHandler) {
-        return players.stream().filter(player -> player.getClientHandler().equals(clientHandler)).findFirst().orElse(null);
+        return slotManager.getPlayers().stream().filter(player -> player.getClientHandler().equals(clientHandler)).findFirst().orElse(null);
     }
     private void playWinSound() {
         winSound.play();
@@ -30,35 +33,24 @@ public class Slot extends GameImpl {
     @Override
     public void join(List<ClientHandler> clientHandlers) {
         clientHandlers.forEach(clientHandler -> {
-            Player player = new SlotPlayer(clientHandler, new SlotMachine());
-            players.add(player);
-            playersPlaying.add(player);
+            slotManager.sitPlayer(new SlotPlayer(clientHandler, new SlotMachine()));
             clientHandler.changeSpot(this);
         });
     }
 
-    public void play() throws IOException {
+    public void play() throws IOException, InterruptedException {
         while (gameEnded()) {
-            Player currentPlayer = playersPlaying.get(currentPlayerPlaying);
+            Player currentPlayer = slotManager.getCurrentPlayerPlaying();
 
             broadcast(String.format(Messages.SOMEONE_PLAYING, currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
             currentPlayer.sendMessage(Messages.YOUR_TURN);
-            currentPlayer.startTurn();
 
-            while (currentPlayer.isPlaying()) {}
+            slotManager.startTurn();
 
-            if (currentPlayer.getCurrentBalance() == 0) {
-                playersPlaying.remove(currentPlayer);
-                currentPlayerPlaying --;
-                players.remove(currentPlayer);
-                currentPlayer.sendMessage(Messages.SLOT_MACHINE_GAMEOVER);
-            }
             if (playersPlaying.size() == 1) {
                 broadcast(String.format(Messages.WINNER, playersPlaying.get(0).getClientHandler().getUsername()), playersPlaying.get(0).getClientHandler());
                 playersPlaying.get(0).sendMessage(Messages.YOU_WON);
                 playWinSound();
-            } else {
-                currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
             }
         }
     }
@@ -66,7 +58,7 @@ public class Slot extends GameImpl {
     public void doubleBet(ClientHandler clientHandler) throws IOException {
         Player player = getPlayerByClient(clientHandler);
 
-        if(!players.get(currentPlayerPlaying).getClientHandler().equals(clientHandler)) {
+        if(!slotManager.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
             player.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
@@ -77,12 +69,13 @@ public class Slot extends GameImpl {
             throw new RuntimeException(e);
         }
         player.releaseTurn();
+        slotManager.releaseTurn();
     }
 
     public void spin(ClientHandler clientHandler) throws IOException {
         Player player = getPlayerByClient(clientHandler);
 
-        if(!players.get(currentPlayerPlaying).getClientHandler().equals(clientHandler)) {
+        if(!slotManager.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
             player.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
@@ -93,14 +86,14 @@ public class Slot extends GameImpl {
             throw new RuntimeException(e);
         }
         player.releaseTurn();
-
+        slotManager.releaseTurn();
     }
 
     @Override
     public void listUsers(ClientHandler clientHandler) throws IOException {
         StringBuilder message = new StringBuilder();
         message.append("------------- USERS ---------------\n");
-        players.forEach(player -> {
+        slotManager.getPlayers().forEach(player -> {
             if(!player.getClientHandler().equals(clientHandler)) {
                 message.append(player.getClientHandler().getUsername()).append(" -> ").append(player.getCurrentBalance()).append(" balance\n").append("\n");
             }

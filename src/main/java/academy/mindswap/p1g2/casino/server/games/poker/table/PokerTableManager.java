@@ -6,14 +6,14 @@ import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableManager {
+public class PokerTableManager {
     private final List<Card> cards;
     private final List<Card> burnedCards;
     private StreetType streetType;
     private final Pot pot;
     private boolean handOnGoing;
 
-    public TableManager() {
+    public PokerTableManager() {
         cards = new ArrayList<>();
         burnedCards = new ArrayList<>();
         streetType = StreetType.PRE_FLOP;

@@ -1,26 +1,23 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
-import academy.mindswap.p1g2.casino.server.games.blackjack.BlackjackPlayer;
 import academy.mindswap.p1g2.casino.server.games.poker.PokerPlayer;
-import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
-
-import java.util.Comparator;
+import academy.mindswap.p1g2.casino.server.games.poker.table.PokerTable;
 
 public abstract class StreetImpl implements Street, StreetHandler {
 
-    protected Table table;
+    protected PokerTable pokerTable;
 
-    public StreetImpl(Table table) {
-        this.table = table;
+    public StreetImpl(PokerTable pokerTable) {
+        this.pokerTable = pokerTable;
     }
 
-    public static StreetImpl buildStreet(Table table) {
-        return switch (table.getStreetType()) {
-            case PRE_FLOP -> new PreFlopStreet(table);
-            case FLOP -> new FlopStreet(table);
-            case TURN -> new TurnStreet(table);
-            case RIVER -> new RiverStreet(table);
-            case SHOWDOWN -> new ShowdownStreet(table);
+    public static StreetImpl buildStreet(PokerTable pokerTable) {
+        return switch (pokerTable.getStreetType()) {
+            case PRE_FLOP -> new PreFlopStreet(pokerTable);
+            case FLOP -> new FlopStreet(pokerTable);
+            case TURN -> new TurnStreet(pokerTable);
+            case RIVER -> new RiverStreet(pokerTable);
+            case SHOWDOWN -> new ShowdownStreet(pokerTable);
         };
     }
 
@@ -31,12 +28,12 @@ public abstract class StreetImpl implements Street, StreetHandler {
     public abstract void execute() throws InterruptedException;
 
     protected boolean canGoToNextStreet() {
-        int maxBet = table.getHigherBet();
+        int maxBet = pokerTable.getHigherBet();
 
-        long count = table.getPlayersPlaying().stream()
+        long count = pokerTable.getPlayersPlaying().stream()
                 .filter(player -> ((PokerPlayer) player).getBet() == maxBet)
                 .count();
 
-        return count == table.getPlayersPlaying().size();
+        return count == pokerTable.getPlayersPlaying().size();
     }
 }
