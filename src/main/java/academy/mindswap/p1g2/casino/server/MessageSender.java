@@ -23,7 +23,7 @@ public class MessageSender {
         commandInvoker.changeSpot(spot);
     }
 
-    public void dealWithCommands(String message, ClientHandler clientHandler) throws IOException {
+    public void dealWithCommands(String message, ClientHandler clientHandler) throws IOException, InterruptedException {
         if (message.startsWith("/")) {
             parseCommand(clientHandler);
         } else {
@@ -31,12 +31,12 @@ public class MessageSender {
         }
     }
 
-    private void invoke(CommandHandler commandHandler, ClientHandler clientHandler) throws IOException {
+    private void invoke(CommandHandler commandHandler, ClientHandler clientHandler) throws IOException, InterruptedException {
         commandInvoker.setMessageCommand(commandHandler);
         commandInvoker.invoke(clientHandler);
     }
 
-    private void parseCommand(ClientHandler clientHandler) throws IOException {
+    private void parseCommand(ClientHandler clientHandler) throws IOException, InterruptedException {
         String command = clientHandler.getMessage().split(" ")[0];
         CommandHandler commandHandler = null;
 

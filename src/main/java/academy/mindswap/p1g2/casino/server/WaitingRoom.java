@@ -16,8 +16,8 @@ import java.util.*;
 public class WaitingRoom implements Runnable, Spot {
     private final List<ClientHandler> clientHandlerList;
     private int number;
-    private PlaySound waitingSound;
-    private PlaySound gameStartSound;
+    private final PlaySound waitingSound;
+    private final PlaySound gameStartSound;
 
     private final HashMap<MenuOption, Integer> votes;
 
@@ -39,7 +39,6 @@ public class WaitingRoom implements Runnable, Spot {
     }
 
     public void init() throws InterruptedException, IOException {
-        waitingSound.stop();
         clientHandlerList.forEach(clientHandler -> {
             try {
                 clientHandler.sendMessageUser(Messages.ROOM_STARTED);
@@ -55,9 +54,10 @@ public class WaitingRoom implements Runnable, Spot {
         synchronized (this) {
             wait();
         }
+
+        waitingSound.stop();
         game.join(clientHandlerList);
         game.play();
-
     }
     private void playWaitingSound() {
         waitingSound.play();

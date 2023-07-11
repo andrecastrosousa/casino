@@ -9,17 +9,20 @@ import java.util.List;
 
 public abstract class DealerImpl implements Dealer {
     protected final List<Card> cards;
-    private PlaySound shufflingSound;
-    private PlaySound giveCardSound;
+    private final PlaySound shufflingSound;
+    private final PlaySound giveCardSound;
 
     public DealerImpl(List<Card> cards) {
         this.cards = cards;
+        shufflingSound = new PlaySound("../casino/sounds/cards_shuffling_sound.wav");
+        giveCardSound = new PlaySound("../casino/sounds/give_card_sound.wav");
     }
 
-    private void playShufflingSound() {
+    protected void playShufflingSound() {
         shufflingSound.play();
     }
-    private void playGiveCardSound() {
+
+    protected void playGiveCardSound() {
         giveCardSound.play();
     }
 

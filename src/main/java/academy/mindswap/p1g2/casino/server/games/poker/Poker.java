@@ -16,9 +16,9 @@ import java.util.Objects;
 
 public class Poker extends GameImpl {
     private final Table table;
-    private PlaySound checkSound;
-    private PlaySound betSound;
-    private PlaySound winSound;
+    private final PlaySound checkSound;
+    private final PlaySound betSound;
+    private final PlaySound winSound;
 
     public Poker() {
         table = new Table();

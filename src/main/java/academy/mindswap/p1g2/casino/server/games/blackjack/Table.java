@@ -1,6 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.blackjack;
 
 import academy.mindswap.p1g2.casino.server.Player;
+import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,8 +13,10 @@ public class Table {
     private int handCount;
     private final List<Player> players;
     private List<Player> playersNotBurst;
+    private final PlaySound winSound;
 
     public Table() {
+        winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
         playersNotBurst = new ArrayList<>();
         blackjackDealer = new BlackjackDealer();
         handCount = 0;
@@ -96,6 +99,7 @@ public class Table {
                     blackjackDealer.receiveCardsFromPlayer(blackjackPlayer.returnCards("Dealer wins this round!!!"));
                 } else {
                     blackjackDealer.receiveCardsFromPlayer(blackjackPlayer.returnCards("You win!!!"));
+                    winSound.play();
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

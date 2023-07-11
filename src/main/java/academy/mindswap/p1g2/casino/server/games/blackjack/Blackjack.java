@@ -33,13 +33,11 @@ import java.util.Objects;
 public class Blackjack extends GameImpl {
     public static final int HIGH_SCORE = 21;
     private final Table table;
-    private PlaySound hitSound;
-    private PlaySound winSound;
+    private final PlaySound hitSound;
 
     public Blackjack() {
         table = new Table();
-            hitSound = new PlaySound("../casino/sounds/hit_sound.wav");
-            winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
+        hitSound = new PlaySound("../casino/sounds/hit_sound.wav");
     }
 
     @Override
@@ -63,7 +61,7 @@ public class Blackjack extends GameImpl {
             table.theWinnerIs();
             table.clear();
         }
-        winSound.play();
+
     }
     private void playHitSound() {
         hitSound.play();

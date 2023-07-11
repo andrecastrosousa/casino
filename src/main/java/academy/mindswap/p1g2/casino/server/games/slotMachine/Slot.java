@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Slot extends GameImpl {
     private int currentPlayerPlaying;
-    private PlaySound winSound;
+    private final PlaySound winSound;
 
     public Slot() {
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
@@ -45,9 +45,8 @@ public class Slot extends GameImpl {
             currentPlayer.sendMessage(Messages.YOUR_TURN);
             currentPlayer.startTurn();
 
-            while (currentPlayer.isPlaying()) {
+            while (currentPlayer.isPlaying()) {}
 
-            }
             if (currentPlayer.getCurrentBalance() == 0) {
                 playersPlaying.remove(currentPlayer);
                 currentPlayerPlaying --;
