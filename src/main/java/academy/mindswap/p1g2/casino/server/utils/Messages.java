@@ -1,5 +1,6 @@
 package academy.mindswap.p1g2.casino.server.utils;
 
+
 import academy.mindswap.p1g2.casino.server.games.slotMachine.SlotMachine;
 
 public class Messages {
@@ -38,8 +39,8 @@ public class Messages {
     public static final String SLOT_MACHINE_CONGRATULATIONS = "Congratulations! You won %d credits! :D";
     public static final String SLOT_MACHINE_BALANCE = "Your balance is: %d";
     public static final String SLOT_MACHINE_GAMEOVER = "Game over. :(";
-    public static final String SLOT_MACHINE_SEPARATOR = "\n--------*--------";
-    public static final String SLOT_MACHINE_NRS_DISPLAY = "| %d |";;
+    public static final String SLOT_MACHINE_SEPARATOR = "--------*--------";
+    public static final String SLOT_MACHINE_NRS_DISPLAY = "| %d | | %d | | %d |" ;
 
 
 
@@ -84,4 +85,6 @@ public class Messages {
             """;
 
     private Messages() {}
+
+
 }

@@ -11,6 +11,10 @@ public class SlotMachine {
     int bet;
     private Evaluator evaluatorChain;
     Player player;
+    private PlaySound spinSound;
+
+
+
 
     public SlotMachine() {
 
@@ -20,10 +24,13 @@ public class SlotMachine {
         evaluatorChain.setNextEvaluator(evaluatorJackpot);
         evaluatorJackpot.setNextEvaluator(evaluatorHalfJackpot);
         evaluatorHalfJackpot.setNextEvaluator(new TwoMatchEvaluator());
+        spinSound = new PlaySound("../casino/sounds/spin_sound.wav");
+
     }
 
-    public void play() throws IOException {
+    public void play() throws IOException, InterruptedException {
         player.sendMessage(Messages.SLOT_MACHINE_WELCOME);
+
 
             /*player.sendMessage(Messages.SLOT_MACHINE_SPIN);
             player.sendMessage(Messages.SLOT_MACHINE_DOUBLE);
@@ -38,19 +45,22 @@ public class SlotMachine {
                 player.sendMessage(Messages.SLOT_MACHINE_NO_CREDITS);
             }
             player.addBalance( - bet);
+            playSpinSound();
+            Thread.sleep(2000);
             List<Integer> spins = spin();
+
             displaySpins(spins);
             int payout = calculatePayout(spins, 2, 3);
             evaluatorChain.evaluateHand(payout, player);
             player.addBalance(payout);
-            if (payout > 0) {
-                player.addBalance(payout); // Update the balance with the payout
-                player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE_WIN, (player.getBalance() - payout)));
-                player.sendMessage(String.format(Messages.SLOT_MACHINE_CONGRATULATIONS, payout));
-            }
-            player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE, player.getBalance()));
+        if (payout > 0) {
+            player.addBalance(payout);
+            player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE_WIN, (player.getBalance() - payout)));
+            player.sendMessage(String.format(Messages.SLOT_MACHINE_CONGRATULATIONS, payout));
         }
 
+        player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE, player.getBalance()));
+    }
 
 
     private List<Integer> spin() {
@@ -64,9 +74,7 @@ public class SlotMachine {
 
     private void displaySpins(List<Integer> spins) throws IOException {
         player.sendMessage(Messages.SLOT_MACHINE_SEPARATOR);
-        for (int number : spins) {
-            player.sendMessage(String.format(Messages.SLOT_MACHINE_NRS_DISPLAY, number));
-        }
+        player.sendMessage(String.format(Messages.SLOT_MACHINE_NRS_DISPLAY, spins.get(0), spins.get(1), spins.get(2)));
         player.sendMessage(Messages.SLOT_MACHINE_SEPARATOR);
     }
 
@@ -103,6 +111,10 @@ public class SlotMachine {
     public void setBet(int bet){
         this.bet = bet;
     }
+    private void playSpinSound() {
+        spinSound.play();
+    }
+
 }
 
 
