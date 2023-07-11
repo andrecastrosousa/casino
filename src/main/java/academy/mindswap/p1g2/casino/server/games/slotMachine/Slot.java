@@ -45,6 +45,10 @@ public class Slot implements Spot {
                 playersPlaying.remove(currentPlayer);
                 currentPlayer.getClientHandler().sendMessageUser("Game Over... :(");
             }
+            if(playersPlaying.size() == 1){
+                broadcast(String.format("%s win the game!", playersPlaying.get(0).getClientHandler().getUsername()), playersPlaying.get(0).getClientHandler());
+                playersPlaying.get(0).getClientHandler().sendMessageUser("You won the game!");
+            }
                 currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
         }
     }
@@ -57,7 +61,11 @@ public class Slot implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        player.doubleBet();
+        try {
+            player.doubleBet();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         player.releaseTurn();
     }
 
@@ -67,7 +75,11 @@ public class Slot implements Spot {
             return;
         }
         Player player = getPlayerByClient(clientHandler);
-        player.spin();
+        try {
+            player.spin();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         player.releaseTurn();
 
     }

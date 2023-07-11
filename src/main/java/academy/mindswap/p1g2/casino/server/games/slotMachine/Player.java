@@ -42,12 +42,12 @@ public class Player {
 
     }
 
-    public void doubleBet() throws IOException {
+    public void doubleBet() throws IOException, InterruptedException {
         slotmachine.setBet(2);
         slotmachine.play();
     }
 
-    public void spin() throws IOException {
+    public void spin() throws IOException, InterruptedException {
         slotmachine.setBet(1);
         slotmachine.play();
     }
