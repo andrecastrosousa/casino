@@ -10,7 +10,7 @@ public class RiverStreet extends StreetImpl {
     }
 
     @Override
-    public void nextStreet() {
+    public void nextStreet() throws InterruptedException {
         if(table.getPlayTimes() >= table.getPlayersPlaying().size() && canGoToNextStreet()) {
             table.setStreetType(StreetType.SHOWDOWN);
             table.initStreet();
@@ -18,7 +18,7 @@ public class RiverStreet extends StreetImpl {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws InterruptedException {
         table.burnCard();
         table.turnUpCard();
 

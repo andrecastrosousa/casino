@@ -6,6 +6,7 @@ import academy.mindswap.p1g2.casino.server.games.poker.Dealer;
 import academy.mindswap.p1g2.casino.server.games.poker.Player;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
+import academy.mindswap.p1g2.casino.server.utils.Messages;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,11 +58,11 @@ public class Table {
         return tableManager.getStreetType();
     }
 
-    public void burnCard() {
+    public void burnCard() throws InterruptedException {
         tableManager.burnCard(dealer.giveCard());
     }
 
-    public void turnUpCard() {
+    public void turnUpCard() throws InterruptedException {
         tableManager.turnUpCard(dealer.giveCard());
     }
 
@@ -102,7 +103,7 @@ public class Table {
         return "";
     }
 
-    public void initStreet() {
+    public void initStreet() throws InterruptedException {
         StreetImpl.buildStreet(this).execute();
         playTimes = 0;
         currentPlayerPlaying = 0;
@@ -118,14 +119,14 @@ public class Table {
         tableManager.resetPot();
     }
 
-    public void startHand() {
+    public void startHand() throws InterruptedException {
         dealer.shuffle();
         dealer.distributeCards(players);
 
         tableManager.setHandOnGoing(true);
     }
 
-    public void playStreet() {
+    public void playStreet() throws InterruptedException {
         Player currentPlayer = getCurrentPlayerPlaying();
 
         if(currentPlayer.getCurrentBalance() > 0) {
@@ -168,11 +169,11 @@ public class Table {
             players.forEach(player -> {
                 try {
                     if (player == winnerPlayer) {
-                        player.sendMessageToPlayer(String.format("You won the hand and won %d poker chips", tableManager.getPotValue()));
+                        player.sendMessageToPlayer(String.format(Messages.YOU_WON_HAND, tableManager.getPotValue()));
                         player.addBalance(tableManager.getPotValue());
                         receiveCardsFromPlayer(player.returnCards());
                     } else {
-                        player.sendMessageToPlayer(String.format("%s won the hand and won %d poker chips", winnerPlayer.getClientHandler().getUsername(), tableManager.getPotValue()));
+                        player.sendMessageToPlayer(String.format(Messages.SOMEONE_WON_HAND, winnerPlayer.getClientHandler().getUsername(), tableManager.getPotValue()));
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);

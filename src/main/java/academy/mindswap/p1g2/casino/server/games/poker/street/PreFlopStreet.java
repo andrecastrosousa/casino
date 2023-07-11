@@ -8,7 +8,7 @@ public class PreFlopStreet extends StreetImpl {
     }
 
     @Override
-    public void nextStreet() {
+    public void nextStreet() throws InterruptedException {
         if(table.getPlayTimes() >= table.getPlayers().size() && canGoToNextStreet()) {
             table.setStreetType(StreetType.FLOP);
             table.initStreet();
@@ -16,7 +16,7 @@ public class PreFlopStreet extends StreetImpl {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws InterruptedException {
         table.startHand();
     }
 }

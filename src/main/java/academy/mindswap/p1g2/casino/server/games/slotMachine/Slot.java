@@ -3,6 +3,8 @@ import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.Spot;
 import academy.mindswap.p1g2.casino.server.command.Commands;
 import academy.mindswap.p1g2.casino.server.games.slotMachine.command.SpinOption;
+import academy.mindswap.p1g2.casino.server.utils.Messages;
+import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,11 +15,13 @@ public class Slot implements Spot {
     private final List<Player> players;
     private final List<Player> playersPlaying;
     private int currentPlayerPlaying;
+    private PlaySound winSound;
+
 
     public Slot(List<ClientHandler> clientHandlers) {
         players = new ArrayList<>();
         playersPlaying = new ArrayList<>();
-
+        winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
         clientHandlers.forEach(clientHandler -> {
             Player player = new Player(clientHandler, new SlotMachine());
             players.add(player);
@@ -28,14 +32,17 @@ public class Slot implements Spot {
     private Player getPlayerByClient(ClientHandler clientHandler) {
         return players.stream().filter(player -> player.getClientHandler().equals(clientHandler)).findFirst().orElse(null);
     }
+    private void playWinSound() {
+        winSound.play();
+    }
     public void play() throws IOException {
 
 
         while (!gameEnded()) {
             Player currentPlayer = playersPlaying.get(currentPlayerPlaying);
 
-            broadcast(String.format("%s is playing. Wait for your turn.", currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
-            currentPlayer.getClientHandler().sendMessageUser("It is your time to play.");
+            broadcast(String.format(Messages.SOMEONE_PLAYING, currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
+            currentPlayer.getClientHandler().sendMessageUser(Messages.YOUR_TURN);
             currentPlayer.startTurn();
 
             while (currentPlayer.isPlaying()) {
@@ -45,11 +52,12 @@ public class Slot implements Spot {
                 playersPlaying.remove(currentPlayer);
                 currentPlayerPlaying --;
                 players.remove(currentPlayer);
-                currentPlayer.getClientHandler().sendMessageUser("Game Over... :(");
+                currentPlayer.getClientHandler().sendMessageUser(Messages.SLOT_MACHINE_GAMEOVER);
             }
             if (playersPlaying.size() == 1) {
-                broadcast(String.format("%s win the game!", playersPlaying.get(0).getClientHandler().getUsername()), playersPlaying.get(0).getClientHandler());
-                playersPlaying.get(0).getClientHandler().sendMessageUser("You won the game!");
+                broadcast(String.format(Messages.WINNER, playersPlaying.get(0).getClientHandler().getUsername()), playersPlaying.get(0).getClientHandler());
+                playersPlaying.get(0).getClientHandler().sendMessageUser(Messages.YOU_WON);
+                playWinSound();
             } else {
                 currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
             }
@@ -60,7 +68,7 @@ public class Slot implements Spot {
     }
     public void doubleBet(ClientHandler clientHandler) throws IOException {
         if(!players.get(currentPlayerPlaying).getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser("Isn't your time to play.");
+            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         }
         Player player = getPlayerByClient(clientHandler);
@@ -74,7 +82,7 @@ public class Slot implements Spot {
 
     public void spin(ClientHandler clientHandler) throws IOException {
         if(!players.get(currentPlayerPlaying).getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser("Isn't your time to play.");
+            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         }
         Player player = getPlayerByClient(clientHandler);

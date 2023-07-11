@@ -3,6 +3,7 @@ package academy.mindswap.p1g2.casino.server.games.blackjack.commands;
 import academy.mindswap.p1g2.casino.server.command.CommandHandler;
 import academy.mindswap.p1g2.casino.server.command.UnknownCommand;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
+import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.util.Arrays;
 
