@@ -29,8 +29,8 @@ public class BlackjackDealer extends DealerImpl {
         }
         players.forEach(player -> {
             try {
-                player.getClientHandler().sendMessageUser(((BlackjackPlayer) player).showCards());
-                player.getClientHandler().sendMessageUser(showFirstCard());
+                player.sendMessage(((BlackjackPlayer) player).showCards());
+                player.sendMessage(showFirstCard());
                 if(((BlackjackPlayer) player).getScore() > Blackjack.HIGH_SCORE){
                     receiveCardsFromPlayer(((BlackjackPlayer) player).returnCards("Your first hand burst!!!"));
                 }

@@ -31,7 +31,7 @@ public abstract class GameImpl implements Game {
                 .stream().filter(player -> !clientHandlerBroadcaster.equals(player.getClientHandler()))
                 .forEach(player -> {
                     try {
-                        player.getClientHandler().sendMessageUser(message);
+                        player.sendMessage(message);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -44,7 +44,7 @@ public abstract class GameImpl implements Game {
                 .filter(player -> Objects.equals(player.getClientHandler().getUsername(), clientToSend))
                 .forEach(player -> {
                     try {
-                        player.getClientHandler().sendMessageUser(message);
+                        player.sendMessage(message);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -53,8 +53,9 @@ public abstract class GameImpl implements Game {
 
     @Override
     public void listCommands(ClientHandler clientHandler) throws IOException {
-        clientHandler.sendMessageUser(Commands.listCommands());
-        clientHandler.sendMessageUser(SpinOption.listCommands());
+        Player player = getPlayerByClient(clientHandler);
+        player.sendMessage(Commands.listCommands());
+        player.sendMessage(SpinOption.listCommands());
     }
 
     @Override

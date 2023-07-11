@@ -1,6 +1,7 @@
-package academy.mindswap.p1g2.casino.server.games;
+package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
+import academy.mindswap.p1g2.casino.server.games.Player;
 
 import java.io.IOException;
 

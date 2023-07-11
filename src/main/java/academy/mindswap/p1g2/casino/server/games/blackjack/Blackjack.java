@@ -52,7 +52,7 @@ public class Blackjack extends GameImpl {
             while (currentPlayerPlaying < playersNotBurst.size()) {
                 Player currentPlayer = playersNotBurst.get(currentPlayerPlaying);
                 broadcast(String.format(Messages.SOMEONE_PLAYING, currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
-                currentPlayer.getClientHandler().sendMessageUser(Messages.YOUR_TURN);
+                currentPlayer.sendMessage(Messages.YOUR_TURN);
                 currentPlayer.startTurn();
 
                 while (currentPlayer.isPlaying()) {}
@@ -64,6 +64,7 @@ public class Blackjack extends GameImpl {
             theWinnerIs();
             blackjackDealer.resetHand();
         }
+        winSound.play();
     }
     private void playHitSound() {
         hitSound.play();
@@ -75,7 +76,7 @@ public class Blackjack extends GameImpl {
             Player currentPlayer = players.get(currentPlayerPlaying);
 
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
+            currentPlayer.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
         BlackjackPlayer blackjackPlayer = (BlackjackPlayer) currentPlayer;
@@ -83,7 +84,7 @@ public class Blackjack extends GameImpl {
         if (blackjackPlayer.getScore() > HIGH_SCORE) {
             blackjackDealer.receiveCardsFromPlayer(blackjackPlayer.returnCards("Your hand burst!!!"));
         } else {
-            clientHandler.sendMessageUser(blackjackPlayer.showCards());
+            currentPlayer.sendMessage(blackjackPlayer.showCards());
         }
         currentPlayer.releaseTurn();
     }
@@ -91,7 +92,7 @@ public class Blackjack extends GameImpl {
     public void stand(ClientHandler clientHandler) throws IOException {
         Player currentPlayer = playersNotBurst.get(currentPlayerPlaying);
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
+            currentPlayer.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
         currentPlayer.releaseTurn();
@@ -100,7 +101,7 @@ public class Blackjack extends GameImpl {
     public void surrender(ClientHandler clientHandler) throws IOException {
         Player currentPlayer = playersNotBurst.get(currentPlayerPlaying);
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
+            currentPlayer.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
         blackjackDealer.receiveCardsFromPlayer(((BlackjackPlayer) currentPlayer).returnCards("You give up!!!"));

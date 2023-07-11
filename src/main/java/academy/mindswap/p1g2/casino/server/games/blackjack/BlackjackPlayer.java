@@ -2,7 +2,7 @@ package academy.mindswap.p1g2.casino.server.games.blackjack;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.deck.Card;
-import academy.mindswap.p1g2.casino.server.games.PlayerImpl;
+import academy.mindswap.p1g2.casino.server.PlayerImpl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,10 +31,6 @@ public class BlackjackPlayer extends PlayerImpl {
         return hand;
     }
 
-    public void sendMessageToPlayer(String message) throws IOException {
-        clientHandler.sendMessageUser(message);
-    }
-
     public String showCards() {
         StringBuilder message = new StringBuilder();
         hand.forEach(card -> message.append(card.toString()));
@@ -45,8 +41,8 @@ public class BlackjackPlayer extends PlayerImpl {
         List<Card> cards = new ArrayList<>(hand);
         hand.clear();
         score = 0;
-        clientHandler.sendMessageUser(message);
+        sendMessage(message);
         return cards;
     }
-    }
+}
 

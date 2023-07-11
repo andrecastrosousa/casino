@@ -1,7 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.slotMachine;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.games.PlayerImpl;
+import academy.mindswap.p1g2.casino.server.PlayerImpl;
 
 import java.io.IOException;
 

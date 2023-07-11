@@ -61,7 +61,7 @@ public class Poker extends GameImpl {
             }
             StreetImpl.buildStreet(table).nextStreet();
         }
-        table.getPlayers().get(0).getClientHandler().sendMessageUser(Messages.YOU_WON);
+        table.getPlayers().get(0).sendMessage(Messages.YOU_WON);
         playWinSound();
     }
     private void playWinSound() {
@@ -73,14 +73,14 @@ public class Poker extends GameImpl {
     }
 
     public void allIn(ClientHandler clientHandler) throws IOException {
-        if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN );
-            return;
-        }
         Player player = getPlayerByClient(clientHandler);
 
-        PokerPlayer pokerPlayer = (PokerPlayer) player;
+        if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
+            player.sendMessage(Messages.NOT_YOUR_TURN );
+            return;
+        }
 
+        PokerPlayer pokerPlayer = (PokerPlayer) player;
         pokerPlayer.allIn();
         broadcast(String.format(Messages.SOMEONE_ALL_IN, clientHandler.getUsername()),clientHandler);
         whisper(Messages.YOU_ALL_IN, clientHandler.getUsername());
@@ -93,13 +93,13 @@ public class Poker extends GameImpl {
         PokerPlayer pokerPlayer = (PokerPlayer) player;
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
+            player.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         } else if(maxBet == 0) {
-            clientHandler.sendMessageUser(Messages.NO_BET_CANT_CALL);
+            player.sendMessage(Messages.NO_BET_CANT_CALL);
             return;
         } else if(pokerPlayer.getBet() == maxBet) {
-            clientHandler.sendMessageUser(Messages.HIGHER_BET_CANT_CALL);
+            player.sendMessage(Messages.HIGHER_BET_CANT_CALL);
             return;
         }
 
@@ -123,10 +123,10 @@ public class Poker extends GameImpl {
         PokerPlayer pokerPlayer = (PokerPlayer) player;
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
+            player.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         } else if(pokerPlayer.getBet() < maxBet ) {
-            clientHandler.sendMessageUser(Messages.HIGHER_BET_CANT_CHECK);
+            player.sendMessage(Messages.HIGHER_BET_CANT_CHECK);
             return;
         }
 
@@ -141,7 +141,7 @@ public class Poker extends GameImpl {
         PokerPlayer pokerPlayer = (PokerPlayer) player;
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
+            player.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
 
@@ -158,10 +158,10 @@ public class Poker extends GameImpl {
         PokerPlayer pokerPlayer = (PokerPlayer) player;
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
+            player.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         } else if(maxBet == 0) {
-            clientHandler.sendMessageUser(Messages.NO_ONE_BET_CANT_RISE);
+            player.sendMessage(Messages.NO_ONE_BET_CANT_RISE);
             return;
         }
 
@@ -184,10 +184,10 @@ public class Poker extends GameImpl {
         PokerPlayer pokerPlayer = (PokerPlayer) player;
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
+            player.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         } else if(maxBet > 0) {
-            clientHandler.sendMessageUser(Messages.CANT_BET_SOMEONE_BET);
+            player.sendMessage(Messages.CANT_BET_SOMEONE_BET);
             return;
         }
         pokerPlayer.bet(20);
@@ -220,7 +220,7 @@ public class Poker extends GameImpl {
                 .filter(player -> !clientHandlerBroadcaster.equals(player.getClientHandler()))
                 .forEach(player -> {
                     try {
-                        player.getClientHandler().sendMessageUser(message);
+                        player.sendMessage(message);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -242,8 +242,9 @@ public class Poker extends GameImpl {
 
     @Override
     public void listCommands(ClientHandler clientHandler) throws IOException {
-        clientHandler.sendMessageUser(Commands.listCommands());
-        clientHandler.sendMessageUser(BetOption.listCommands());
+        Player player = getPlayerByClient(clientHandler);
+        player.sendMessage(Commands.listCommands());
+        player.sendMessage(BetOption.listCommands());
     }
 
     @Override

@@ -48,7 +48,7 @@ public class ClientHandler implements Runnable {
         return messageSender;
     }
 
-    public void sendMessageUser(String message) throws IOException {
+    protected void sendMessageUser(String message) throws IOException {
         out.write(message);
         out.newLine();
         out.flush();

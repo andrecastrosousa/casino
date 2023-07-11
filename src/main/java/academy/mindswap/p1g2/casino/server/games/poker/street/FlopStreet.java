@@ -26,7 +26,7 @@ public class FlopStreet extends StreetImpl {
 
         table.getPlayers().forEach(player -> {
             try {
-                player.getClientHandler().sendMessageUser(table.showTableCards());
+                player.sendMessage(table.showTableCards());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

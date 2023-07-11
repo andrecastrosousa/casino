@@ -40,7 +40,7 @@ public class PokerDealer extends DealerImpl {
 
         players.forEach(player -> {
             try {
-                player.getClientHandler().sendMessageUser(((PokerPlayer) player).showCards());
+                player.sendMessage(((PokerPlayer) player).showCards());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
