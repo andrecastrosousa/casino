@@ -1,7 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.blackjack;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.games.PlayerImpl;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class BlackjackPlayer extends PlayerImpl {
 
     public BlackjackPlayer(ClientHandler clientHandler) {
         super(clientHandler);
-        hand = new ArrayList<Card>(2);
+        hand = new ArrayList<>(2);
         score = 0;
     }
 

@@ -1,9 +1,10 @@
 package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.Commands;
-import academy.mindswap.p1g2.casino.server.games.slotMachine.Slot;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
+import academy.mindswap.p1g2.casino.server.games.Game;
+import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,13 +14,11 @@ import java.util.Objects;
 public class WaitingRoom implements Runnable, Spot {
     private final List<ClientHandler> clientHandlerList;
     private int number;
-    private volatile boolean gameStarted;
     private PlaySound waitingSound;
     private PlaySound gameStartSound;
 
     public WaitingRoom(int number) {
         this.clientHandlerList = new ArrayList<>();
-        gameStarted = false;
         this.number = number;
         gameStartSound = new PlaySound("../casino/sounds/game_start.wav");
 
@@ -41,8 +40,8 @@ public class WaitingRoom implements Runnable, Spot {
                 throw new RuntimeException(e);
             }
         });
-        playGameStartSound();
-        Slot slot = new Slot(clientHandlerList);
+
+        Game slot = new Poker(clientHandlerList);
         slot.play();
 
     }
@@ -73,7 +72,6 @@ public class WaitingRoom implements Runnable, Spot {
         clientHandler.changeSpot(this);
         clientHandler.sendMessageUser(Messages.ROOM_WAITING);
         if(isFull()) {
-            gameStarted = true;
             notifyAll();
         }
     }

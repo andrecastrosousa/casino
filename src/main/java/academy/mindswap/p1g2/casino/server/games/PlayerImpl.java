@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public abstract class PlayerImpl implements Player {
     protected final ClientHandler clientHandler;
-    protected boolean isPlaying;
+    protected volatile boolean isPlaying;
     protected int currentBalance;
 
     protected PlayerImpl(ClientHandler clientHandler, int currentBalance) {

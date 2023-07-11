@@ -12,20 +12,9 @@ import java.io.IOException;
 import java.util.Objects;
 
 public abstract class GameImpl implements Game {
-    protected final List<Player> players;
-    protected final List<Player> playersPlaying;
+    protected List<Player> players;
+    protected List<Player> playersPlaying;
 
-    protected GameImpl(List<ClientHandler> clientHandlers) {
-        this.players = new ArrayList<>();
-        this.playersPlaying = new ArrayList<>();
-
-        clientHandlers.forEach(clientHandler -> {
-            Player player = new SlotPlayer(clientHandler, new SlotMachine());
-            players.add(player);
-            playersPlaying.add(player);
-            clientHandler.changeSpot(this);
-        });
-    }
 
     @Override
     public boolean gameEnded() {
@@ -48,7 +37,6 @@ public abstract class GameImpl implements Game {
                     }
                 });
     }
-
 
     @Override
     public void whisper(String message, String clientToSend) {

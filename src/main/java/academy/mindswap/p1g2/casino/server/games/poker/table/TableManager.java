@@ -1,6 +1,6 @@
 package academy.mindswap.p1g2.casino.server.games.poker.table;
 
-import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
 
 import java.util.ArrayList;

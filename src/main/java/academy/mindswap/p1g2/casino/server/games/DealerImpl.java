@@ -1,9 +1,8 @@
 package academy.mindswap.p1g2.casino.server.games;
 
-import academy.mindswap.p1g2.casino.server.games.poker.PokerPlayer;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.poker;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.games.Player;
 import academy.mindswap.p1g2.casino.server.games.PlayerImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;

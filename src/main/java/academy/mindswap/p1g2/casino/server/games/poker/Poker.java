@@ -1,8 +1,8 @@
 package academy.mindswap.p1g2.casino.server.games.poker;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.Spot;
 import academy.mindswap.p1g2.casino.server.command.Commands;
+import academy.mindswap.p1g2.casino.server.games.GameImpl;
 import academy.mindswap.p1g2.casino.server.games.Player;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-public class Poker implements Spot {
+public class Poker extends GameImpl {
     private final Table table;
     private PlaySound checkSound;
     private PlaySound betSound;
@@ -38,15 +38,18 @@ public class Poker implements Spot {
     private void playBetSound() {
         betSound.play();
     }
-    private Player getPlayerByClient(ClientHandler clientHandler) {
+
+    @Override
+    protected Player getPlayerByClient(ClientHandler clientHandler) {
         return table.getPlayers().stream()
                 .filter(player -> player.getClientHandler().equals(clientHandler))
                 .findFirst()
                 .orElse(null);
     }
 
-    public void play() throws IOException, InterruptedException {
-        while (!gameEnded()) {
+    @Override
+    public void play() throws IOException, InterruptedException  {
+        while (gameEnded()) {
             table.initStreet();
             while (table.isHandOnGoing()) {
                 Player currentPlayer = table.getCurrentPlayerPlaying();
@@ -64,8 +67,9 @@ public class Poker implements Spot {
     private void playWinSound() {
         winSound.play();
     }
-    private boolean gameEnded() {
-        return table.getQuantityOfPlayers() <= 1;
+    @Override
+    public boolean gameEnded() {
+        return table.getQuantityOfPlayers() > 1;
     }
 
     public void allIn(ClientHandler clientHandler) throws IOException {
@@ -99,13 +103,14 @@ public class Poker implements Spot {
             return;
         }
 
-        pokerPlayer.call(maxBet - pokerPlayer.getBet());
+        int chipsBet = maxBet - pokerPlayer.getBet();
+        pokerPlayer.call(chipsBet);
         if (player.getCurrentBalance() == 0) {
             broadcast(String.format(Messages.SOMEONE_ALL_IN_W_CHIPS, clientHandler.getUsername(), pokerPlayer.getBet()),clientHandler);
             whisper(String.format(Messages.YOU_ALL_IN_W_CHIPS_BALANCE, pokerPlayer.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         } else {
-            broadcast(String.format(Messages.SOMEONE_CALL_W_CHIPS, clientHandler.getUsername(), maxBet - pokerPlayer.getBet()),clientHandler);
-            whisper(String.format(Messages.YOU_CALL_W_CHIPS_BALANCE, maxBet - pokerPlayer.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.SOMEONE_CALL_W_CHIPS, clientHandler.getUsername(), chipsBet),clientHandler);
+            whisper(String.format(Messages.YOU_CALL_W_CHIPS_BALANCE, chipsBet, player.getCurrentBalance()), clientHandler.getUsername());
         }
 
         player.releaseTurn();

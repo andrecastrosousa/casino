@@ -53,7 +53,7 @@ public class ShowdownStreet extends StreetImpl {
                         } else {
                             player.sendMessage(String.format(Messages.SOMEONE_WON_HAND_W,
                                     winnerPlayer.getClientHandler().getUsername(),
-                                    pokerPlayer.getHandScore().getEvaluator().getName(),
+                                    ((PokerPlayer) winnerPlayer).getHandScore().getEvaluator().getName(),
                                     table.getPotValue()
                             ));
                         }

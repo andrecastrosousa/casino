@@ -1,6 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games;
 
-import java.util.Collections;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
+
 import java.util.List;
 
 public interface Dealer {

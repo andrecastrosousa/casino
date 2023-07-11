@@ -4,6 +4,7 @@ import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.Player;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
+
 import academy.mindswap.p1g2.casino.server.games.*;
 
 import java.io.IOException;
@@ -33,8 +34,9 @@ public class Blackjack extends GameImpl {
     private PlaySound hitSound;
     private PlaySound winSound;
 
+    private List<Player> playersNotBurst;
+
     public Blackjack(List<ClientHandler> clientHandlerList) {
-        super(clientHandlerList);
         hitSound = new PlaySound("../casino/sounds/hit_sound.wav");
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
         blackjackDealer = new BlackjackDealer();
@@ -43,18 +45,17 @@ public class Blackjack extends GameImpl {
     }
 
     public void play() throws IOException {
-        while (!gameEnded()) {
+        while (gameEnded()) {
             blackjackDealer.shuffle();
             blackjackDealer.distributeCards(players);
-            List<Player> playersNotBurst = players.stream().filter(player -> ((BlackjackPlayer) player).getScore() > 0).toList();
+            playersNotBurst = players.stream().filter(player -> ((BlackjackPlayer) player).getScore() > 0).toList();
             while (currentPlayerPlaying < playersNotBurst.size()) {
                 Player currentPlayer = playersNotBurst.get(currentPlayerPlaying);
                 broadcast(String.format(Messages.SOMEONE_PLAYING, currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
                 currentPlayer.getClientHandler().sendMessageUser(Messages.YOUR_TURN);
                 currentPlayer.startTurn();
 
-                while (currentPlayer.isPlaying()) {
-                }
+                while (currentPlayer.isPlaying()) {}
                 currentPlayerPlaying++;
             }
             currentPlayerPlaying = 0;
@@ -67,9 +68,12 @@ public class Blackjack extends GameImpl {
     private void playHitSound() {
         hitSound.play();
     }
-    public void hit(ClientHandler clientHandler) throws IOException, InterruptedException {
-        playHitSound();
-        Player currentPlayer = players.get(currentPlayerPlaying);
+
+
+    public void hit(ClientHandler clientHandler) throws IOException {
+            playHitSound();
+            Player currentPlayer = players.get(currentPlayerPlaying);
+
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
@@ -85,7 +89,7 @@ public class Blackjack extends GameImpl {
     }
 
     public void stand(ClientHandler clientHandler) throws IOException {
-        Player currentPlayer = players.get(currentPlayerPlaying);
+        Player currentPlayer = playersNotBurst.get(currentPlayerPlaying);
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
@@ -94,7 +98,7 @@ public class Blackjack extends GameImpl {
     }
 
     public void surrender(ClientHandler clientHandler) throws IOException {
-        Player currentPlayer = players.get(currentPlayerPlaying);
+        Player currentPlayer = playersNotBurst.get(currentPlayerPlaying);
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
             clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
@@ -123,7 +127,7 @@ public class Blackjack extends GameImpl {
 
     @Override
     public boolean gameEnded() {
-        return handCount > 3;
+        return handCount <= 3;
     }
 }
 

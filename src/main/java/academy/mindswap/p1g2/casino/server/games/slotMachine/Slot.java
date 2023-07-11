@@ -15,15 +15,10 @@ public class Slot extends GameImpl {
     private PlaySound winSound;
 
 
-    public Slot(List<ClientHandler> clientHandlers) {
-        super(clientHandlers);
+    public Slot() {
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
-        clientHandlers.forEach(clientHandler -> {
-            Player player = new SlotPlayer(clientHandler, new SlotMachine());
-            players.add(player);
-            playersPlaying.add(player);
-            clientHandler.changeSpot(this);
-        });
+        this.players = new ArrayList<>();
+        this.playersPlaying = new ArrayList<>();
 
     }
     public Player getPlayerByClient(ClientHandler clientHandler) {
@@ -34,7 +29,7 @@ public class Slot extends GameImpl {
     }
 
     public void play() throws IOException {
-        while (!gameEnded()) {
+        while (gameEnded()) {
             Player currentPlayer = playersPlaying.get(currentPlayerPlaying);
 
             broadcast(String.format(Messages.SOMEONE_PLAYING, currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
@@ -88,10 +83,4 @@ public class Slot extends GameImpl {
         player.releaseTurn();
 
     }
-
-    @Override
-    public void removeClient(ClientHandler clientHandler) {
-
-    }
-
 }

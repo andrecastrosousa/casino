@@ -1,6 +1,6 @@
 package academy.mindswap.p1g2.casino.server.games.poker;
 
-import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.games.poker.rule.EvaluatorType;
 
 import java.util.List;
