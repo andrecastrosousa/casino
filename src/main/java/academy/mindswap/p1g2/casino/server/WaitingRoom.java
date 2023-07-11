@@ -1,23 +1,21 @@
 package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.Commands;
-import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 import academy.mindswap.p1g2.casino.server.games.slotMachine.Slot;
-import academy.mindswap.p1g2.casino.server.games.slotMachine.SlotMachine;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Room implements Runnable, Spot {
+public class WaitingRoom implements Runnable, Spot {
     private final List<ClientHandler> clientHandlerList;
 
     private int number;
 
     private volatile boolean gameStarted;
 
-    public Room(int number) {
+    public WaitingRoom(int number) {
         this.clientHandlerList = new ArrayList<>();
         gameStarted = false;
         this.number = number;
