@@ -6,6 +6,7 @@ import academy.mindswap.p1g2.casino.server.games.poker.rule.EvaluatorFactory;
 import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
 
 import java.io.IOException;
+import java.util.List;
 
 public class ShowdownStreet extends StreetImpl {
     public ShowdownStreet(Table table) {
@@ -15,6 +16,17 @@ public class ShowdownStreet extends StreetImpl {
     @Override
     public void nextStreet() {
         table.setStreetType(StreetType.PRE_FLOP);
+        List<Player> playersToRemove = table.getPlayers().stream()
+                .filter(player -> player.getCurrentBalance() == 0)
+                .toList();
+        playersToRemove.forEach(player -> {
+            try {
+                player.sendMessageToPlayer("You have lost all your poker chips. Thanks for playing.");
+                table.removePlayer(player, true);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override

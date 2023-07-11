@@ -42,6 +42,7 @@ public class Poker implements Spot {
             }
             StreetImpl.buildStreet(table).nextStreet();
         }
+        table.getPlayers().get(0).getClientHandler().sendMessageUser("You won the poker game.");
     }
 
     private boolean gameEnded() {

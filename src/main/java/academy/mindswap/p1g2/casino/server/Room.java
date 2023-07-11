@@ -2,6 +2,7 @@ package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.Commands;
 import academy.mindswap.p1g2.casino.server.games.blackjack.Blackjack;
+import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,8 +30,10 @@ public class Room implements Runnable, Spot {
                 throw new RuntimeException(e);
             }
         });
-        Blackjack blackjack = new Blackjack(clientHandlerList);
-        blackjack.play();
+        Poker poker = new Poker(clientHandlerList);
+        poker.play();
+        /*Blackjack blackjack = new Blackjack(clientHandlerList);
+        blackjack.play();*/
     }
 
     @Override

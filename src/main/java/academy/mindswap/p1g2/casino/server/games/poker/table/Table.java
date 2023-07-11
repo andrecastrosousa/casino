@@ -112,6 +112,7 @@ public class Table {
         players.forEach(Player::resetBet);
         playersPlaying.clear();
         playersPlaying.addAll(players);
+        dealer.pickTableCards(tableManager.clear());
         tableManager.resetPot();
     }
 

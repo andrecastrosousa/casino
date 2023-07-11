@@ -42,4 +42,8 @@ public class Dealer {
             this.cards.add(0, card);
         }
     }
+
+    public void pickTableCards(List<Card> cards) {
+        this.cards.addAll(cards);
+    }
 }
