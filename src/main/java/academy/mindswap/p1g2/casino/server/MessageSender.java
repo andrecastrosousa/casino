@@ -24,7 +24,7 @@ public class MessageSender {
     }
 
     public void dealWithCommands(String message, ClientHandler clientHandler) throws IOException {
-        if(message.startsWith("/")) {
+        if (message.startsWith("/")) {
             parseCommand(clientHandler);
         } else {
             invoke(new BroadcastCommand(), clientHandler);
@@ -38,32 +38,23 @@ public class MessageSender {
 
     private void parseCommand(ClientHandler clientHandler) throws IOException {
         String command = clientHandler.getMessage().split(" ")[0];
-        if(commandInvoker.getSpot() instanceof Poker) {
-            CommandHandler commandHandler = BetOption.getCommandHandlerByString(command);
-            if(!(commandHandler instanceof UnknownCommand)) {
-                invoke(commandHandler, clientHandler);
-                return;
-            }
-        }else
-            if(commandInvoker.getSpot() instanceof Slot) {
-            CommandHandler commandHandler = SpinOption.getCommandHandlerByString(command);
-            if(!(commandHandler instanceof UnknownCommand)) {
-                invoke(commandHandler, clientHandler);
-                return;
-            }
-        } else if(commandInvoker.getSpot() instanceof Blackjack) {
-            CommandHandler commandHandler = BlackjackMove.getCommandHandlerByString(command);
-            if(!(commandHandler instanceof UnknownCommand)) {
-                invoke(commandHandler, clientHandler);
-                return;
-            }
-        } else if(commandInvoker.getSpot() instanceof WaitingRoom) {
-            CommandHandler commandHandler = MenuOption.getCommandHandlerByString(command);
-            if(!(commandHandler instanceof UnknownCommand)) {
-                invoke(commandHandler, clientHandler);
-                return;
-            }
+        CommandHandler commandHandler = null;
+
+        if (commandInvoker.getSpot() instanceof Poker) {
+            commandHandler = BetOption.getCommandHandlerByString(command);
+        } else if (commandInvoker.getSpot() instanceof Slot) {
+            commandHandler = SpinOption.getCommandHandlerByString(command);
+        } else if (commandInvoker.getSpot() instanceof Blackjack) {
+            commandHandler = BlackjackMove.getCommandHandlerByString(command);
+        } else if (commandInvoker.getSpot() instanceof WaitingRoom) {
+            commandHandler = MenuOption.getCommandHandlerByString(command);
         }
+
+        if (commandHandler != null && !(commandHandler instanceof UnknownCommand)) {
+            invoke(commandHandler, clientHandler);
+            return;
+        }
+
         invoke(Commands.getCommandHandlerByString(command), clientHandler);
     }
 }
