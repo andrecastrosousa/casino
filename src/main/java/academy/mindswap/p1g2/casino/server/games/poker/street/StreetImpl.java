@@ -24,10 +24,10 @@ public abstract class StreetImpl implements Street, StreetHandler {
     }
 
     @Override
-    public abstract void nextStreet();
+    public abstract void nextStreet() throws InterruptedException;
 
     @Override
-    public abstract void execute();
+    public abstract void execute() throws InterruptedException;
 
     protected boolean canGoToNextStreet() {
         int maxBet = table.getHigherBet();

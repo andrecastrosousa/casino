@@ -7,6 +7,7 @@ import academy.mindswap.p1g2.casino.server.games.Card;
 import academy.mindswap.p1g2.casino.server.games.DeckGenerator;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
+import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,11 +37,15 @@ public class Blackjack implements Spot {
     private List<Player> players;
     private int currentPlayerPlaying;
     private int handCount;
+    private PlaySound hitSound;
+    private PlaySound winSound;
 
     public Blackjack(List<ClientHandler> clientHandlerList) {
         players = new ArrayList<>();
         cards = DeckGenerator.getDeckOfCards();
         dealer = new Dealer(cards);
+        hitSound = new PlaySound("../casino/sounds/hit_sound.wav");
+        winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
         clientHandlerList.forEach(clientHandler -> {
             players.add(new Player(clientHandler));
             clientHandler.changeSpot(this);
@@ -48,8 +53,10 @@ public class Blackjack implements Spot {
         handCount = 0;
         currentPlayerPlaying = 0;
     }
-
-    public void play() throws IOException {
+    private void playWinSound() {
+        winSound.play();
+    }
+    public void play() throws IOException, InterruptedException {
 
         while (!gameOver()) {
             dealer.shuffle();
@@ -57,8 +64,8 @@ public class Blackjack implements Spot {
             List<Player> playersNotBurst = players.stream().filter(player -> player.getScore() > 0).toList();
             while (currentPlayerPlaying < playersNotBurst.size()) {
                 Player currentPlayer = playersNotBurst.get(currentPlayerPlaying);
-                broadcast(String.format("%s is playing. Wait for your turn.", currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
-                currentPlayer.getClientHandler().sendMessageUser("It is your time to play.");
+                broadcast(String.format(Messages.SOMEONE_PLAYING, currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
+                currentPlayer.getClientHandler().sendMessageUser(Messages.YOUR_TURN);
                 currentPlayer.startTurn();
 
                 while (currentPlayer.isPlaying()) {
@@ -73,16 +80,19 @@ public class Blackjack implements Spot {
 
 
     }
-
+    private void playHitSound() {
+        hitSound.play();
+    }
     public void hit(ClientHandler clientHandler) throws IOException {
+        playHitSound();
         Player currentPlayer = players.get(currentPlayerPlaying);
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser("Isn't your time to play.");
+            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         }
         currentPlayer.receiveCard(dealer.giveCard());
         if (currentPlayer.getScore() > HIGH_SCORE) {
-            dealer.receiveCardsFromPlayer(currentPlayer.returnCards("Your hand burst!!!"));
+            dealer.receiveCardsFromPlayer(currentPlayer.returnCards(Messages.HAND_BURST));
         } else {
             clientHandler.sendMessageUser(currentPlayer.showCards());
         }
@@ -92,7 +102,7 @@ public class Blackjack implements Spot {
     public void stand(ClientHandler clientHandler) throws IOException {
         Player currentPlayer = players.get(currentPlayerPlaying);
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser("Isn't your time to play.");
+            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         }
         currentPlayer.releaseTurn();
@@ -101,10 +111,10 @@ public class Blackjack implements Spot {
     public void surrender(ClientHandler clientHandler) throws IOException {
         Player currentPlayer = players.get(currentPlayerPlaying);
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser("Isn't your time to play.");
+            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         }
-        dealer.receiveCardsFromPlayer(currentPlayer.returnCards("You give up!!!"));
+        dealer.receiveCardsFromPlayer(currentPlayer.returnCards(Messages.YOU_GIVE_UP));
         currentPlayer.releaseTurn();
     }
 
@@ -167,9 +177,10 @@ public class Blackjack implements Spot {
         players.forEach(player -> {
             try {
                 if (dealer.getScore() > player.getScore() && dealer.getScore() <= 21) {
-                    dealer.receiveCardsFromPlayer(player.returnCards("Dealer wins this round!!!"));
+                    dealer.receiveCardsFromPlayer(player.returnCards(Messages.DEALER_WIN));
                 } else {
-                    dealer.receiveCardsFromPlayer(player.returnCards("You win!!!"));
+                    playWinSound();
+                    dealer.receiveCardsFromPlayer(player.returnCards(Messages.YOU_WIN));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

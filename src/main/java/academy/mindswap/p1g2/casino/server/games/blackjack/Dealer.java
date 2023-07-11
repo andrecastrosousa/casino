@@ -1,6 +1,8 @@
 package academy.mindswap.p1g2.casino.server.games.blackjack;
 
 import academy.mindswap.p1g2.casino.server.games.Card;
+import academy.mindswap.p1g2.casino.server.utils.Messages;
+import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,17 +13,32 @@ public class Dealer {
     private List<Card> cards;
     private ArrayList<Card> hand;
     private int score;
+    private PlaySound shufflingSound;
+    private PlaySound giveCardSound;
 
     public Dealer(List<Card> cards) {
         this.cards = cards;
         hand = new ArrayList<>(2);
+        shufflingSound = new PlaySound("../casino/sounds/cards_shuffling_sound.wav");
+        giveCardSound = new PlaySound("../casino/sounds/give_card_sound.wav");
     }
 
-    public void shuffle() {
+    public void shuffle() throws InterruptedException {
+        playShufflingSound();
+        Thread.sleep(8000);
         Collections.shuffle(cards);
     }
 
-    public void giveCards(List<Player> players) {
+    private void playShufflingSound() {
+        shufflingSound.play();
+    }
+    private void playGiveCardSound() {
+        giveCardSound.play();
+    }
+
+    public void giveCards(List<Player> players) throws InterruptedException {
+        playGiveCardSound();
+        Thread.sleep(3000);
         handScore(cards.remove(cards.size() - 1));
         handScore(cards.remove(cards.size() - 1));
 
@@ -34,7 +51,7 @@ public class Dealer {
                 player.getClientHandler().sendMessageUser(player.showCards());
                 player.getClientHandler().sendMessageUser(showFirstCard());
                 if(player.getScore() > Blackjack.HIGH_SCORE){
-                    receiveCardsFromPlayer(player.returnCards("Your first hand burst!!!"));
+                    receiveCardsFromPlayer(player.returnCards(Messages.FIRST_HAND_BURST));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -48,13 +65,13 @@ public class Dealer {
 
 
     private String showFirstCard() {
-        return "Dealer hand: \n" +
+        return Messages.DEALER_HAND +
                 hand.get(0).toString();
     }
 
     public String showCards() {
         StringBuilder message = new StringBuilder();
-        message.append("Dealer hand: ");
+        message.append(Messages.DEALER_HAND);
         hand.forEach(card -> message.append(card.toString()));
         return message.toString();
     }

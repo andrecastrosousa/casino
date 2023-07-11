@@ -10,7 +10,7 @@ public class FlopStreet extends StreetImpl {
     }
 
     @Override
-    public void nextStreet() {
+    public void nextStreet() throws InterruptedException {
         if(table.getPlayTimes() >= table.getPlayersPlaying().size() && canGoToNextStreet()) {
             table.setStreetType(StreetType.TURN);
             table.initStreet();
@@ -18,7 +18,7 @@ public class FlopStreet extends StreetImpl {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws InterruptedException {
         table.burnCard();
         for(int i = 0; i < 3; i++) {
             table.turnUpCard();

@@ -1,6 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.slotMachine;
 import academy.mindswap.p1g2.casino.server.games.slotMachine.evaluator.*;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
+import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.io.IOException;
 import java.util.*;
@@ -13,9 +14,6 @@ public class SlotMachine {
     Player player;
     private PlaySound spinSound;
 
-
-
-
     public SlotMachine() {
 
         evaluatorChain = new LoseEvaluator();
@@ -26,10 +24,13 @@ public class SlotMachine {
         evaluatorHalfJackpot.setNextEvaluator(new TwoMatchEvaluator());
         spinSound = new PlaySound("../casino/sounds/spin_sound.wav");
 
+
     }
 
     public void play() throws IOException, InterruptedException {
         player.sendMessage(Messages.SLOT_MACHINE_WELCOME);
+
+        Thread.sleep(5000);
 
 
             /*player.sendMessage(Messages.SLOT_MACHINE_SPIN);
@@ -114,6 +115,7 @@ public class SlotMachine {
     private void playSpinSound() {
         spinSound.play();
     }
+
 
 }
 

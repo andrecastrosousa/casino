@@ -4,6 +4,7 @@ import academy.mindswap.p1g2.casino.server.games.poker.Player;
 import academy.mindswap.p1g2.casino.server.games.poker.rule.Evaluator;
 import academy.mindswap.p1g2.casino.server.games.poker.rule.EvaluatorFactory;
 import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
+import academy.mindswap.p1g2.casino.server.utils.Messages;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,7 +22,7 @@ public class ShowdownStreet extends StreetImpl {
                 .toList();
         playersToRemove.forEach(player -> {
             try {
-                player.sendMessageToPlayer("You have lost all your poker chips. Thanks for playing.");
+                player.sendMessageToPlayer(Messages.YOU_LOSE_ALL_CHIPS);
                 table.removePlayer(player, true);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -43,10 +44,10 @@ public class ShowdownStreet extends StreetImpl {
                 ifPresent(winnerPlayer -> table.getPlayers().forEach(player -> {
                     try {
                         if (player == winnerPlayer) {
-                            player.sendMessageToPlayer(String.format("You won the hand with %s and won %d poker chips.", player.getHandScore().getEvaluator().getName(), table.getPotValue()));
+                            player.sendMessageToPlayer(String.format(Messages.YOU_WON_HAND, player.getHandScore().getEvaluator().getName(), table.getPotValue()));
                             player.addBalance(table.getPotValue());
                         } else {
-                            player.sendMessageToPlayer(String.format("%s won the hand with %s and won %d poker chips.",
+                            player.sendMessageToPlayer(String.format(Messages.SOMEONE_WON_HAND_W,
                                     winnerPlayer.getClientHandler().getUsername(),
                                     player.getHandScore().getEvaluator().getName(),
                                     table.getPotValue()

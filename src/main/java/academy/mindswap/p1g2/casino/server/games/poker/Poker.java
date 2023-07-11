@@ -6,6 +6,8 @@ import academy.mindswap.p1g2.casino.server.command.Commands;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
+import academy.mindswap.p1g2.casino.server.utils.Messages;
+import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -14,17 +16,27 @@ import java.util.Objects;
 
 public class Poker implements Spot {
     private final Table table;
+    private PlaySound checkSound;
+    private PlaySound betSound;
+    private PlaySound winSound;
 
     public Poker(List<ClientHandler> clientHandlers) {
         table = new Table();
         table.sitDealer(new Dealer());
-
+        checkSound = new PlaySound("../casino/sounds/check_sound.wav");
+        betSound = new PlaySound("../casino/sounds/bet_sound.wav");
+        winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
         clientHandlers.forEach(clientHandler -> {
             table.sitPlayer(new Player(clientHandler, table));
             clientHandler.changeSpot(this);
         });
     }
-
+    private void playCheckSound() {
+        checkSound.play();
+    }
+    private void playBetSound() {
+        betSound.play();
+    }
     private Player getPlayerByClient(ClientHandler clientHandler) {
         return table.getPlayers().stream()
                 .filter(player -> player.getClientHandler().equals(clientHandler))
@@ -32,35 +44,38 @@ public class Poker implements Spot {
                 .orElse(null);
     }
 
-    public void play() throws IOException {
+    public void play() throws IOException, InterruptedException {
         while (!gameEnded()) {
             table.initStreet();
             while (table.isHandOnGoing()) {
                 Player currentPlayer = table.getCurrentPlayerPlaying();
                 if(currentPlayer.getCurrentBalance() > 0) {
-                    broadcast(String.format("%s is playing. Wait for your turn.", currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
-                    currentPlayer.sendMessageToPlayer("It is your time to play.");
+                    broadcast(String.format(Messages.SOMEONE_PLAYING, currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
+                    currentPlayer.sendMessageToPlayer(Messages.YOUR_TURN);
                 }
                 table.playStreet();
             }
             StreetImpl.buildStreet(table).nextStreet();
         }
-        table.getPlayers().get(0).getClientHandler().sendMessageUser("You won the poker game.");
+        table.getPlayers().get(0).getClientHandler().sendMessageUser(Messages.YOU_WON);
+        playWinSound();
     }
-
+    private void playWinSound() {
+        winSound.play();
+    }
     private boolean gameEnded() {
         return table.getQuantityOfPlayers() <= 1;
     }
 
     public void allIn(ClientHandler clientHandler) throws IOException {
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser("Isn't your time to play.");
+            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN );
             return;
         }
         Player player = getPlayerByClient(clientHandler);
         player.allIn();
-        broadcast(String.format("%s did an all in", clientHandler.getUsername()),clientHandler);
-        whisper("You did an all in", clientHandler.getUsername());
+        broadcast(String.format(Messages.SOMEONE_ALL_IN, clientHandler.getUsername()),clientHandler);
+        whisper(Messages.YOU_ALL_IN, clientHandler.getUsername());
         player.releaseTurn();
     }
 
@@ -69,54 +84,55 @@ public class Poker implements Spot {
         int maxBet = table.getHigherBet();
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser("Isn't your time to play.");
+            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         } else if(maxBet == 0) {
-            clientHandler.sendMessageUser("You can't call because no one bet. You only can /bet, /check or /fold");
+            clientHandler.sendMessageUser(Messages.NO_BET_CANT_CALL);
             return;
         } else if(player.getBet() == maxBet) {
-            clientHandler.sendMessageUser("You can't call because you have the higher bet. You only can /check or /fold");
+            clientHandler.sendMessageUser(Messages.HIGHER_BET_CANT_CALL);
             return;
         }
 
         player.call(maxBet - player.getBet());
         if (player.getCurrentBalance() == 0) {
-            broadcast(String.format("%s did an all in with %d poker chips", clientHandler.getUsername(), player.getBet()),clientHandler);
-            whisper(String.format("You did an all in with %d poker chips, your current balance is %d", player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.SOMEONE_ALL_IN_W_CHIPS, clientHandler.getUsername(), player.getBet()),clientHandler);
+            whisper(String.format(Messages.YOU_ALL_IN_W_CHIPS_BALANCE, player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         } else {
-            broadcast(String.format("%s did a call with %d poker chips", clientHandler.getUsername(), maxBet - player.getBet()),clientHandler);
-            whisper(String.format("You did a call with %d poker chips, your current balance is %d", maxBet - player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.SOMEONE_CALL_W_CHIPS, clientHandler.getUsername(), maxBet - player.getBet()),clientHandler);
+            whisper(String.format(Messages.YOU_CALL_W_CHIPS_BALANCE, maxBet - player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         }
 
         player.releaseTurn();
     }
 
     public void check(ClientHandler clientHandler) throws IOException {
+        playCheckSound();
         int maxBet = table.getHigherBet();
         Player player = getPlayerByClient(clientHandler);
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser("Isn't your time to play.");
+            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         } else if(player.getBet() < maxBet ) {
-            clientHandler.sendMessageUser("You can't check because someone bet higher. You only can /call, /fold, /allIn or /raise");
+            clientHandler.sendMessageUser(Messages.HIGHER_BET_CANT_CHECK);
             return;
         }
         player.check();
-        broadcast(String.format("%s did a check.", clientHandler.getUsername()),clientHandler);
-        whisper("You did a check", clientHandler.getUsername());
+        broadcast(String.format(Messages.SOMEONE_CHECK, clientHandler.getUsername()),clientHandler);
+        whisper(Messages.YOU_CHECK, clientHandler.getUsername());
         player.releaseTurn();
     }
 
     public void fold(ClientHandler clientHandler) throws IOException {
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser("Isn't your time to play.");
+            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         }
         Player player = getPlayerByClient(clientHandler);
         player.fold();
-        broadcast(String.format("%s did a fold.", clientHandler.getUsername()),clientHandler);
-        whisper("You did a fold", clientHandler.getUsername());
+        broadcast(String.format(Messages.SOMEONE_FOLD, clientHandler.getUsername()),clientHandler);
+        whisper(Messages.YOU_FOLD, clientHandler.getUsername());
         table.removePlayer(player, false);
         player.releaseTurn();
     }
@@ -125,43 +141,44 @@ public class Poker implements Spot {
         int maxBet = table.getHigherBet();
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser("Isn't your time to play.");
+            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         } else if(maxBet == 0) {
-            clientHandler.sendMessageUser("You can't raise because no one bet. You only can /bet, /fold or /allIn");
+            clientHandler.sendMessageUser(Messages.NO_ONE_BET_CANT_RISE);
             return;
         }
         Player player = getPlayerByClient(clientHandler);
         player.raise(maxBet * 2);
         if (player.getCurrentBalance() == 0) {
-            broadcast(String.format("%s did an all in with %d poker chips", clientHandler.getUsername(), player.getBet()),clientHandler);
-            whisper(String.format("You did an all in with %d poker chips, your current balance is %d", player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.YOU_ALL_IN_W_CHIPS, clientHandler.getUsername(), player.getBet()),clientHandler);
+            whisper(String.format(Messages.YOU_ALL_IN_W_CHIPS_BALANCE, player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         } else {
-            broadcast(String.format("%s did a raise with %d poker chips", clientHandler.getUsername(), player.getBet()),clientHandler);
-            whisper(String.format("You did a raise with %d poker chips, your current balance is %d", player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.YOU_RISE_W_CHIPS, clientHandler.getUsername(), player.getBet()),clientHandler);
+            whisper(String.format(Messages.YOU_RISE_W_CHIPS_BALANCE, player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         }
 
         player.releaseTurn();
     }
 
     public void bet(ClientHandler clientHandler) throws IOException {
+        playBetSound();
         int maxBet = table.getHigherBet();
         Player player = getPlayerByClient(clientHandler);
 
         if(!table.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
-            clientHandler.sendMessageUser("Isn't your time to play.");
+            clientHandler.sendMessageUser(Messages.NOT_YOUR_TURN);
             return;
         } else if(maxBet > 0) {
-            clientHandler.sendMessageUser("You can't bet because someone already did it. You only can /call, /raise, /allIn or /fold");
+            clientHandler.sendMessageUser(Messages.CANT_BET_SOMEONE_BET);
             return;
         }
         player.bet(20);
         if (player.getCurrentBalance() == 0) {
-            broadcast(String.format("%s did an all in with %d poker chips", clientHandler.getUsername(), player.getBet()),clientHandler);
-            whisper(String.format("You did an all in with %d poker chips, your current balance is %d", player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.SOMEONE_ALL_IN_W_CHIPS, clientHandler.getUsername(), player.getBet()),clientHandler);
+            whisper(String.format(Messages.YOU_ALL_IN_W_CHIPS_BALANCE, player.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         } else {
-            broadcast(String.format("%s did a bet with 20 poker chips", clientHandler.getUsername()),clientHandler);
-            whisper(String.format("You did a bet with 20 poker chips, your current balance is %d", player.getCurrentBalance()), clientHandler.getUsername());
+            broadcast(String.format(Messages.SOMEONE_BET_20, clientHandler.getUsername()),clientHandler);
+            whisper(String.format(Messages.YOU_BET_20, player.getCurrentBalance()), clientHandler.getUsername());
         }
 
         player.releaseTurn();
@@ -176,7 +193,7 @@ public class Poker implements Spot {
     }
 
     public void showBalance(ClientHandler clientHandler) {
-        whisper(String.format("Current balance %d", getPlayerByClient(clientHandler).getCurrentBalance()), clientHandler.getUsername());
+        whisper(String.format(Messages.CURRENT_BALANCE, getPlayerByClient(clientHandler).getCurrentBalance()), clientHandler.getUsername());
     }
 
     @Override

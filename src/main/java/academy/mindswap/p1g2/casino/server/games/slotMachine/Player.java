@@ -13,7 +13,7 @@ public class Player {
 
     public Player (ClientHandler clientHandler, SlotMachine slotMachine) {
         this.clientHandler = clientHandler;
-        currentBalance = 20;
+        currentBalance = 2;
         isPlaying = false;
         this.slotmachine = slotMachine;
         this.slotmachine.sitPlayer(this);
