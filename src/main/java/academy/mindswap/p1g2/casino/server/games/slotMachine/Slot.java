@@ -96,4 +96,18 @@ public class Slot extends GameImpl {
         player.releaseTurn();
 
     }
+
+    @Override
+    public void listUsers(ClientHandler clientHandler) throws IOException {
+        StringBuilder message = new StringBuilder();
+        message.append("------------- USERS ---------------\n");
+        players.forEach(player -> {
+            if(!player.getClientHandler().equals(clientHandler)) {
+                message.append(player.getClientHandler().getUsername()).append(" -> ").append(player.getCurrentBalance()).append(" balance\n").append("\n");
+            }
+        });
+        message.append("-----------------------------------");
+        Player player = getPlayerByClient(clientHandler);
+        player.sendMessage(message.toString());
+    }
 }

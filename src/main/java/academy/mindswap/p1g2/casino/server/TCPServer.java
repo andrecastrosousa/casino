@@ -92,6 +92,20 @@ public class TCPServer implements Spot {
                 });
     }
 
+    @Override
+    public void listUsers(ClientHandler clientHandler) throws IOException {
+        StringBuilder message = new StringBuilder();
+        message.append("------------- USERS ---------------\n");
+        clientHandlerList.forEach(clientHandler1 -> {
+            if(!clientHandler1.equals(clientHandler)) {
+                message.append(clientHandler1.getUsername()).append("\n");
+            }
+        });
+        message.append("-----------------------------------");
+
+        clientHandler.sendMessageUser(message.toString());
+    }
+
     public void listCommands(ClientHandler clientHandler) throws IOException {
         clientHandler.sendMessageUser(Commands.listCommands());
     }

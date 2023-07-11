@@ -132,7 +132,7 @@ public class WaitingRoom implements Runnable, Spot {
     }
 
     public synchronized void setGame(Game game) {
-        if (votes.values().stream().reduce(0, Integer::sum) == 3) {
+        if (votes.values().stream().mapToInt(Integer::intValue).sum() == 3) {
             Map.Entry<MenuOption, Integer> mostVotedOption = votes.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
 
             if (mostVotedOption != null) {
