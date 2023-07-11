@@ -36,8 +36,10 @@ public class Poker implements Spot {
             table.initStreet();
             while (table.isHandOnGoing()) {
                 Player currentPlayer = table.getCurrentPlayerPlaying();
-                broadcast(String.format("%s is playing. Wait for your turn.", currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
-                currentPlayer.sendMessageToPlayer("It is your time to play.");
+                if(currentPlayer.getCurrentBalance() > 0) {
+                    broadcast(String.format("%s is playing. Wait for your turn.", currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
+                    currentPlayer.sendMessageToPlayer("It is your time to play.");
+                }
                 table.playStreet();
             }
             StreetImpl.buildStreet(table).nextStreet();

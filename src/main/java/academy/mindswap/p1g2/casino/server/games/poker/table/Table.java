@@ -126,7 +126,9 @@ public class Table {
     public void playStreet() {
         Player currentPlayer = getCurrentPlayerPlaying();
 
-        currentPlayer.startTurn();
+        if(currentPlayer.getCurrentBalance() > 0) {
+            currentPlayer.startTurn();
+        }
 
         while (currentPlayer.isPlaying()) {
 
