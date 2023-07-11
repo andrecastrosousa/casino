@@ -9,6 +9,7 @@ import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Table {
@@ -104,6 +105,7 @@ public class Table {
     public void initStreet() {
         StreetImpl.buildStreet(this).execute();
         playTimes = 0;
+        currentPlayerPlaying = 0;
         players.forEach(Player::resetBet);
     }
 
@@ -186,5 +188,12 @@ public class Table {
         }
 
         return true;
+    }
+
+    public int getHigherBet() {
+        return getPlayersPlaying().stream()
+                .map(Player::getBet)
+                .max(Comparator.comparingInt(Integer::intValue))
+                .orElse(0);
     }
 }

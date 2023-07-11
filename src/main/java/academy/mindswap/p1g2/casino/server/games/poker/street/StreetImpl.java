@@ -30,10 +30,7 @@ public abstract class StreetImpl implements Street, StreetHandler {
     public abstract void execute();
 
     protected boolean canGoToNextStreet() {
-        int maxBet = table.getPlayersPlaying().stream()
-                .map(Player::getBet)
-                .max(Comparator.comparingInt(Integer::intValue))
-                .orElse(0);
+        int maxBet = table.getHigherBet();
 
         long count = table.getPlayersPlaying().stream()
                 .filter(player -> player.getBet() == maxBet)

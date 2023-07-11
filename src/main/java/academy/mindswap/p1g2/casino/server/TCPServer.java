@@ -16,7 +16,7 @@ public class TCPServer implements Spot {
     private ServerSocket serverSocket;
     private List<ClientHandler> clientHandlerList;
 
-    private List<Room> rooms;
+    private List<WaitingRoom> waitingRooms;
 
     ExecutorService executors = Executors.newFixedThreadPool(3);
 
@@ -30,7 +30,7 @@ public class TCPServer implements Spot {
         try {
             serverSocket = new ServerSocket(port);
             clientHandlerList = new ArrayList<>();
-            rooms = new ArrayList<>();
+            waitingRooms = new ArrayList<>();
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -48,17 +48,17 @@ public class TCPServer implements Spot {
             clientHandlerList.add(clientHandler);
             new Thread(clientHandler).start();
 
-            Room room;
+            WaitingRoom waitingRoom;
 
             if((clientHandlerList.size() - 1) % 3 == 0) {
-                room = new Room(rooms.size() + 1);
-                rooms.add(room);
-                executors.execute(room);
+                waitingRoom = new WaitingRoom(waitingRooms.size() + 1);
+                waitingRooms.add(waitingRoom);
+                executors.execute(waitingRoom);
             } else {
-                room = rooms.get(rooms.size() - 1);
+                waitingRoom = waitingRooms.get(waitingRooms.size() - 1);
             }
 
-            room.addClient(clientHandler);
+            waitingRoom.addClient(clientHandler);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
