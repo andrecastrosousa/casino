@@ -130,9 +130,13 @@ public class Table {
         while (currentPlayer.isPlaying()) {
 
         }
+
         playTimes++;
-        tableManager.setHandOnGoing(handContinue());
-        StreetImpl.buildStreet(this).nextStreet();
+        if(handContinue()) {
+            StreetImpl.buildStreet(this).nextStreet();
+            return;
+        }
+        tableManager.setHandOnGoing(false);
     }
 
     public void removePlayer(Player player, boolean fromTable) {
