@@ -15,6 +15,10 @@ public class Messages {
     public static final String CLIENT_WELCOME = "Welcome to our chat!";
     public static final String CLIENT_NAME = "Your name is %s";
     public static final String INSERT_COMMAND = "Insert a command";
+    public static final String WELCOME = "Welcome to blackjack game!!!";
+    public static final String START = "Let´s start!!!";
+    public static final String PLAYER = "Player: ";
+    public static final String DEALER = "Dealer: ";
 
     /* CARDS */
     public static final String CARD_HEART = """
