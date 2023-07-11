@@ -3,7 +3,7 @@ package academy.mindswap.p1g2.casino.server.games.poker.table;
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.Card;
 import academy.mindswap.p1g2.casino.server.games.Player;
-import academy.mindswap.p1g2.casino.server.games.poker.Dealer;
+import academy.mindswap.p1g2.casino.server.games.poker.PokerDealer;
 import academy.mindswap.p1g2.casino.server.games.poker.PokerPlayer;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
@@ -15,7 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Table {
-    private Dealer dealer;
+    private PokerDealer pokerDealer;
     private final List<Player> players;
     private final List<Player> playersPlaying;
     private int currentPlayerPlaying;
@@ -38,8 +38,8 @@ public class Table {
         return players;
     }
 
-    public void sitDealer(Dealer dealer) {
-        this.dealer = dealer;
+    public void sitDealer(PokerDealer pokerDealer) {
+        this.pokerDealer = pokerDealer;
     }
 
     public void sitPlayer(Player player) {
@@ -59,12 +59,13 @@ public class Table {
         return tableManager.getStreetType();
     }
 
-    public void burnCard() throws InterruptedException {
-        tableManager.burnCard(dealer.giveCard());
+
+    public void burnCard() {
+        tableManager.burnCard(pokerDealer.giveCard());
     }
 
-    public void turnUpCard() throws InterruptedException {
-        tableManager.turnUpCard(dealer.giveCard());
+    public void turnUpCard() {
+        tableManager.turnUpCard(pokerDealer.giveCard());
     }
 
     public void setStreetType(StreetType streetType) {
@@ -120,14 +121,14 @@ public class Table {
         });
         playersPlaying.clear();
         playersPlaying.addAll(players);
-        dealer.pickTableCards(tableManager.clear());
+        pokerDealer.pickTableCards(tableManager.clear());
         tableManager.resetPot();
     }
 
-    public void startHand() throws InterruptedException {
-        dealer.shuffle();
-        dealer.distributeCards(players);
 
+    public void startHand() {
+        pokerDealer.shuffle();
+        pokerDealer.distributeCards(players);
         tableManager.setHandOnGoing(true);
     }
 
@@ -159,7 +160,7 @@ public class Table {
     }
 
     public void receiveCardsFromPlayer(List<Card> cards) {
-        dealer.receiveCardsFromPlayer(cards);
+        pokerDealer.receiveCardsFromPlayer(cards);
     }
 
     public int getPotValue() {

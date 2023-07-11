@@ -22,10 +22,11 @@ public class Poker implements Spot {
 
     public Poker(List<ClientHandler> clientHandlers) {
         table = new Table();
-        table.sitDealer(new Dealer());
+        table.sitDealer(new PokerDealer());
         checkSound = new PlaySound("../casino/sounds/check_sound.wav");
         betSound = new PlaySound("../casino/sounds/bet_sound.wav");
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
+
         clientHandlers.forEach(clientHandler -> {
             table.sitPlayer(new PokerPlayer(clientHandler, table));
             clientHandler.changeSpot(this);
