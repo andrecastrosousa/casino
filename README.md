@@ -1,5 +1,5 @@
 # MindSwap Academy Casino
-Welcome to the MindSwap Academy Casino! This project aims to create an interactive and enjoyable online casino experience. Players can engage in various mini-games such as poker, blackjack, and roulette. The games will commence when a room has at least three clients, who will then be presented with three mini-games to select from.
+Welcome to the MindSwap Academy Casino! This project aims to create an interactive and enjoyable online casino experience. Players can engage in various mini-games such as poker, blackjack, and roulette. The games will commence when a waitingRoom has at least three clients, who will then be presented with three mini-games to select from.
 
 ## Authors
 
@@ -21,7 +21,7 @@ The casino offers the following mini-games for players to enjoy:
 3. ***Roulette***: A game of chance where players place bets on a number, color, or group of numbers and wait for the roulette wheel to determine the winner.
 
 ## Room Creation and Gameplay
-To start a mini-game, a room must have a minimum of three clients. Once three clients have joined a room, they will be presented with the option to choose one of the available mini-games.
+To start a mini-game, a waitingRoom must have a minimum of three clients. Once three clients have joined a waitingRoom, they will be presented with the option to choose one of the available mini-games.
 
 Upon selecting a mini-game, the game will start, and the players will be able to interact with each other and the game interface. The outcome of each game will be determined based on the rules of the specific mini-game chosen.
 
@@ -47,6 +47,6 @@ To get started with the MindSwap Academy Casino, please follow these steps:
 
 - Start the client application on multiple devices or within multiple instances to simulate concurrent gameplay.
 
-- Connect the clients to the server and follow the on-screen instructions to join a room and select a mini-game.
+- Connect the clients to the server and follow the on-screen instructions to join a waitingRoom and select a mini-game.
 
 - Enjoy playing the exciting mini-games at the MindSwap Academy Casino!

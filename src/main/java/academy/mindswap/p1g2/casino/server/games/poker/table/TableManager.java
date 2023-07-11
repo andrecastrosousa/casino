@@ -56,15 +56,15 @@ public class TableManager {
         pot.resetPot();
     }
 
-    public int getPotValue() {
-        return pot.getAmount();
+    public List<Card> clear() {
+        List<Card> cardsToRemove = new ArrayList<>(cards);
+        cardsToRemove.addAll(burnedCards);
+        cards.clear();
+        burnedCards.clear();
+        return cardsToRemove;
     }
 
-    @Override
-    public String toString() {
-        return "TableManager{" +
-                "streetType=" + streetType +
-                ", pot=" + pot +
-                '}';
+    public int getPotValue() {
+        return pot.getAmount();
     }
 }

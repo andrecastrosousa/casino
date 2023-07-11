@@ -46,7 +46,11 @@ public class Player implements Comparable {
 
 
     public void bet(int amount) {
-        betOptionSelected = BetOption.CALL;
+        betOptionSelected = BetOption.BET;
+        if(currentBalance - amount  < 0) {
+            amount = currentBalance;
+            betOptionSelected = BetOption.ALL_IN;
+        }
         this.bet += amount;
         currentBalance -= amount;
         table.addBet(amount);
@@ -54,6 +58,10 @@ public class Player implements Comparable {
 
     public void call(int amount) {
         betOptionSelected = BetOption.CALL;
+        if(currentBalance - amount < 0) {
+            amount = currentBalance;
+            betOptionSelected = BetOption.ALL_IN;
+        }
         this.bet += amount;
         currentBalance -= amount;
         table.addBet(amount);
@@ -73,6 +81,10 @@ public class Player implements Comparable {
 
     public void raise(int amount) {
         betOptionSelected = BetOption.RAISE;
+        if(currentBalance - amount < 0) {
+            amount = currentBalance;
+            betOptionSelected = BetOption.ALL_IN;
+        }
         currentBalance -= amount;
         this.bet += amount;
         table.addBet(amount);

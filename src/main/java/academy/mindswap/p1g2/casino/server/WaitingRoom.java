@@ -1,23 +1,20 @@
 package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.Commands;
-import academy.mindswap.p1g2.casino.server.games.blackjack.Blackjack;
+import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Room implements Runnable, Spot {
+public class WaitingRoom implements Runnable, Spot {
     private final List<ClientHandler> clientHandlerList;
 
     private int number;
 
-    private boolean gameStarted;
-
-    public Room(int number) {
+    public WaitingRoom(int number) {
         this.clientHandlerList = new ArrayList<>();
-        gameStarted = false;
         this.number = number;
     }
 
@@ -29,8 +26,10 @@ public class Room implements Runnable, Spot {
                 throw new RuntimeException(e);
             }
         });
-        Blackjack blackjack = new Blackjack(clientHandlerList);
-        blackjack.play();
+        Poker poker = new Poker(clientHandlerList);
+        poker.play();
+        /*Blackjack blackjack = new Blackjack(clientHandlerList);
+        blackjack.play();*/
     }
 
     @Override
@@ -50,9 +49,8 @@ public class Room implements Runnable, Spot {
     public synchronized void addClient(ClientHandler clientHandler) throws IOException, InterruptedException {
         clientHandlerList.add(clientHandler);
         clientHandler.changeSpot(this);
-        clientHandler.sendMessageUser("\nWaiting for players to start the game...\n");
+        clientHandler.sendMessageUser(String.format("\nYou are in a waiting room nº%d. \nWaiting for players to start the game...\n", number));
         if(isFull()) {
-            gameStarted = true;
             notifyAll();
         }
     }
