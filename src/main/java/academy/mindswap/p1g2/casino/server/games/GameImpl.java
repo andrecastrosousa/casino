@@ -1,11 +1,9 @@
 package academy.mindswap.p1g2.casino.server.games;
 
-import java.util.ArrayList;
 import java.util.List;
 import academy.mindswap.p1g2.casino.server.ClientHandler;
+import academy.mindswap.p1g2.casino.server.Player;
 import academy.mindswap.p1g2.casino.server.command.Commands;
-import academy.mindswap.p1g2.casino.server.games.slotMachine.SlotMachine;
-import academy.mindswap.p1g2.casino.server.games.slotMachine.SlotPlayer;
 import academy.mindswap.p1g2.casino.server.games.slotMachine.command.SpinOption;
 
 import java.io.IOException;

@@ -3,7 +3,7 @@ package academy.mindswap.p1g2.casino.server.games.poker;
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.command.Commands;
 import academy.mindswap.p1g2.casino.server.games.GameImpl;
-import academy.mindswap.p1g2.casino.server.games.Player;
+import academy.mindswap.p1g2.casino.server.Player;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
@@ -20,13 +20,15 @@ public class Poker extends GameImpl {
     private PlaySound betSound;
     private PlaySound winSound;
 
-    public Poker(List<ClientHandler> clientHandlers) {
+    public Poker() {
         table = new Table();
         table.sitDealer(new PokerDealer());
         checkSound = new PlaySound("../casino/sounds/check_sound.wav");
         betSound = new PlaySound("../casino/sounds/bet_sound.wav");
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
+    }
 
+    public void join(List<ClientHandler> clientHandlers) {
         clientHandlers.forEach(clientHandler -> {
             table.sitPlayer(new PokerPlayer(clientHandler, table));
             clientHandler.changeSpot(this);

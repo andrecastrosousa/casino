@@ -2,9 +2,9 @@ package academy.mindswap.p1g2.casino.server.games.slotMachine;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.GameImpl;
-import academy.mindswap.p1g2.casino.server.games.Player;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
+import academy.mindswap.p1g2.casino.server.Player;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,13 +18,23 @@ public class Slot extends GameImpl {
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
         this.players = new ArrayList<>();
         this.playersPlaying = new ArrayList<>();
-
     }
+
     public Player getPlayerByClient(ClientHandler clientHandler) {
         return players.stream().filter(player -> player.getClientHandler().equals(clientHandler)).findFirst().orElse(null);
     }
     private void playWinSound() {
         winSound.play();
+    }
+
+    @Override
+    public void join(List<ClientHandler> clientHandlers) {
+        clientHandlers.forEach(clientHandler -> {
+            Player player = new SlotPlayer(clientHandler, new SlotMachine());
+            players.add(player);
+            playersPlaying.add(player);
+            clientHandler.changeSpot(this);
+        });
     }
 
     public void play() throws IOException {

@@ -3,7 +3,7 @@ package academy.mindswap.p1g2.casino.server.games.blackjack;
 import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.games.DealerImpl;
 import academy.mindswap.p1g2.casino.server.games.deck.DeckGenerator;
-import academy.mindswap.p1g2.casino.server.games.Player;
+import academy.mindswap.p1g2.casino.server.Player;
 
 import java.io.IOException;
 import java.util.ArrayList;

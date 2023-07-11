@@ -1,13 +1,14 @@
 package academy.mindswap.p1g2.casino.server.games.blackjack;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.games.Player;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
+import academy.mindswap.p1g2.casino.server.Player;
 import academy.mindswap.p1g2.casino.server.games.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,12 +37,26 @@ public class Blackjack extends GameImpl {
 
     private List<Player> playersNotBurst;
 
-    public Blackjack(List<ClientHandler> clientHandlerList) {
-        hitSound = new PlaySound("../casino/sounds/hit_sound.wav");
-        winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
+    public Blackjack() {
+            hitSound = new PlaySound("../casino/sounds/hit_sound.wav");
+            winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
+
+        this.players = new ArrayList<>();
+        this.playersPlaying = new ArrayList<>();
+        playersNotBurst = new ArrayList<>();
         blackjackDealer = new BlackjackDealer();
         handCount = 0;
         currentPlayerPlaying = 0;
+    }
+
+    @Override
+    public void join(List<ClientHandler> clientHandlers) {
+        clientHandlers.forEach(clientHandler -> {
+            Player player = new BlackjackPlayer(clientHandler);
+            players.add(player);
+            playersPlaying.add(player);
+            clientHandler.changeSpot(this);
+        });
     }
 
     public void play() throws IOException {
@@ -61,7 +76,6 @@ public class Blackjack extends GameImpl {
             currentPlayerPlaying = 0;
             handCount++;
 
-            theWinnerIs();
             blackjackDealer.resetHand();
         }
         winSound.play();
@@ -106,24 +120,6 @@ public class Blackjack extends GameImpl {
         }
         blackjackDealer.receiveCardsFromPlayer(((BlackjackPlayer) currentPlayer).returnCards("You give up!!!"));
         currentPlayer.releaseTurn();
-    }
-
-    private void theWinnerIs() throws IOException {
-        broadcast(blackjackDealer.showCards(), players.get(0).getClientHandler());
-        players.get(0).sendMessage(blackjackDealer.showCards());
-        List<Player> players = this.players.stream().filter(player -> ((BlackjackPlayer) player).getScore() > 0).toList();
-        players.forEach(player -> {
-            BlackjackPlayer blackjackPlayer = (BlackjackPlayer) player;
-            try {
-                if (blackjackDealer.getScore() > blackjackPlayer.getScore() && blackjackDealer.getScore() <= 21) {
-                    blackjackDealer.receiveCardsFromPlayer(blackjackPlayer.returnCards("Dealer wins this round!!!"));
-                } else {
-                    blackjackDealer.receiveCardsFromPlayer(blackjackPlayer.returnCards("You win!!!"));
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 
     @Override

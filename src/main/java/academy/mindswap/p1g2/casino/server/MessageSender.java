@@ -3,6 +3,7 @@ package academy.mindswap.p1g2.casino.server;
 import academy.mindswap.p1g2.casino.server.command.*;
 import academy.mindswap.p1g2.casino.server.games.blackjack.Blackjack;
 import academy.mindswap.p1g2.casino.server.games.blackjack.commands.BlackjackMove;
+import academy.mindswap.p1g2.casino.server.games.menu.MenuOption;
 import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.slotMachine.Slot;
@@ -51,12 +52,18 @@ public class MessageSender {
                 return;
             }
         } else if(commandInvoker.getSpot() instanceof Blackjack) {
-                CommandHandler commandHandler = BlackjackMove.getCommandHandlerByString(command);
-                if(!(commandHandler instanceof UnknownCommand)) {
-                    invoke(commandHandler, clientHandler);
-                    return;
-                }
+            CommandHandler commandHandler = BlackjackMove.getCommandHandlerByString(command);
+            if(!(commandHandler instanceof UnknownCommand)) {
+                invoke(commandHandler, clientHandler);
+                return;
             }
+        } else if(commandInvoker.getSpot() instanceof WaitingRoom) {
+            CommandHandler commandHandler = MenuOption.getCommandHandlerByString(command);
+            if(!(commandHandler instanceof UnknownCommand)) {
+                invoke(commandHandler, clientHandler);
+                return;
+            }
+        }
         invoke(Commands.getCommandHandlerByString(command), clientHandler);
     }
 }
