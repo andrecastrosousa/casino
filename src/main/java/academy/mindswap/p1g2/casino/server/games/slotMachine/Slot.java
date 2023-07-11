@@ -41,15 +41,18 @@ public class Slot implements Spot {
             while (currentPlayer.isPlaying()) {
 
             }
-            if(currentPlayer.getBalance() == 0){
+            if (currentPlayer.getBalance() == 0) {
                 playersPlaying.remove(currentPlayer);
+                currentPlayerPlaying --;
+                players.remove(currentPlayer);
                 currentPlayer.getClientHandler().sendMessageUser("Game Over... :(");
             }
-            if(playersPlaying.size() == 1){
+            if (playersPlaying.size() == 1) {
                 broadcast(String.format("%s win the game!", playersPlaying.get(0).getClientHandler().getUsername()), playersPlaying.get(0).getClientHandler());
                 playersPlaying.get(0).getClientHandler().sendMessageUser("You won the game!");
-            }
+            } else {
                 currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
+            }
         }
     }
     private boolean gameEnded() {
