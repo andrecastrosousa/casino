@@ -1,28 +1,28 @@
 package academy.mindswap.p1g2.casino.server.games.slotMachine;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.games.GameImpl;
+import academy.mindswap.p1g2.casino.server.Player;
+import academy.mindswap.p1g2.casino.server.command.Commands;
+import academy.mindswap.p1g2.casino.server.games.manager.GameImpl;
+import academy.mindswap.p1g2.casino.server.games.slotMachine.command.SpinOption;
+import academy.mindswap.p1g2.casino.server.games.slotMachine.manager.SlotMachine;
+import academy.mindswap.p1g2.casino.server.games.slotMachine.manager.SlotManager;
+import academy.mindswap.p1g2.casino.server.games.slotMachine.participant.SlotPlayer;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
-import academy.mindswap.p1g2.casino.server.Player;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Slot extends GameImpl {
-    private int currentPlayerPlaying;
+
     private final PlaySound winSound;
 
     public Slot() {
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
-        this.players = new ArrayList<>();
-        this.playersPlaying = new ArrayList<>();
+        gameManager = new SlotManager();
     }
 
-    public Player getPlayerByClient(ClientHandler clientHandler) {
-        return players.stream().filter(player -> player.getClientHandler().equals(clientHandler)).findFirst().orElse(null);
-    }
     private void playWinSound() {
         winSound.play();
     }
@@ -30,35 +30,28 @@ public class Slot extends GameImpl {
     @Override
     public void join(List<ClientHandler> clientHandlers) {
         clientHandlers.forEach(clientHandler -> {
-            Player player = new SlotPlayer(clientHandler, new SlotMachine());
-            players.add(player);
-            playersPlaying.add(player);
+            gameManager.sitPlayer(new SlotPlayer(clientHandler, new SlotMachine()));
             clientHandler.changeSpot(this);
         });
     }
 
-    public void play() throws IOException {
-        while (gameEnded()) {
-            Player currentPlayer = playersPlaying.get(currentPlayerPlaying);
+    public void play() throws IOException, InterruptedException {
+        Player currentPlayer = gameManager.getCurrentPlayerPlaying();
+        broadcast(Messages.TITLE_SLOT_MACHINE, currentPlayer.getClientHandler());
+        currentPlayer.sendMessage(Messages.TITLE_SLOT_MACHINE);
+
+        while (!gameEnded()) {
+            currentPlayer = gameManager.getCurrentPlayerPlaying();
 
             broadcast(String.format(Messages.SOMEONE_PLAYING, currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
             currentPlayer.sendMessage(Messages.YOUR_TURN);
-            currentPlayer.startTurn();
 
-            while (currentPlayer.isPlaying()) {}
+            gameManager.startTurn();
 
-            if (currentPlayer.getCurrentBalance() == 0) {
-                playersPlaying.remove(currentPlayer);
-                currentPlayerPlaying --;
-                players.remove(currentPlayer);
-                currentPlayer.sendMessage(Messages.SLOT_MACHINE_GAMEOVER);
-            }
-            if (playersPlaying.size() == 1) {
-                broadcast(String.format(Messages.WINNER, playersPlaying.get(0).getClientHandler().getUsername()), playersPlaying.get(0).getClientHandler());
-                playersPlaying.get(0).sendMessage(Messages.YOU_WON);
+            if (gameManager.getQuantityOfPlayers() == 1) {
+                broadcast(String.format(Messages.WINNER, gameManager.getPlayersPlaying().get(0).getClientHandler().getUsername()), gameManager.getPlayersPlaying().get(0).getClientHandler());
+                gameManager.getPlayersPlaying().get(0).sendMessage(Messages.YOU_WON);
                 playWinSound();
-            } else {
-                currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
             }
         }
     }
@@ -66,47 +59,53 @@ public class Slot extends GameImpl {
     public void doubleBet(ClientHandler clientHandler) throws IOException {
         Player player = getPlayerByClient(clientHandler);
 
-        if(!players.get(currentPlayerPlaying).getClientHandler().equals(clientHandler)) {
+        if (!gameManager.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
             player.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
 
         try {
-            ((SlotPlayer)player).doubleBet();
+            ((SlotPlayer) player).doubleBet();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        player.releaseTurn();
+        gameManager.releaseTurn();
     }
 
     public void spin(ClientHandler clientHandler) throws IOException {
         Player player = getPlayerByClient(clientHandler);
 
-        if(!players.get(currentPlayerPlaying).getClientHandler().equals(clientHandler)) {
+        if (!gameManager.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
             player.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
 
         try {
-            ((SlotPlayer)player).spin();
+            ((SlotPlayer) player).spin();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        player.releaseTurn();
-
+        gameManager.releaseTurn();
     }
 
     @Override
     public void listUsers(ClientHandler clientHandler) throws IOException {
         StringBuilder message = new StringBuilder();
         message.append("------------- USERS ---------------\n");
-        players.forEach(player -> {
-            if(!player.getClientHandler().equals(clientHandler)) {
+        gameManager.getPlayers().forEach(player -> {
+            if (!player.getClientHandler().equals(clientHandler)) {
                 message.append(player.getClientHandler().getUsername()).append(" -> ").append(player.getCurrentBalance()).append(" balance\n").append("\n");
             }
         });
         message.append("-----------------------------------");
         Player player = getPlayerByClient(clientHandler);
         player.sendMessage(message.toString());
+    }
+
+    @Override
+    public void listCommands(ClientHandler clientHandler) throws IOException {
+        Player player = getPlayerByClient(clientHandler);
+        player.sendMessage(Commands.listCommands());
+        player.sendMessage(SpinOption.listCommands());
     }
 }

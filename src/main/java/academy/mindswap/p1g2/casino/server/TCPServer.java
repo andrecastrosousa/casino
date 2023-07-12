@@ -13,12 +13,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class TCPServer implements Spot {
+    ExecutorService executors = Executors.newFixedThreadPool(3);
     private ServerSocket serverSocket;
     private List<ClientHandler> clientHandlerList;
-
     private List<WaitingRoom> waitingRooms;
-
-    ExecutorService executors = Executors.newFixedThreadPool(3);
 
     public static void main(String[] args) {
         TCPServer server = new TCPServer();
@@ -50,7 +48,7 @@ public class TCPServer implements Spot {
 
             WaitingRoom waitingRoom;
 
-            if((clientHandlerList.size() - 1) % 3 == 0) {
+            if ((clientHandlerList.size() - 1) % 3 == 0) {
                 waitingRoom = new WaitingRoom(waitingRooms.size() + 1);
                 waitingRooms.add(waitingRoom);
                 executors.execute(waitingRoom);
@@ -68,7 +66,7 @@ public class TCPServer implements Spot {
         }
     }
 
-    public void broadcast(String message, ClientHandler clientHandlerBroadcaster){
+    public void broadcast(String message, ClientHandler clientHandlerBroadcaster) {
         clientHandlerList
                 .stream().filter(clientHandler -> !clientHandlerBroadcaster.equals(clientHandler))
                 .forEach(clientHandler -> {
@@ -97,7 +95,7 @@ public class TCPServer implements Spot {
         StringBuilder message = new StringBuilder();
         message.append("------------- USERS ---------------\n");
         clientHandlerList.forEach(clientHandler1 -> {
-            if(!clientHandler1.equals(clientHandler)) {
+            if (!clientHandler1.equals(clientHandler)) {
                 message.append(clientHandler1.getUsername()).append("\n");
             }
         });

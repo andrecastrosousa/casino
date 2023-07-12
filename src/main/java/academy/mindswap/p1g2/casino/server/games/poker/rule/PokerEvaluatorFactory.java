@@ -1,8 +1,8 @@
 package academy.mindswap.p1g2.casino.server.games.poker.rule;
 
-public class EvaluatorFactory {
+public class PokerEvaluatorFactory {
 
-    private EvaluatorFactory() {
+    private PokerEvaluatorFactory() {
 
     }
 

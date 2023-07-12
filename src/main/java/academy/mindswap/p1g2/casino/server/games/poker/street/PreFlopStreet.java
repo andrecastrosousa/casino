@@ -1,22 +1,22 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
-import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
+import academy.mindswap.p1g2.casino.server.games.poker.table.PokerTable;
 
 public class PreFlopStreet extends StreetImpl {
-    public PreFlopStreet(Table table) {
-        super(table);
+    public PreFlopStreet(PokerTable pokerTable) {
+        super(pokerTable);
     }
 
     @Override
     public void nextStreet() throws InterruptedException {
-        if(table.getPlayTimes() >= table.getPlayers().size() && canGoToNextStreet()) {
-            table.setStreetType(StreetType.FLOP);
-            table.initStreet();
+        if (pokerTable.getPlayTimes() >= pokerTable.getPlayers().size() && canGoToNextStreet()) {
+            pokerTable.setStreetType(StreetType.FLOP);
+            pokerTable.initStreet();
         }
     }
 
     @Override
     public void execute() throws InterruptedException {
-        table.startHand();
+        pokerTable.startHand();
     }
 }

@@ -1,96 +1,65 @@
 package academy.mindswap.p1g2.casino.server.games.poker.table;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.Player;
-import academy.mindswap.p1g2.casino.server.games.poker.PokerDealer;
-import academy.mindswap.p1g2.casino.server.games.poker.PokerPlayer;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
+import academy.mindswap.p1g2.casino.server.games.manager.GameManagerImpl;
+import academy.mindswap.p1g2.casino.server.games.poker.participant.PokerDealer;
+import academy.mindswap.p1g2.casino.server.games.poker.participant.PokerPlayer;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetImpl;
 import academy.mindswap.p1g2.casino.server.games.poker.street.StreetType;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Table {
-    private PokerDealer pokerDealer;
-    private final List<Player> players;
-    private final List<Player> playersPlaying;
-    private int currentPlayerPlaying;
-    private final TableManager tableManager;
+public class PokerTable extends GameManagerImpl {
+    private final PokerDealer pokerDealer;
+    private final PokerTableManager pokerTableManager;
     private int playTimes;
 
-    public Table() {
-        currentPlayerPlaying = 0;
-        players = new ArrayList<>();
-        playersPlaying = new ArrayList<>();
-        tableManager = new TableManager();
+    public PokerTable(PokerDealer pokerDealer) {
+        pokerTableManager = new PokerTableManager();
         playTimes = 0;
-    }
-
-    public Player getCurrentPlayerPlaying() {
-        return players.get(currentPlayerPlaying);
-    }
-
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public void sitDealer(PokerDealer pokerDealer) {
         this.pokerDealer = pokerDealer;
     }
 
-    public void sitPlayer(Player player) {
-        players.add(player);
-        playersPlaying.add(player);
-    }
-
-    public int getQuantityOfPlayers() {
-        return players.size();
-    }
-
     public boolean isHandOnGoing() {
-        return tableManager.isHandOnGoing();
+        return pokerTableManager.isHandOnGoing();
     }
 
     public StreetType getStreetType() {
-        return tableManager.getStreetType();
-    }
-
-
-    public void burnCard() {
-        tableManager.burnCard(pokerDealer.giveCard());
-    }
-
-    public void turnUpCard() {
-        tableManager.turnUpCard(pokerDealer.giveCard());
+        return pokerTableManager.getStreetType();
     }
 
     public void setStreetType(StreetType streetType) {
-        tableManager.setStreetType(streetType);
+        pokerTableManager.setStreetType(streetType);
+    }
+
+    public void burnCard() {
+        pokerTableManager.burnCard(pokerDealer.giveCard());
+    }
+
+    public void turnUpCard() {
+        pokerTableManager.turnUpCard(pokerDealer.giveCard());
     }
 
     public List<Card> getCards() {
-        return tableManager.getCards();
+        return pokerTableManager.getCards();
     }
 
     public void addBet(int bet) {
-        tableManager.addBetToPot(bet);
+        pokerTableManager.addBetToPot(bet);
     }
 
     public int getPlayTimes() {
         return playTimes;
     }
 
-    public List<Player> getPlayersPlaying() {
-        return playersPlaying;
-    }
-
     public String showTableCards() {
         StringBuilder message = new StringBuilder();
-        tableManager.getCards().forEach(card -> message.append(card.toString()));
+        pokerTableManager.getCards().forEach(card -> message.append(card.toString()));
         return message.toString();
     }
 
@@ -99,7 +68,7 @@ public class Table {
                 .filter(player -> player.getClientHandler().equals(clientHandler))
                 .findFirst()
                 .orElse(null);
-        if(playerFound != null) {
+        if (playerFound != null) {
             return ((PokerPlayer) playerFound).showCards();
         }
         return "";
@@ -109,50 +78,50 @@ public class Table {
         StreetImpl.buildStreet(this).execute();
         playTimes = 0;
         currentPlayerPlaying = 0;
-        players.forEach( player -> {
+        players.forEach(player -> {
             ((PokerPlayer) player).resetBet();
         });
     }
 
     public void resetHand() {
-        tableManager.setHandOnGoing(false);
-        players.forEach( player -> {
+        pokerTableManager.setHandOnGoing(false);
+        players.forEach(player -> {
             ((PokerPlayer) player).resetBet();
         });
         playersPlaying.clear();
         playersPlaying.addAll(players);
-        pokerDealer.pickTableCards(tableManager.clear());
-        tableManager.resetPot();
+        pokerDealer.pickTableCards(pokerTableManager.clear());
+        pokerTableManager.resetPot();
     }
 
 
     public void startHand() {
         pokerDealer.shuffle();
         pokerDealer.distributeCards(players);
-        tableManager.setHandOnGoing(true);
+        pokerTableManager.setHandOnGoing(true);
     }
 
-    public void playStreet() throws InterruptedException {
+    @Override
+    public synchronized void startTurn() throws InterruptedException {
         Player currentPlayer = getCurrentPlayerPlaying();
 
-        if(currentPlayer.getCurrentBalance() > 0) {
+        if (currentPlayer.getCurrentBalance() > 0) {
             currentPlayer.startTurn();
         }
 
-        while (currentPlayer.isPlaying()) {
-
-        }
+        // Will wait for user to release thread, this happens when user finished successfully the turn
+        wait();
 
         playTimes++;
-        if(handContinue()) {
+        if (handContinue()) {
             StreetImpl.buildStreet(this).nextStreet();
             return;
         }
-        tableManager.setHandOnGoing(false);
+        pokerTableManager.setHandOnGoing(false);
     }
 
     public void removePlayer(Player player, boolean fromTable) {
-        if(fromTable) {
+        if (fromTable) {
             players.remove(player);
         }
         playersPlaying.remove(player);
@@ -164,29 +133,29 @@ public class Table {
     }
 
     public int getPotValue() {
-        return tableManager.getPotValue();
+        return pokerTableManager.getPotValue();
     }
 
     public boolean handContinue() {
-        if(playersPlaying.size() == 1) {
+        if (playersPlaying.size() == 1) {
             currentPlayerPlaying = 0;
             Player winnerPlayer = playersPlaying.get(0);
 
             players.forEach(player -> {
                 try {
                     if (player == winnerPlayer) {
-                        player.sendMessage(String.format(Messages.YOU_WON_HAND, tableManager.getPotValue()));
-                        player.addBalance(tableManager.getPotValue());
+                        player.sendMessage(String.format(Messages.YOU_WON_HAND, pokerTableManager.getPotValue()));
+                        player.addBalance(pokerTableManager.getPotValue());
                         receiveCardsFromPlayer(((PokerPlayer) player).returnCards());
                     } else {
-                        player.sendMessage(String.format(Messages.SOMEONE_WON_HAND, winnerPlayer.getClientHandler().getUsername(), tableManager.getPotValue()));
+                        player.sendMessage(String.format(Messages.SOMEONE_WON_HAND, winnerPlayer.getClientHandler().getUsername(), pokerTableManager.getPotValue()));
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             });
 
-            tableManager.setStreetType(StreetType.SHOWDOWN);
+            pokerTableManager.setStreetType(StreetType.SHOWDOWN);
             return false;
         }
         currentPlayerPlaying = (currentPlayerPlaying + 1) % players.size();

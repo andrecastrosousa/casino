@@ -18,7 +18,7 @@ public class TCPClient {
         this.consoleReader = new BufferedReader(new InputStreamReader(System.in));
     }
 
-    private void handleServer(){
+    private void handleServer() {
         connectToServer();
         //   System.out.println("Connected");
         startListenToServer();
@@ -35,6 +35,7 @@ public class TCPClient {
             handleServer();
         }
     }
+
     private void communicateWithServer() {
         try {
             //   System.out.println("comm");
@@ -53,7 +54,7 @@ public class TCPClient {
         socketWriter.newLine();
         socketWriter.flush();
 
-        if(message.equals("/quit")) {
+        if (message.equals("/quit")) {
             close();
             System.exit(0);
         }
@@ -109,7 +110,7 @@ public class TCPClient {
         BufferedReader serverReader;
 
         public ServerListener(InputStream inputStream) {
-            this.serverReader = new BufferedReader(new InputStreamReader(inputStream));;
+            this.serverReader = new BufferedReader(new InputStreamReader(inputStream));
         }
 
         @Override
@@ -120,10 +121,11 @@ public class TCPClient {
                 e.printStackTrace();
             }
         }
+
         private void readMessage() throws IOException {
             String readMessageFromServer = serverReader.readLine();
             System.out.println(readMessageFromServer);
-            if(readMessageFromServer == null || readMessageFromServer.equals("quit")) {
+            if (readMessageFromServer == null || readMessageFromServer.equals("quit")) {
                 close();
                 return;
             }

@@ -1,6 +1,7 @@
-package academy.mindswap.p1g2.casino.server.games.blackjack;
+package academy.mindswap.p1g2.casino.server.games.blackjack.participant;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
+import academy.mindswap.p1g2.casino.server.games.deck.BoardChecker;
 import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.PlayerImpl;
 
@@ -32,9 +33,8 @@ public class BlackjackPlayer extends PlayerImpl {
     }
 
     public String showCards() {
-        StringBuilder message = new StringBuilder();
-        hand.forEach(card -> message.append(card.toString()));
-        return message.toString();
+        BoardChecker boardChecker = BoardChecker.getInstance();
+        return boardChecker.getBoard(hand);
     }
 
     public List<Card> returnCards(String message) throws IOException {

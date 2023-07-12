@@ -5,14 +5,13 @@ import academy.mindswap.p1g2.casino.server.Spot;
 import academy.mindswap.p1g2.casino.server.WaitingRoom;
 import academy.mindswap.p1g2.casino.server.command.CommandHandler;
 import academy.mindswap.p1g2.casino.server.command.Commands;
-import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 
 import java.io.IOException;
 
 public class SlotsCommand implements CommandHandler {
     @Override
     public void execute(Spot spot, ClientHandler clientHandler) throws IOException {
-        if(spot instanceof WaitingRoom) {
+        if (spot instanceof WaitingRoom) {
             ((WaitingRoom) spot).slots(clientHandler);
             return;
         }

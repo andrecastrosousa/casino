@@ -1,5 +1,5 @@
 # MindSwap Academy Casino
-Welcome to the MindSwap Academy Casino! This project aims to create an interactive and enjoyable online casino experience. Players can engage in various mini-games such as poker, blackjack, and roulette. The games will commence when a waitingRoom has at least three clients, who will then be presented with three mini-games to select from.
+Welcome to the MindSwap Academy Casino! This project aims to create an interactive and enjoyable online casino experience. Players can engage in various mini-games such as poker, blackjack, and slots. The games will start when a waitingRoom has at least three clients, who will then be presented with three mini-games to select from.
 
 ## Authors
 
@@ -16,9 +16,9 @@ The casino offers the following mini-games for players to enjoy:
 
 1. ***Poker***: A classic card game where players bet on their hand's strength and attempt to create the best possible combination of cards to win the pot.
 
-2. ***Blackjack***: Also known as "21," this game requires players to compete against the pokerDealer by reaching a hand value as close to 21 as possible without exceeding it.
+2. ***Blackjack***: Also known as "21", this game requires players to compete against the pokerDealer by reaching a hand value as close to 21 as possible without exceeding it.
 
-3. ***Roulette***: A game of chance where players place bets on a number, color, or group of numbers and wait for the roulette wheel to determine the winner.
+3. ***Slots***: A game of chance where players place bets on a slot and wait for the slot wheel to determine the winner.
 
 ## Room Creation and Gameplay
 To start a mini-game, a waitingRoom must have a minimum of three clients. Once three clients have joined a waitingRoom, they will be presented with the option to choose one of the available mini-games.

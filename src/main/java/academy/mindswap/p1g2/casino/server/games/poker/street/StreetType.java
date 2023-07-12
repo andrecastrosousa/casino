@@ -5,5 +5,5 @@ public enum StreetType {
     FLOP,
     TURN,
     RIVER,
-    SHOWDOWN;
+    SHOWDOWN
 }

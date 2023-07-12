@@ -1,12 +1,14 @@
-package academy.mindswap.p1g2.casino.server.games.poker;
+package academy.mindswap.p1g2.casino.server.games.poker.participant;
 
-import academy.mindswap.p1g2.casino.server.games.deck.Card;
-import academy.mindswap.p1g2.casino.server.games.DealerImpl;
-import academy.mindswap.p1g2.casino.server.games.deck.DeckGenerator;
 import academy.mindswap.p1g2.casino.server.Player;
+import academy.mindswap.p1g2.casino.server.games.DealerImpl;
+import academy.mindswap.p1g2.casino.server.games.deck.BoardChecker;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
+import academy.mindswap.p1g2.casino.server.games.deck.DeckGenerator;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+
 public class PokerDealer extends DealerImpl {
 
     public PokerDealer() {
@@ -19,16 +21,16 @@ public class PokerDealer extends DealerImpl {
 
     @Override
     public void distributeCards(List<Player> players) {
-
-        for(int i = 0; i < 2; i++) {
-            for(Player player : players) {
+        BoardChecker boardChecker = BoardChecker.getInstance();
+        for (int i = 0; i < 2; i++) {
+            for (Player player : players) {
                 ((PokerPlayer) player).receiveCard(cards.remove(cards.size() - 1));
             }
         }
 
         players.forEach(player -> {
             try {
-                player.sendMessage(((PokerPlayer) player).showCards());
+                player.sendMessage(boardChecker.getBoard(((PokerPlayer) player).getCards()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -1,7 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.poker.rule;
 
 import academy.mindswap.p1g2.casino.server.games.deck.Card;
-import academy.mindswap.p1g2.casino.server.games.poker.HandScore;
+import academy.mindswap.p1g2.casino.server.games.poker.participant.HandScore;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,7 +15,7 @@ public class StraightFlushEvaluator extends HandEvaluator {
 
         AtomicReference<Card.Suit> suitFlush = new AtomicReference<>(Card.Suit.CLUBS);
 
-        if(isFlush(cards, suitFlush)) {
+        if (isFlush(cards, suitFlush)) {
             List<Card> cardsFlush = cards.stream()
                     .filter(card -> card.getSuit() == suitFlush.get())
                     .toList();

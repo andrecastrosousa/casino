@@ -1,32 +1,34 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
-import academy.mindswap.p1g2.casino.server.games.poker.table.Table;
+import academy.mindswap.p1g2.casino.server.games.deck.BoardChecker;
+import academy.mindswap.p1g2.casino.server.games.poker.table.PokerTable;
 
 import java.io.IOException;
 
 public class FlopStreet extends StreetImpl {
-    public FlopStreet(Table table) {
-        super(table);
+    public FlopStreet(PokerTable pokerTable) {
+        super(pokerTable);
     }
 
     @Override
     public void nextStreet() throws InterruptedException {
-        if(table.getPlayTimes() >= table.getPlayersPlaying().size() && canGoToNextStreet()) {
-            table.setStreetType(StreetType.TURN);
-            table.initStreet();
+        if (pokerTable.getPlayTimes() >= pokerTable.getPlayersPlaying().size() && canGoToNextStreet()) {
+            pokerTable.setStreetType(StreetType.TURN);
+            pokerTable.initStreet();
         }
     }
 
     @Override
     public void execute() throws InterruptedException {
-        table.burnCard();
-        for(int i = 0; i < 3; i++) {
-            table.turnUpCard();
+        BoardChecker boardChecker = BoardChecker.getInstance();
+        pokerTable.burnCard();
+        for (int i = 0; i < 3; i++) {
+            pokerTable.turnUpCard();
         }
 
-        table.getPlayers().forEach(player -> {
+        pokerTable.getPlayers().forEach(player -> {
             try {
-                player.sendMessage(table.showTableCards());
+                player.sendMessage(boardChecker.getBoard(pokerTable.getCards()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

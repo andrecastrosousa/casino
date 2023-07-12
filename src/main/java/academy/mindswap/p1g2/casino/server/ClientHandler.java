@@ -8,13 +8,13 @@ import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable {
+    private static int numberOfClients = 0;
     private final Socket socket;
     private final BufferedWriter out;
     private final BufferedReader in;
+    private final MessageSender messageSender;
     private String username;
     private String message;
-    private final MessageSender messageSender;
-    private static int numberOfClients = 0;
 
     public ClientHandler(Socket socket, TCPServer server) throws IOException {
         this.socket = socket;
@@ -22,6 +22,10 @@ public class ClientHandler implements Runnable {
         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         numberOfClients++;
+    }
+
+    public static int getNumberOfClients() {
+        return numberOfClients;
     }
 
     public String getUsername() {
@@ -38,10 +42,6 @@ public class ClientHandler implements Runnable {
 
     public void changeUsername(String username) {
         this.username = username;
-    }
-
-    public static int getNumberOfClients() {
-        return numberOfClients;
     }
 
     public MessageSender getMessageSender() {
@@ -80,7 +80,7 @@ public class ClientHandler implements Runnable {
 
     private void greetClient() throws IOException {
         System.out.println(Messages.CLIENT_ARRIVED);
-        sendMessageUser(Messages.CLIENT_WELCOME);
+        sendMessageUser(Messages.CASINO_MINDSWAP_ACADEMY);
         username = RandomNameGenerator.generateRandomName();
         sendMessageUser(String.format(Messages.CLIENT_NAME, username));
     }

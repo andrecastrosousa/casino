@@ -1,9 +1,9 @@
 package academy.mindswap.p1g2.casino.server.games.poker.rule;
 
 import academy.mindswap.p1g2.casino.server.games.deck.Card;
-import academy.mindswap.p1g2.casino.server.games.poker.HandScore;
+import academy.mindswap.p1g2.casino.server.games.poker.participant.HandScore;
 
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RoyalFlushEvaluator extends HandEvaluator {

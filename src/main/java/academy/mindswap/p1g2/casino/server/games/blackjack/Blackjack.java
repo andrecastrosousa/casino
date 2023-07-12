@@ -1,18 +1,18 @@
 package academy.mindswap.p1g2.casino.server.games.blackjack;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
+import academy.mindswap.p1g2.casino.server.games.blackjack.commands.BlackjackMove;
+import academy.mindswap.p1g2.casino.server.games.blackjack.participant.BlackjackPlayer;
+import academy.mindswap.p1g2.casino.server.games.blackjack.manager.BlackjackTable;
+import academy.mindswap.p1g2.casino.server.games.manager.GameImpl;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import academy.mindswap.p1g2.casino.server.Player;
 import academy.mindswap.p1g2.casino.server.command.Commands;
-import academy.mindswap.p1g2.casino.server.games.*;
-import academy.mindswap.p1g2.casino.server.games.slotMachine.command.SpinOption;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Rules:
@@ -32,34 +32,29 @@ import java.util.Objects;
 
 public class Blackjack extends GameImpl {
     public static final int HIGH_SCORE = 21;
-    private final Table table;
     private final PlaySound hitSound;
 
     public Blackjack() {
-        table = new Table();
+        gameManager = new BlackjackTable();
         hitSound = new PlaySound("../casino/sounds/hit_sound.wav");
     }
 
     @Override
-    public void join(List<ClientHandler> clientHandlers) {
-        clientHandlers.forEach(clientHandler -> {
-            table.sitPlayer(new BlackjackPlayer(clientHandler));
-            clientHandler.changeSpot(this);
-        });
-    }
+    public void play() throws IOException, InterruptedException {
+        Player currentPlayer = gameManager.getCurrentPlayerPlaying();
+        broadcast(Messages.TITLE_BLACKJACK, currentPlayer.getClientHandler());
+        currentPlayer.sendMessage(Messages.TITLE_BLACKJACK);
 
-    public void play() throws IOException {
         while (gameEnded()) {
-            table.startHand();
-            while (table.handStillOnGoing()) {
-                Player currentPlayer = table.getCurrentPlayerPlaying();
+            ((BlackjackTable)gameManager).startHand();
+            while (((BlackjackTable) gameManager).handStillOnGoing()) {
+                currentPlayer = gameManager.getCurrentPlayerPlaying();
                 broadcast(String.format(Messages.SOMEONE_PLAYING, currentPlayer.getClientHandler().getUsername()), currentPlayer.getClientHandler());
                 currentPlayer.sendMessage(Messages.YOUR_TURN);
-                table.playHand();
+                gameManager.startTurn();
             }
-            broadcast(table.getDealerCards(), table.getPlayers().get(0).getClientHandler());
-            table.theWinnerIs();
-            table.clear();
+            broadcast(((BlackjackTable) gameManager).getDealerCards(), gameManager.getPlayers().get(0).getClientHandler());
+            ((BlackjackTable) gameManager).theWinnerIs();
         }
 
     }
@@ -70,44 +65,55 @@ public class Blackjack extends GameImpl {
 
     public void hit(ClientHandler clientHandler) throws IOException {
         playHitSound();
-        Player currentPlayer = table.getCurrentPlayerPlaying();
+        Player currentPlayer = gameManager.getCurrentPlayerPlaying();
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
             currentPlayer.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
-        table.playerHit();
+        ((BlackjackTable) gameManager).playerHit();
         currentPlayer.releaseTurn();
+        gameManager.releaseTurn();
     }
 
     public void stand(ClientHandler clientHandler) throws IOException {
-        Player currentPlayer = table.getCurrentPlayerPlaying();
+        Player currentPlayer = gameManager.getCurrentPlayerPlaying();
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
             currentPlayer.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
         currentPlayer.releaseTurn();
+        gameManager.releaseTurn();
     }
 
     public void surrender(ClientHandler clientHandler) throws IOException {
-        Player currentPlayer = table.getCurrentPlayerPlaying();
+        Player currentPlayer = gameManager.getCurrentPlayerPlaying();
         if (!currentPlayer.getClientHandler().equals(clientHandler)) {
             currentPlayer.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
-        table.playerSurrender();
+        ((BlackjackTable) gameManager).playerSurrender();
         currentPlayer.releaseTurn();
+        gameManager.releaseTurn();
+    }
+
+    @Override
+    public void join(List<ClientHandler> clientHandlers) {
+        clientHandlers.forEach(clientHandler -> {
+            gameManager.sitPlayer(new BlackjackPlayer(clientHandler));
+            clientHandler.changeSpot(this);
+        });
     }
 
     @Override
     public boolean gameEnded() {
-        return table.getHandCount() <= 3;
+        return ((BlackjackTable) gameManager).getHandCount() <= 3;
     }
 
     @Override
     public void listUsers(ClientHandler clientHandler) throws IOException {
         StringBuilder message = new StringBuilder();
         message.append("------------- USERS ---------------\n");
-        table.getPlayers().forEach(player -> {
+        gameManager.getPlayers().forEach(player -> {
             if(!player.getClientHandler().equals(clientHandler)) {
                 message.append(player.getClientHandler().getUsername()).append("\n");
             }
@@ -118,44 +124,10 @@ public class Blackjack extends GameImpl {
     }
 
     @Override
-    public void broadcast(String message, ClientHandler clientHandlerBroadcaster) {
-        table.getPlayers().stream().filter(player -> !clientHandlerBroadcaster.equals(player.getClientHandler()))
-                .forEach(player -> {
-                    try {
-                        player.sendMessage(message);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-    }
-
-    @Override
-    public void whisper(String message, String clientToSend) {
-        table.getPlayers().stream()
-                .filter(player -> Objects.equals(player.getClientHandler().getUsername(), clientToSend))
-                .forEach(player -> {
-                    try {
-                        player.sendMessage(message);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-    }
-
-    @Override
     public void listCommands(ClientHandler clientHandler) throws IOException {
         Player player = getPlayerByClient(clientHandler);
         player.sendMessage(Commands.listCommands());
-        player.sendMessage(SpinOption.listCommands());
-    }
-
-    @Override
-    public void removeClient(ClientHandler clientHandler) {
-        Player playerToRemove = getPlayerByClient(clientHandler);
-        if(playerToRemove != null) {
-            table.removePlayer(playerToRemove);
-            playerToRemove.getClientHandler().closeConnection();
-        }
+        player.sendMessage(BlackjackMove.listCommands());
     }
 }
 

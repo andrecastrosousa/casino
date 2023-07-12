@@ -1,47 +1,28 @@
-package academy.mindswap.p1g2.casino.server.games.blackjack;
+package academy.mindswap.p1g2.casino.server.games.blackjack.manager;
 
+import academy.mindswap.p1g2.casino.server.games.manager.GameManagerImpl;
 import academy.mindswap.p1g2.casino.server.Player;
+import academy.mindswap.p1g2.casino.server.games.blackjack.Blackjack;
+import academy.mindswap.p1g2.casino.server.games.blackjack.participant.BlackjackDealer;
+import academy.mindswap.p1g2.casino.server.games.blackjack.participant.BlackjackPlayer;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-public class Table {
+public class BlackjackTable extends GameManagerImpl {
     private final BlackjackDealer blackjackDealer;
-    private int currentPlayerPlaying;
     private int handCount;
-    private final List<Player> players;
-    private List<Player> playersNotBurst;
     private final PlaySound winSound;
 
-    public Table() {
+    public BlackjackTable() {
         winSound = new PlaySound("../casino/sounds/you_win_sound.wav");
-        playersNotBurst = new ArrayList<>();
         blackjackDealer = new BlackjackDealer();
         handCount = 0;
-        players = new ArrayList<>();
-        currentPlayerPlaying = 0;
-    }
-
-    public void sitPlayer(Player player) {
-        players.add(player);
-    }
-
-    public void removePlayer(Player player) {
-        players.remove(player);
-    }
-
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public Player getCurrentPlayerPlaying() {
-        return playersNotBurst.get(currentPlayerPlaying);
     }
 
     public boolean handStillOnGoing() {
-        return currentPlayerPlaying < playersNotBurst.size();
+        return currentPlayerPlaying < playersPlaying.size();
     }
 
     public String getDealerCards() {
@@ -72,21 +53,7 @@ public class Table {
     public void startHand() {
         blackjackDealer.shuffle();
         blackjackDealer.distributeCards(players);
-        playersNotBurst = players.stream().filter(player -> ((BlackjackPlayer) player).getScore() > 0).toList();
-    }
-
-    public void playHand() {
-        Player currentPlayer = getCurrentPlayerPlaying();
-        currentPlayer.startTurn();
-
-        while (currentPlayer.isPlaying()) {}
-        currentPlayerPlaying++;
-    }
-
-    public void clear() {
-        currentPlayerPlaying = 0;
-        handCount++;
-        blackjackDealer.resetHand();
+        playersPlaying = players.stream().filter(player -> ((BlackjackPlayer) player).getScore() > 0).toList();
     }
 
     public void theWinnerIs() throws IOException {
@@ -105,5 +72,23 @@ public class Table {
                 throw new RuntimeException(e);
             }
         });
+
+        clear();
+    }
+
+    private void clear() {
+        currentPlayerPlaying = 0;
+        handCount++;
+        blackjackDealer.resetHand();
+    }
+
+    @Override
+    public synchronized void startTurn() throws InterruptedException {
+        Player currentPlayer = getCurrentPlayerPlaying();
+        currentPlayer.startTurn();
+
+        wait();
+
+        currentPlayerPlaying++;
     }
 }

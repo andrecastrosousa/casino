@@ -1,7 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.poker.rule;
 
 import academy.mindswap.p1g2.casino.server.games.deck.Card;
-import academy.mindswap.p1g2.casino.server.games.poker.HandScore;
+import academy.mindswap.p1g2.casino.server.games.poker.participant.HandScore;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -14,12 +14,11 @@ public abstract class HandEvaluator implements Evaluator {
 
     @Override
     public HandScore evaluateNext(List<Card> cards) {
-        if(nextEvaluator != null) {
+        if (nextEvaluator != null) {
             return nextEvaluator.evaluateHand(cards);
         }
         return null;
     }
-
 
 
     @Override
@@ -30,7 +29,7 @@ public abstract class HandEvaluator implements Evaluator {
     protected boolean isFlush(List<Card> cards, AtomicReference<Card.Suit> suitFlush) {
         return Arrays.stream(Card.getSuits())
                 .anyMatch(suit -> {
-                    if(cards.stream()
+                    if (cards.stream()
                             .filter(card -> card.getSuit() == suit)
                             .count() >= 5) {
                         suitFlush.set(suit);
@@ -56,7 +55,7 @@ public abstract class HandEvaluator implements Evaluator {
                 indexOfLastCombinationCard = 0;
             }
         }
-        if(countVerifiedCards <= 4) {
+        if (countVerifiedCards <= 4) {
             indexOfLastCombinationCard = 0;
         }
         return indexOfLastCombinationCard;
@@ -65,7 +64,7 @@ public abstract class HandEvaluator implements Evaluator {
     private Map<Card.Value, List<Card>> getPairsByValue(List<Card> cards) {
         Map<Card.Value, List<Card>> valueCounts = new HashMap<>();
 
-        for(Card card: cards) {
+        for (Card card : cards) {
             List<Card> cardsAdded = valueCounts.getOrDefault(card.getValue(), new ArrayList<>());
             cardsAdded.add(card);
             valueCounts.put(card.getValue(), cardsAdded);

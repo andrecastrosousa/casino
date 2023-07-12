@@ -1,9 +1,10 @@
 package academy.mindswap.p1g2.casino.server.games.poker.rule;
 
 import academy.mindswap.p1g2.casino.server.games.deck.Card;
-import academy.mindswap.p1g2.casino.server.games.poker.HandScore;
+import academy.mindswap.p1g2.casino.server.games.poker.participant.HandScore;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StraightEvaluator extends HandEvaluator {
     @Override

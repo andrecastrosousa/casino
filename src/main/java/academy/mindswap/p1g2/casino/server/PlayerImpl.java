@@ -12,7 +12,8 @@ public abstract class PlayerImpl implements Player {
         isPlaying = false;
         this.currentBalance = currentBalance;
     }
-    protected PlayerImpl(ClientHandler clientHandler){
+
+    protected PlayerImpl(ClientHandler clientHandler) {
         this.clientHandler = clientHandler;
         isPlaying = false;
         this.currentBalance = 0;

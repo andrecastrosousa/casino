@@ -6,5 +6,6 @@ import java.io.IOException;
 
 public interface Evaluator {
     boolean evaluateHand(int payout, Player player) throws IOException;
+
     void setNextEvaluator(Evaluator evaluator);
 }

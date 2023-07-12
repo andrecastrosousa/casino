@@ -10,8 +10,8 @@ public class DeckGenerator {
 
     public static List<Card> getDeckOfCards() {
         List<Card> deck = new ArrayList<>();
-        for(Card.Suit suit : Card.getSuits()) {
-            for (Card.Value value: Card.getCardValues()) {
+        for (Card.Suit suit : Card.getSuits()) {
+            for (Card.Value value : Card.getCardValues()) {
                 deck.add(new Card(value, suit));
             }
         }
@@ -19,3 +19,4 @@ public class DeckGenerator {
         return deck;
     }
 }
+
