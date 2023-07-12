@@ -1,8 +1,8 @@
 package academy.mindswap.p1g2.casino.server.games;
 
-import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 import academy.mindswap.p1g2.casino.server.Player;
 import academy.mindswap.p1g2.casino.server.games.deck.Card;
+import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,7 @@ public abstract class DealerImpl implements Dealer {
     }
 
     @Override
-    public void shuffle(){
+    public void shuffle() {
         playShufflingSound();
         try {
             Thread.sleep(8000);
@@ -53,7 +53,7 @@ public abstract class DealerImpl implements Dealer {
 
     @Override
     public void receiveCardsFromPlayer(List<Card> cards) {
-        for (Card card: cards) {
+        for (Card card : cards) {
             this.cards.add(0, card);
         }
     }

@@ -11,7 +11,7 @@ import java.io.IOException;
 public class SurrenderCommand implements CommandHandler {
     @Override
     public void execute(Spot spot, ClientHandler clientHandler) throws IOException {
-        if(spot instanceof Blackjack){
+        if (spot instanceof Blackjack) {
             ((Blackjack) spot).surrender(clientHandler);
             return;
         }

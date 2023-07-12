@@ -1,4 +1,4 @@
-package academy.mindswap.p1g2.casino.server.games.blackjack;
+package academy.mindswap.p1g2.casino.server.games.blackjack.participant;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.games.deck.BoardChecker;

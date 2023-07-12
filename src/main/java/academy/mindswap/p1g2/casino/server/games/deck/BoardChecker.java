@@ -6,12 +6,13 @@ import java.util.List;
 public class BoardChecker {
     private static BoardChecker instance;
     private List<Board> boards;
-    private BoardChecker(){
+
+    private BoardChecker() {
         boards = new ArrayList<>(List.of(new BoardOneCard(), new BoardTwoCards(), new BoardThreeCards(), new BoardFourCards(), new BoardFiveCards()));
     }
 
-    public static BoardChecker getInstance(){
-        if(instance == null){
+    public static BoardChecker getInstance() {
+        if (instance == null) {
             instance = new BoardChecker();
         }
         return instance;

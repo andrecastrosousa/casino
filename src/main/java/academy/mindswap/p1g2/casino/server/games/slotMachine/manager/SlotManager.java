@@ -1,35 +1,16 @@
-package academy.mindswap.p1g2.casino.server.games.slotMachine;
+package academy.mindswap.p1g2.casino.server.games.slotMachine.manager;
 
 import academy.mindswap.p1g2.casino.server.Player;
+import academy.mindswap.p1g2.casino.server.games.manager.GameManagerImpl;
 import academy.mindswap.p1g2.casino.server.utils.Messages;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-public class SlotManager {
-    private int currentPlayerPlaying;
-    private final List<Player> players;
-    private final List<Player> playersPlaying;
-
+public class SlotManager extends GameManagerImpl {
     public SlotManager() {
-        players = new ArrayList<>();
-        playersPlaying = new ArrayList<>();
     }
 
-    public Player getCurrentPlayerPlaying() {
-        return playersPlaying.get(currentPlayerPlaying);
-    }
-
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public void sitPlayer(Player player) {
-        players.add(player);
-        playersPlaying.add(player);
-    }
-
+    @Override
     public synchronized void startTurn() throws IOException, InterruptedException {
         Player currentPlayer = getCurrentPlayerPlaying();
         currentPlayer.startTurn();
@@ -39,16 +20,11 @@ public class SlotManager {
 
         if (currentPlayer.getCurrentBalance() == 0) {
             playersPlaying.remove(currentPlayer);
-            currentPlayerPlaying --;
+            currentPlayerPlaying--;
             players.remove(currentPlayer);
             currentPlayer.sendMessage(Messages.SLOT_MACHINE_GAMEOVER);
         }
 
         currentPlayerPlaying = (currentPlayerPlaying + 1) % playersPlaying.size();
     }
-
-    public synchronized void releaseTurn() {
-        notifyAll();
-    }
-
 }

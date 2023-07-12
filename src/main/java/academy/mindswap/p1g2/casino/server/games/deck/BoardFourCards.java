@@ -4,7 +4,7 @@ import academy.mindswap.p1g2.casino.server.utils.Messages;
 
 import java.util.List;
 
-public class BoardFourCards implements Board{
+public class BoardFourCards implements Board {
     @Override
     public boolean canHandle(int cardsSize) {
         return cardsSize == 4;

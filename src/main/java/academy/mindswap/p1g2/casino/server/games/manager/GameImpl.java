@@ -1,32 +1,30 @@
-package academy.mindswap.p1g2.casino.server.games;
+package academy.mindswap.p1g2.casino.server.games.manager;
 
-import java.util.List;
 import academy.mindswap.p1g2.casino.server.ClientHandler;
 import academy.mindswap.p1g2.casino.server.Player;
-import academy.mindswap.p1g2.casino.server.command.Commands;
-import academy.mindswap.p1g2.casino.server.games.slotMachine.command.SpinOption;
 
 import java.io.IOException;
 import java.util.Objects;
 
 public abstract class GameImpl implements Game {
-    protected List<Player> players;
-    protected List<Player> playersPlaying;
-
+    protected GameManager gameManager;
 
     @Override
     public boolean gameEnded() {
-        return players.size() <= 1;
+        return gameManager.getQuantityOfPlayers() <= 1;
     }
 
     protected Player getPlayerByClient(ClientHandler clientHandler) {
-        return players.stream().filter(player -> player.getClientHandler().equals(clientHandler)).findFirst().orElse(null);
+        return gameManager.getPlayers().stream()
+                .filter(player -> player.getClientHandler().equals(clientHandler))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public void broadcast(String message, ClientHandler clientHandlerBroadcaster) {
-        players
-                .stream().filter(player -> !clientHandlerBroadcaster.equals(player.getClientHandler()))
+        gameManager.getPlayers().stream()
+                .filter(player -> !clientHandlerBroadcaster.equals(player.getClientHandler()))
                 .forEach(player -> {
                     try {
                         player.sendMessage(message);
@@ -38,7 +36,7 @@ public abstract class GameImpl implements Game {
 
     @Override
     public void whisper(String message, String clientToSend) {
-        players.stream()
+        gameManager.getPlayers().stream()
                 .filter(player -> Objects.equals(player.getClientHandler().getUsername(), clientToSend))
                 .forEach(player -> {
                     try {
@@ -50,17 +48,13 @@ public abstract class GameImpl implements Game {
     }
 
     @Override
-    public void listCommands(ClientHandler clientHandler) throws IOException {
-        Player player = getPlayerByClient(clientHandler);
-        player.sendMessage(Commands.listCommands());
-        player.sendMessage(SpinOption.listCommands());
-    }
+    public abstract void listCommands(ClientHandler clientHandler) throws IOException;
 
     @Override
     public void removeClient(ClientHandler clientHandler) {
         Player playerToRemove = getPlayerByClient(clientHandler);
-        if(playerToRemove != null) {
-            players.remove(playerToRemove);
+        if (playerToRemove != null) {
+            gameManager.getPlayers().remove(playerToRemove);
             playerToRemove.getClientHandler().closeConnection();
         }
     }

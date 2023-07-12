@@ -12,7 +12,7 @@ public class RiverStreet extends StreetImpl {
 
     @Override
     public void nextStreet() throws InterruptedException {
-        if(pokerTable.getPlayTimes() >= pokerTable.getPlayersPlaying().size() && canGoToNextStreet()) {
+        if (pokerTable.getPlayTimes() >= pokerTable.getPlayersPlaying().size() && canGoToNextStreet()) {
             pokerTable.setStreetType(StreetType.SHOWDOWN);
             pokerTable.initStreet();
         }

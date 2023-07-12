@@ -24,14 +24,6 @@ public enum SpinOption {
         this.handler = handler;
     }
 
-    public String getCommand() {
-        return command;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public static CommandHandler getCommandHandlerByString(String message) {
         return Arrays.stream(SpinOption.values())
                 .filter(commands -> commands.getCommand().equals(message))
@@ -43,12 +35,20 @@ public enum SpinOption {
     public static String listCommands() {
         StringBuilder message = new StringBuilder();
         message.append(Messages.POKER_SEPARATOR);
-        for(SpinOption command : SpinOption.values()) {
-            if(command != UNKNOWN) {
+        for (SpinOption command : SpinOption.values()) {
+            if (command != UNKNOWN) {
                 message.append(command.getCommand()).append(" -> ").append(command.getDescription()).append("\n");
             }
         }
         message.append(Messages.SEPARATOR);
         return message.toString();
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

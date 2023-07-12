@@ -1,16 +1,16 @@
 package academy.mindswap.p1g2.casino.server.games.poker.rule;
 
 import academy.mindswap.p1g2.casino.server.games.deck.Card;
-import academy.mindswap.p1g2.casino.server.games.poker.HandScore;
+import academy.mindswap.p1g2.casino.server.games.poker.participant.HandScore;
 
-import java.util.*;
+import java.util.List;
 
 public class ThreeOfAKindEvaluator extends HandEvaluator {
     @Override
     public HandScore evaluateHand(List<Card> cards) {
         List<Card> newHand = getPairCards(cards, 3);
 
-        if(newHand.size() == 3) {
+        if (newHand.size() == 3) {
             List<Card> higherCards = getHigherCards(cards, newHand);
             newHand.addAll(higherCards.subList(0, 2));
             return new HandScore(

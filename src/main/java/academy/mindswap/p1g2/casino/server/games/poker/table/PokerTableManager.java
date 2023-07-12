@@ -9,8 +9,8 @@ import java.util.List;
 public class PokerTableManager {
     private final List<Card> cards;
     private final List<Card> burnedCards;
-    private StreetType streetType;
     private final Pot pot;
+    private StreetType streetType;
     private boolean handOnGoing;
 
     public PokerTableManager() {
@@ -32,16 +32,16 @@ public class PokerTableManager {
         return streetType;
     }
 
+    public void setStreetType(StreetType streetType) {
+        this.streetType = streetType;
+    }
+
     public void burnCard(Card card) {
         burnedCards.add(card);
     }
 
     public void turnUpCard(Card card) {
         cards.add(card);
-    }
-
-    public void setStreetType(StreetType streetType) {
-        this.streetType = streetType;
     }
 
     public List<Card> getCards() {

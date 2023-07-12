@@ -4,6 +4,7 @@ import java.util.List;
 
 public interface Board {
     boolean canHandle(int cardsSize);
+
     String handle(List<Card> cards);
 
 }

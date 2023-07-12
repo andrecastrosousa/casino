@@ -11,7 +11,7 @@ import java.io.IOException;
 public class ShowTableCommand implements CommandHandler {
     @Override
     public void execute(Spot spot, ClientHandler clientHandler) throws IOException {
-        if(spot instanceof Poker) {
+        if (spot instanceof Poker) {
             ((Poker) spot).showTableCards(clientHandler);
             return;
         }

@@ -1,6 +1,6 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
-import academy.mindswap.p1g2.casino.server.games.poker.PokerPlayer;
+import academy.mindswap.p1g2.casino.server.games.poker.participant.PokerPlayer;
 import academy.mindswap.p1g2.casino.server.games.poker.table.PokerTable;
 
 public abstract class StreetImpl implements Street, StreetHandler {

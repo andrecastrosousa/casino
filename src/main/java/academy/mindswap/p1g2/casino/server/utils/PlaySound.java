@@ -19,9 +19,10 @@ public class PlaySound {
     }
 
     public void play() {
-        //clip.setFramePosition(0);
-       //clip.start();
+        clip.setFramePosition(0);
+        clip.start();
     }
+
     public void stop() {
         clip.stop();
         clip.flush();

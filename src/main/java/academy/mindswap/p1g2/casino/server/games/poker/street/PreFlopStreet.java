@@ -9,7 +9,7 @@ public class PreFlopStreet extends StreetImpl {
 
     @Override
     public void nextStreet() throws InterruptedException {
-        if(pokerTable.getPlayTimes() >= pokerTable.getPlayers().size() && canGoToNextStreet()) {
+        if (pokerTable.getPlayTimes() >= pokerTable.getPlayers().size() && canGoToNextStreet()) {
             pokerTable.setStreetType(StreetType.FLOP);
             pokerTable.initStreet();
         }

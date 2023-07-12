@@ -1,4 +1,4 @@
-package academy.mindswap.p1g2.casino.server.games;
+package academy.mindswap.p1g2.casino.server.games.manager;
 
 import academy.mindswap.p1g2.casino.server.games.blackjack.Blackjack;
 import academy.mindswap.p1g2.casino.server.games.menu.MenuOption;

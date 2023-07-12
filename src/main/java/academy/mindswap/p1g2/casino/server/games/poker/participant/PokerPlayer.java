@@ -1,10 +1,10 @@
-package academy.mindswap.p1g2.casino.server.games.poker;
+package academy.mindswap.p1g2.casino.server.games.poker.participant;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
-import academy.mindswap.p1g2.casino.server.games.deck.BoardChecker;
-import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.Player;
 import academy.mindswap.p1g2.casino.server.PlayerImpl;
+import academy.mindswap.p1g2.casino.server.games.deck.BoardChecker;
+import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.poker.table.PokerTable;
 
@@ -14,9 +14,9 @@ import java.util.Objects;
 
 public class PokerPlayer extends PlayerImpl implements Comparable {
     private final List<Card> cards;
+    private final PokerTable pokerTable;
     private BetOption betOptionSelected;
     private int bet;
-    private final PokerTable pokerTable;
     private HandScore handScore;
 
     public PokerPlayer(ClientHandler clientHandler, PokerTable pokerTable) {
@@ -36,7 +36,7 @@ public class PokerPlayer extends PlayerImpl implements Comparable {
 
     public void bet(int amount) {
         betOptionSelected = BetOption.BET;
-        if(currentBalance - amount  < 0) {
+        if (currentBalance - amount < 0) {
             amount = currentBalance;
             betOptionSelected = BetOption.ALL_IN;
         }
@@ -47,7 +47,7 @@ public class PokerPlayer extends PlayerImpl implements Comparable {
 
     public void call(int amount) {
         betOptionSelected = BetOption.CALL;
-        if(currentBalance - amount < 0) {
+        if (currentBalance - amount < 0) {
             amount = currentBalance;
             betOptionSelected = BetOption.ALL_IN;
         }
@@ -70,7 +70,7 @@ public class PokerPlayer extends PlayerImpl implements Comparable {
 
     public void raise(int amount) {
         betOptionSelected = BetOption.RAISE;
-        if(currentBalance - amount < 0) {
+        if (currentBalance - amount < 0) {
             amount = currentBalance;
             betOptionSelected = BetOption.ALL_IN;
         }
@@ -100,12 +100,12 @@ public class PokerPlayer extends PlayerImpl implements Comparable {
         return cards;
     }
 
-    public void setHandScore(HandScore handScore) {
-        this.handScore = handScore;
-    }
-
     public HandScore getHandScore() {
         return handScore;
+    }
+
+    public void setHandScore(HandScore handScore) {
+        this.handScore = handScore;
     }
 
     public void resetBet() {

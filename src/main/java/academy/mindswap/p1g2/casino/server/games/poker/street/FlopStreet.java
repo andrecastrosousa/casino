@@ -1,7 +1,6 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
 import academy.mindswap.p1g2.casino.server.games.deck.BoardChecker;
-import academy.mindswap.p1g2.casino.server.games.poker.PokerPlayer;
 import academy.mindswap.p1g2.casino.server.games.poker.table.PokerTable;
 
 import java.io.IOException;
@@ -13,7 +12,7 @@ public class FlopStreet extends StreetImpl {
 
     @Override
     public void nextStreet() throws InterruptedException {
-        if(pokerTable.getPlayTimes() >= pokerTable.getPlayersPlaying().size() && canGoToNextStreet()) {
+        if (pokerTable.getPlayTimes() >= pokerTable.getPlayersPlaying().size() && canGoToNextStreet()) {
             pokerTable.setStreetType(StreetType.TURN);
             pokerTable.initStreet();
         }
@@ -23,7 +22,7 @@ public class FlopStreet extends StreetImpl {
     public void execute() throws InterruptedException {
         BoardChecker boardChecker = BoardChecker.getInstance();
         pokerTable.burnCard();
-        for(int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             pokerTable.turnUpCard();
         }
 

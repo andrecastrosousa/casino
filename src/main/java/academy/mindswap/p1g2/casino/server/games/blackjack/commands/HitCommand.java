@@ -11,7 +11,7 @@ import java.io.IOException;
 public class HitCommand implements CommandHandler {
     @Override
     public void execute(Spot spot, ClientHandler clientHandler) throws IOException, InterruptedException {
-        if(spot instanceof Blackjack){
+        if (spot instanceof Blackjack) {
             ((Blackjack) spot).hit(clientHandler);
             return;
         }

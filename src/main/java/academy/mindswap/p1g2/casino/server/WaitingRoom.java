@@ -1,21 +1,21 @@
 package academy.mindswap.p1g2.casino.server;
 
 import academy.mindswap.p1g2.casino.server.command.Commands;
-import academy.mindswap.p1g2.casino.server.utils.Messages;
-import academy.mindswap.p1g2.casino.server.utils.PlaySound;
-import academy.mindswap.p1g2.casino.server.games.Game;
-import academy.mindswap.p1g2.casino.server.games.GameFactory;
 import academy.mindswap.p1g2.casino.server.games.blackjack.Blackjack;
+import academy.mindswap.p1g2.casino.server.games.manager.Game;
+import academy.mindswap.p1g2.casino.server.games.manager.GameFactory;
 import academy.mindswap.p1g2.casino.server.games.menu.MenuOption;
 import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 import academy.mindswap.p1g2.casino.server.games.slotMachine.Slot;
+import academy.mindswap.p1g2.casino.server.utils.Messages;
+import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.io.IOException;
 import java.util.*;
 
 public class WaitingRoom implements Runnable, Spot {
     private final List<ClientHandler> clientHandlerList;
-    private int number;
+    private final int number;
     private final PlaySound waitingSound;
     private final PlaySound gameStartSound;
 
@@ -28,9 +28,9 @@ public class WaitingRoom implements Runnable, Spot {
         this.number = number;
         gameStartSound = new PlaySound("../casino/sounds/game_start.wav");
 
-        if(number == 1){
+        if (number == 1) {
             waitingSound = new PlaySound("../casino/sounds/waiting_sound_1.wav");
-        } else if (number == 2){
+        } else if (number == 2) {
             waitingSound = new PlaySound("../casino/sounds/waiting_sound_2.wav");
         } else {
             waitingSound = new PlaySound("../casino/sounds/waiting_sound_3.wav");
@@ -42,7 +42,7 @@ public class WaitingRoom implements Runnable, Spot {
         clientHandlerList.forEach(clientHandler -> {
             try {
                 clientHandler.sendMessageUser(Messages.ROOM_STARTED);
-                clientHandler.sendMessageUser("Vote for a game to play...");
+                clientHandler.sendMessageUser(Messages.VOTE_MESSAGE);
 
                 clientHandler.sendMessageUser(MenuOption.showMenu());
 
@@ -59,9 +59,11 @@ public class WaitingRoom implements Runnable, Spot {
         game.join(clientHandlerList);
         game.play();
     }
+
     private void playWaitingSound() {
         waitingSound.play();
     }
+
     private void playGameStartSound() {
         gameStartSound.play();
     }
@@ -70,7 +72,7 @@ public class WaitingRoom implements Runnable, Spot {
     public void run() {
         playWaitingSound();
         try {
-            if(!isFull()) {
+            if (!isFull()) {
                 synchronized (this) {
                     wait();
                 }
@@ -84,8 +86,8 @@ public class WaitingRoom implements Runnable, Spot {
     public synchronized void addClient(ClientHandler clientHandler) throws IOException, InterruptedException {
         clientHandlerList.add(clientHandler);
         clientHandler.changeSpot(this);
-        clientHandler.sendMessageUser(Messages.ROOM_WAITING);
-        if(isFull()) {
+        clientHandler.sendMessageUser(String.format(Messages.ROOM_WAITING, number));
+        if (isFull()) {
             notifyAll();
         }
     }
@@ -98,7 +100,7 @@ public class WaitingRoom implements Runnable, Spot {
         StringBuilder message = new StringBuilder();
         message.append(Messages.USER_SEPARATOR);
         clientHandlerList.forEach(clientHandler1 -> {
-            if(!clientHandler1.equals(clientHandler)) {
+            if (!clientHandler1.equals(clientHandler)) {
                 message.append(clientHandler1.getUsername()).append("\n");
             }
         });
@@ -109,25 +111,25 @@ public class WaitingRoom implements Runnable, Spot {
 
     public void blackjack(ClientHandler clientHandler) {
         int count = votes.getOrDefault(MenuOption.BLACKJACK, 0);
-        broadcast((count + 1) + " votes on blackjack", clientHandler);
+        broadcast(String.format(Messages.NUMBER_OF_VOTES_BLACKJACK, count + 1), clientHandler);
         votes.put(MenuOption.BLACKJACK, count + 1);
-        whisper("You've voted on Blackjack. \nWaiting for everyone to vote.",clientHandler.getUsername());
+        whisper(Messages.BLACKJACK_VOTE, clientHandler.getUsername());
         setGame(new Blackjack());
     }
 
     public void poker(ClientHandler clientHandler) {
         int count = votes.getOrDefault(MenuOption.POKER, 0);
-        broadcast((count + 1) + " votes on poker", clientHandler);
+        broadcast(String.format(Messages.NUMBER_OF_VOTES_POKER, count + 1), clientHandler);
         votes.put(MenuOption.POKER, count + 1);
-        whisper("You've voted on Poker. \nWaiting for everyone to vote.",clientHandler.getUsername());
+        whisper(Messages.POKER_VOTE, clientHandler.getUsername());
         setGame(new Poker());
     }
 
     public void slots(ClientHandler clientHandler) {
         int count = votes.getOrDefault(MenuOption.SLOT_MACHINE, 0);
-        broadcast((count + 1) + " votes on slots", clientHandler);
+        broadcast(String.format(Messages.NUMBER_OF_VOTES_SLOTS, count + 1), clientHandler);
         votes.put(MenuOption.SLOT_MACHINE, count + 1);
-        whisper("You've voted on Slots. \nWaiting for everyone to vote.",clientHandler.getUsername());
+        whisper(Messages.SLOTS_VOTE, clientHandler.getUsername());
         setGame(new Slot());
     }
 
@@ -145,7 +147,7 @@ public class WaitingRoom implements Runnable, Spot {
     }
 
     @Override
-    public void broadcast(String message, ClientHandler clientHandlerBroadcaster){
+    public void broadcast(String message, ClientHandler clientHandlerBroadcaster) {
         clientHandlerList
                 .stream().filter(clientHandler -> !clientHandlerBroadcaster.equals(clientHandler))
                 .forEach(clientHandler -> {

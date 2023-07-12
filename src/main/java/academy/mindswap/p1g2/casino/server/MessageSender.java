@@ -7,7 +7,6 @@ import academy.mindswap.p1g2.casino.server.games.menu.MenuOption;
 import academy.mindswap.p1g2.casino.server.games.poker.Poker;
 import academy.mindswap.p1g2.casino.server.games.poker.command.BetOption;
 import academy.mindswap.p1g2.casino.server.games.slotMachine.Slot;
-import academy.mindswap.p1g2.casino.server.games.slotMachine.SlotMachine;
 import academy.mindswap.p1g2.casino.server.games.slotMachine.command.SpinOption;
 
 import java.io.IOException;

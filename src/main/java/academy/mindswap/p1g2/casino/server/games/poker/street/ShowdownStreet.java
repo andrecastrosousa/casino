@@ -1,7 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.poker.street;
 
 import academy.mindswap.p1g2.casino.server.Player;
-import academy.mindswap.p1g2.casino.server.games.poker.PokerPlayer;
+import academy.mindswap.p1g2.casino.server.games.poker.participant.PokerPlayer;
 import academy.mindswap.p1g2.casino.server.games.poker.rule.Evaluator;
 import academy.mindswap.p1g2.casino.server.games.poker.rule.PokerEvaluatorFactory;
 import academy.mindswap.p1g2.casino.server.games.poker.table.PokerTable;
