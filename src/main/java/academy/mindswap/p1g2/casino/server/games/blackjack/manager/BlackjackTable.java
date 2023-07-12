@@ -5,6 +5,7 @@ import academy.mindswap.p1g2.casino.server.Player;
 import academy.mindswap.p1g2.casino.server.games.blackjack.Blackjack;
 import academy.mindswap.p1g2.casino.server.games.blackjack.participant.BlackjackDealer;
 import academy.mindswap.p1g2.casino.server.games.blackjack.participant.BlackjackPlayer;
+import academy.mindswap.p1g2.casino.server.utils.Messages;
 import academy.mindswap.p1g2.casino.server.utils.PlaySound;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class BlackjackTable extends GameManagerImpl {
         BlackjackPlayer blackjackPlayer = (BlackjackPlayer) currentPlayer;
         blackjackPlayer.receiveCard(blackjackDealer.giveCard());
         if (blackjackPlayer.getScore() > Blackjack.HIGH_SCORE) {
-            blackjackDealer.receiveCardsFromPlayer(blackjackPlayer.returnCards("Your hand burst!!!"));
+            blackjackDealer.receiveCardsFromPlayer(blackjackPlayer.returnCards(Messages.HAND_BURST));
         } else {
             currentPlayer.sendMessage(blackjackPlayer.showCards());
         }
@@ -43,7 +44,7 @@ public class BlackjackTable extends GameManagerImpl {
 
     public void playerSurrender() throws IOException {
         Player currentPlayer = getCurrentPlayerPlaying();
-        blackjackDealer.receiveCardsFromPlayer(((BlackjackPlayer) currentPlayer).returnCards("You give up!!!"));
+        blackjackDealer.receiveCardsFromPlayer(((BlackjackPlayer) currentPlayer).returnCards(Messages.YOU_GIVE_UP));
     }
 
     public int getHandCount() {
@@ -63,9 +64,9 @@ public class BlackjackTable extends GameManagerImpl {
             BlackjackPlayer blackjackPlayer = (BlackjackPlayer) player;
             try {
                 if (blackjackDealer.getScore() > blackjackPlayer.getScore() && blackjackDealer.getScore() <= 21) {
-                    blackjackDealer.receiveCardsFromPlayer(blackjackPlayer.returnCards("Dealer wins this round!!!"));
+                    blackjackDealer.receiveCardsFromPlayer(blackjackPlayer.returnCards(Messages.DEALER_WIN));
                 } else {
-                    blackjackDealer.receiveCardsFromPlayer(blackjackPlayer.returnCards("You win!!!"));
+                    blackjackDealer.receiveCardsFromPlayer(blackjackPlayer.returnCards(Messages.YOU_WIN));
                     winSound.play();
                 }
             } catch (IOException e) {

@@ -49,24 +49,24 @@ public class Messages {
     public static final String SOMEONE_ALL_IN = "%s did an all in";
     public static final String YOU_ALL_IN = "You did an all in";
     public static final String YOU_ALL_IN_W_CHIPS = "%s did an all in with %d poker chips";
-    public static final String NO_BET_CANT_CALL = "\033[1;31mYou can't call because no one bet. You only can /bet, /check or /fold.\033[1m";
-    public static final String HIGHER_BET_CANT_CALL = "\033[1;31mYou can't call because you have the higher bet. You only can /check or /fold.\033[1m";
+    public static final String NO_BET_CANT_CALL = "\033[1;31mYou can't call because no one bet. You only can /bet, /check or /fold.\033[0m";
+    public static final String HIGHER_BET_CANT_CALL = "\033[1;31mYou can't call because you have the higher bet. You only can /check or /fold.\033[0m";
     public static final String SOMEONE_ALL_IN_W_CHIPS = "%s did an all in with %d poker chips";
     public static final String SOMEONE_CALL_W_CHIPS = "%s did a call with %d poker chips";
     public static final String YOU_ALL_IN_W_CHIPS_BALANCE = "You did an all in with %d poker chips, your current balance is %d";
     public static final String YOU_CALL_W_CHIPS_BALANCE = "You did a call with %d poker chips, your current balance is %d";
     public static final String SOMEONE_CHECK = "%s did a check.";
     public static final String YOU_CHECK = "You did a check";
-    public static final String HIGHER_BET_CANT_CHECK = "\033[1;31mYou can't check because someone bet higher. You only can /call, /fold, /allIn or /raise.\033[1m";
+    public static final String HIGHER_BET_CANT_CHECK = "\033[1;31mYou can't check because someone bet higher. You only can /call, /fold, /allIn or /raise.\033[0m";
     public static final String SOMEONE_FOLD = "%s did a fold.";
     public static final String YOU_FOLD = "You did a fold";
-    public static final String NO_ONE_BET_CANT_RISE = "\033[1;31mYou can't raise because no one bet. You only can /bet, /fold or /allIn\033[1m";
+    public static final String NO_ONE_BET_CANT_RISE = "\033[1;31mYou can't raise because no one bet. You only can /bet, /fold or /allIn\033[0m";
     public static final String YOU_RISE_W_CHIPS = "%s did a raise with %d poker chips";
     public static final String YOU_RISE_W_CHIPS_BALANCE = "You did a raise with %d poker chips, your current balance is %d";
     public static final String SOMEONE_BET_20 = "%s did a bet with 20 poker chips";
     public static final String YOU_BET_20 = "You did a bet with 20 poker chips, your current balance is %d";
     public static final String CURRENT_BALANCE = "Current balance %d";
-    public static final String CANT_BET_SOMEONE_BET = "\033[1;31mYou can't bet because someone already did it. You only can /call, /raise, /allIn or /fold\033[1m";
+    public static final String CANT_BET_SOMEONE_BET = "\033[1;31mYou can't bet because someone already did it. You only can /call, /raise, /allIn or /fold\033[0m";
     public static final String YOU_WON_HAND = "You won the hand with %s and won %d poker chips";
     public static final String SOMEONE_WON_HAND = "%s won the hand and with %s won %d poker chips";
     public static final String YOU_LOSE_ALL_CHIPS = "You have lost all your poker chips. Thanks for playing.";
@@ -117,7 +117,7 @@ public class Messages {
             |    ´---------`     ´---------`       ´---------`       ´---------`    |                
             |    |%s        |     |%s        |       |%s        |       |%s        |    |          
             |    |         |     |         |       |         |       |         |    |
-            |    |   %s     |     |    %s    |       |    %s    |       |    %s    |    |                
+            |    |    %s    |     |    %s    |       |    %s    |       |    %s    |    |                
             |    |         |     |         |       |         |       |         |    |
             |    |        %s|     |        %s|       |        %s|       |        %s|    |
             |     `--------´      `--------´        `--------´        `--------´    |                                            
@@ -128,7 +128,7 @@ public class Messages {
             |    ´---------`     ´---------`       ´---------`   |                 
             |    |%s        |     |%s        |       |%s        |   |          
             |    |         |     |         |       |         |   |
-            |    |     %s   |     |    %s    |       |    %s    |   |               
+            |    |    %s    |     |    %s    |       |    %s    |   |               
             |    |         |     |         |       |         |   |
             |    |        %s|     |        %s|       |        %s|   |
             |     `--------´      `--------´        `--------´   |                                             
@@ -150,14 +150,12 @@ public class Messages {
              _________________
             |                 |       
             |    ´---------`  |               
-            |    |%s       |  |        
+            |    |%s        |  |        
             |    |         |  |
-            |    |   %s    |  |                 
+            |    |    %s    |  |                 
             |    |         |  |
-            |    |       %s|  |
-            |     `--------´  |                         
-            |                 |
-            |                 |                  
+            |    |        %s|  |
+            |     `--------´  |                                           
             |_________________|""";
 
 

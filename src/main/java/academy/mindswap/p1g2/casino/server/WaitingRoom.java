@@ -57,7 +57,9 @@ public class WaitingRoom implements Runnable, Spot {
 
         waitingSound.stop();
         game.join(clientHandlerList);
+        playGameStartSound();
         game.play();
+
     }
 
     private void playWaitingSound() {

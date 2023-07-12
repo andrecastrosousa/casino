@@ -47,7 +47,7 @@ public class Poker extends GameImpl {
         Player currentPlayer = gameManager.getCurrentPlayerPlaying();
         broadcast(Messages.TITLE_POKER, currentPlayer.getClientHandler());
         currentPlayer.sendMessage(Messages.TITLE_POKER);
-
+        Thread.sleep(4000);
         while (!gameEnded()) {
             ((PokerTable) gameManager).initStreet();
             while (((PokerTable) gameManager).isHandOnGoing()) {
@@ -75,7 +75,7 @@ public class Poker extends GameImpl {
             player.sendMessage(Messages.NOT_YOUR_TURN);
             return;
         }
-
+        playBetSound();
         PokerPlayer pokerPlayer = (PokerPlayer) player;
         pokerPlayer.allIn();
         broadcast(String.format(Messages.SOMEONE_ALL_IN, clientHandler.getUsername()), clientHandler);
@@ -108,12 +108,11 @@ public class Poker extends GameImpl {
             broadcast(String.format(Messages.SOMEONE_CALL_W_CHIPS, clientHandler.getUsername(), chipsBet), clientHandler);
             whisper(String.format(Messages.YOU_CALL_W_CHIPS_BALANCE, chipsBet, player.getCurrentBalance()), clientHandler.getUsername());
         }
-
+        playBetSound();
         gameManager.releaseTurn();
     }
 
     public void check(ClientHandler clientHandler) throws IOException {
-        playCheckSound();
         int maxBet = ((PokerTable) gameManager).getHigherBet();
         Player player = getPlayerByClient(clientHandler);
         PokerPlayer pokerPlayer = (PokerPlayer) player;
@@ -125,7 +124,7 @@ public class Poker extends GameImpl {
             player.sendMessage(Messages.HIGHER_BET_CANT_CHECK);
             return;
         }
-
+        playCheckSound();
         pokerPlayer.check();
         broadcast(String.format(Messages.SOMEONE_CHECK, clientHandler.getUsername()), clientHandler);
         whisper(Messages.YOU_CHECK, clientHandler.getUsername());
@@ -171,16 +170,15 @@ public class Poker extends GameImpl {
             broadcast(String.format(Messages.YOU_RISE_W_CHIPS, clientHandler.getUsername(), pokerPlayer.getBet()), clientHandler);
             whisper(String.format(Messages.YOU_RISE_W_CHIPS_BALANCE, pokerPlayer.getBet(), player.getCurrentBalance()), clientHandler.getUsername());
         }
-
+        playBetSound();
         gameManager.releaseTurn();
     }
 
     public void bet(ClientHandler clientHandler) throws IOException {
-        playBetSound();
+
         int maxBet = ((PokerTable) gameManager).getHigherBet();
         Player player = getPlayerByClient(clientHandler);
         PokerPlayer pokerPlayer = (PokerPlayer) player;
-
         if (!gameManager.getCurrentPlayerPlaying().getClientHandler().equals(clientHandler)) {
             player.sendMessage(Messages.NOT_YOUR_TURN);
             return;
@@ -196,7 +194,7 @@ public class Poker extends GameImpl {
             broadcast(String.format(Messages.SOMEONE_BET_20, clientHandler.getUsername()), clientHandler);
             whisper(String.format(Messages.YOU_BET_20, player.getCurrentBalance()), clientHandler.getUsername());
         }
-
+        playBetSound();
         gameManager.releaseTurn();
     }
 

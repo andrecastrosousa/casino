@@ -39,7 +39,6 @@ public class SlotMachine {
 
     public void play() throws IOException, InterruptedException {
 
-        Thread.sleep(5000);
         if (player.getCurrentBalance() < bet) {
             player.sendMessage(Messages.SLOT_MACHINE_NO_CREDITS);
         }
@@ -52,12 +51,6 @@ public class SlotMachine {
         calculatePayout(spins);
     }
 
-    /**
-     * hasdjasdha
-     *
-     * @param spins number of spin made by user.
-     * @return
-     */
     private void calculatePayout(List<Integer> spins) throws IOException { //{2,3,3,4}   {2:!,3:2,4:1}
         Map<Integer, Integer> matrix = new HashMap<>();
         int payout = 0;
@@ -83,8 +76,8 @@ public class SlotMachine {
 
     private void evaluatePayout(int payout) throws IOException {
         evaluatorChain.evaluateHand(payout, player);
+        player.addBalance(payout - bet);
         if (payout > 0) {
-            player.addBalance(payout - bet);
             player.sendMessage(String.format(Messages.SLOT_MACHINE_BALANCE_WIN, (player.getCurrentBalance() - payout)));
             player.sendMessage(String.format(Messages.SLOT_MACHINE_CONGRATULATIONS, payout));
         }

@@ -39,7 +39,7 @@ public class Slot extends GameImpl {
         Player currentPlayer = gameManager.getCurrentPlayerPlaying();
         broadcast(Messages.TITLE_SLOT_MACHINE, currentPlayer.getClientHandler());
         currentPlayer.sendMessage(Messages.TITLE_SLOT_MACHINE);
-
+        Thread.sleep(4000);
         while (!gameEnded()) {
             currentPlayer = gameManager.getCurrentPlayerPlaying();
 

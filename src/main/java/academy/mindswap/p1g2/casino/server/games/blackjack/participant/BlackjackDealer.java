@@ -6,6 +6,7 @@ import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.games.DealerImpl;
 import academy.mindswap.p1g2.casino.server.games.deck.DeckGenerator;
 import academy.mindswap.p1g2.casino.server.Player;
+import academy.mindswap.p1g2.casino.server.utils.Messages;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class BlackjackDealer extends DealerImpl {
                 player.sendMessage(boardChecker.getBoard(((BlackjackPlayer)player).getHand()));
                 player.sendMessage(boardChecker.getBoard(showFirstCard()));
                 if(((BlackjackPlayer) player).getScore() > Blackjack.HIGH_SCORE){
-                    receiveCardsFromPlayer(((BlackjackPlayer) player).returnCards("Your first hand burst!!!"));
+                    receiveCardsFromPlayer(((BlackjackPlayer) player).returnCards(Messages.FIRST_HAND_BURST));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

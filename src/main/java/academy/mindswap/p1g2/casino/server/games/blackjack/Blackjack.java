@@ -44,7 +44,7 @@ public class Blackjack extends GameImpl {
         Player currentPlayer = gameManager.getCurrentPlayerPlaying();
         broadcast(Messages.TITLE_BLACKJACK, currentPlayer.getClientHandler());
         currentPlayer.sendMessage(Messages.TITLE_BLACKJACK);
-
+        Thread.sleep(4000);
         while (gameEnded()) {
             ((BlackjackTable)gameManager).startHand();
             while (((BlackjackTable) gameManager).handStillOnGoing()) {
