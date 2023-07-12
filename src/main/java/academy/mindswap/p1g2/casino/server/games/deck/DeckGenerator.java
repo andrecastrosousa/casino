@@ -1,5 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.deck;
 
+import academy.mindswap.p1g2.casino.server.utils.Messages;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,3 +21,4 @@ public class DeckGenerator {
         return deck;
     }
 }
+

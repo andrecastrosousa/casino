@@ -1,5 +1,6 @@
 package academy.mindswap.p1g2.casino.server.games.blackjack;
 
+import academy.mindswap.p1g2.casino.server.games.deck.BoardChecker;
 import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.games.DealerImpl;
 import academy.mindswap.p1g2.casino.server.games.deck.DeckGenerator;
@@ -20,6 +21,7 @@ public class BlackjackDealer extends DealerImpl {
 
     @Override
     public void distributeCards(List<Player> players) {
+        BoardChecker boardChecker = BoardChecker.getInstance();
         handScore(cards.remove(cards.size() - 1));
         handScore(cards.remove(cards.size() - 1));
 
@@ -29,8 +31,8 @@ public class BlackjackDealer extends DealerImpl {
         }
         players.forEach(player -> {
             try {
-                player.sendMessage(((BlackjackPlayer) player).showCards());
-                player.sendMessage(showFirstCard());
+                player.sendMessage(boardChecker.getBoard(((BlackjackPlayer)player).getHand()));
+                player.sendMessage(boardChecker.getBoard(showFirstCard()));
                 if(((BlackjackPlayer) player).getScore() > Blackjack.HIGH_SCORE){
                     receiveCardsFromPlayer(((BlackjackPlayer) player).returnCards("Your first hand burst!!!"));
                 }
@@ -40,16 +42,13 @@ public class BlackjackDealer extends DealerImpl {
         });
     }
 
-    private String showFirstCard() {
-        return "Dealer hand: \n" +
-                hand.get(0).toString();
+    private List<Card> showFirstCard() {
+        return List.of(hand.get(0));
     }
 
     public String showCards() {
-        StringBuilder message = new StringBuilder();
-        message.append("Dealer hand: ");
-        hand.forEach(card -> message.append(card.toString()));
-        return message.toString();
+        BoardChecker boardChecker = BoardChecker.getInstance();
+        return boardChecker.getBoard(hand);
     }
 
     public void handScore(Card card){

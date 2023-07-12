@@ -101,10 +101,10 @@ public class Card implements Comparable {
     }
 
     public enum Suit {
-        CLUBS(Messages.CARD_CLUB),
-        SPADES(Messages.CARD_SPADE),
-        HEARTS(Messages.CARD_HEART),
-        DIAMONDS(Messages.CARD_DIAMOND);
+        CLUBS(Messages.SUIT_CLUB),
+        SPADES(Messages.SUIT_SPADE),
+        HEARTS(Messages.SUIT_HEART),
+        DIAMONDS(Messages.SUIT_DIAMOND);
 
         private final String asciiArt;
 

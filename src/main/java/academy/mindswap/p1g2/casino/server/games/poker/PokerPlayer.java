@@ -1,6 +1,7 @@
 package academy.mindswap.p1g2.casino.server.games.poker;
 
 import academy.mindswap.p1g2.casino.server.ClientHandler;
+import academy.mindswap.p1g2.casino.server.games.deck.BoardChecker;
 import academy.mindswap.p1g2.casino.server.games.deck.Card;
 import academy.mindswap.p1g2.casino.server.Player;
 import academy.mindswap.p1g2.casino.server.PlayerImpl;
@@ -87,9 +88,8 @@ public class PokerPlayer extends PlayerImpl implements Comparable {
     }
 
     public String showCards() {
-        StringBuilder message = new StringBuilder();
-        cards.forEach(card -> message.append(card.toString()));
-        return message.toString();
+        BoardChecker boardChecker = BoardChecker.getInstance();
+        return boardChecker.getBoard(cards);
     }
 
     public void addCards(List<Card> cards) {
